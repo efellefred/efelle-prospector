@@ -196,6 +196,7 @@ function selectPropType(type) {
 function propGoStage1() {
   document.querySelectorAll('.prop-stage').forEach(s => s.classList.remove('active'));
   document.getElementById('prop-stage-1').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Reset form when navigating back to proposal engine from another screen
@@ -227,6 +228,7 @@ function propGoStage2() {
   document.querySelectorAll('.prop-stage').forEach(s => s.classList.remove('active'));
   document.getElementById('prop-stage-2').classList.add('active');
   populatePropClientSelect();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function propFetchClient() {
