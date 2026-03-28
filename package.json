@@ -1,0 +1,17 @@
+{
+  "name": "efelle-prospector",
+  "version": "4.0.0",
+  "description": "efelle Prospector — modular sales tool with API proxy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node tests/smoke-test.js",
+    "test:quick": "node tests/smoke-test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.3.1",
+    "helmet": "^8.1.0"
+  }
+}
