@@ -1,4 +1,4 @@
-import { setCurrentScreen, setCurrentEngine } from './state.js';
+import { setCurrentScreen, setCurrentEngine, currentEngine } from './state.js';
 
 export const ENGINES = {
   wsr: {
@@ -58,9 +58,32 @@ export function showEngine(id) {
   if (id === 'prop' && typeof window.propReset === 'function') window.propReset();
 }
 
+// Reset the current engine to its first step
+function resetCurrentEngine() {
+  const eng = currentEngine;
+  if (eng === 'prop' && typeof window.propReset === 'function') window.propReset();
+  if (eng === 'wsr' && typeof window.wsrShowStage === 'function') window.wsrShowStage('1a');
+  if (eng === 'cca') {
+    const s1a = document.getElementById('cca-stage-1a');
+    const s1b = document.getElementById('cca-stage-1b');
+    const s2 = document.getElementById('cca-stage-2');
+    const s3 = document.getElementById('cca-stage-3');
+    if (s1a) s1a.style.display = 'block';
+    if (s1b) s1b.style.display = 'none';
+    if (s2) s2.style.display = 'none';
+    if (s3) s3.style.display = 'none';
+  }
+  if (eng === 'cap') {
+    const output = document.getElementById('cap-output');
+    if (output) output.style.display = 'none';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // Attach to window for onclick compatibility
 window.showScreen = showScreen;
 window.showEngine = showEngine;
+window.resetCurrentEngine = resetCurrentEngine;
 
 // Initialize: ensure home screen is active on load
 showScreen('home');
