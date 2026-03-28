@@ -77,6 +77,83 @@ async function scrapeLogoFromHomepage(url) {
   }
 }
 
+// Scrape the homepage and contact page for a street address
+async function scrapeAddressFromSite(url) {
+  try {
+    // Try homepage first, then /contact, /contact-us, /about
+    const baseUrl = new URL(url);
+    const pagesToTry = [
+      url,
+      new URL('/contact', baseUrl).href,
+      new URL('/contact-us', baseUrl).href,
+      new URL('/about', baseUrl).href,
+    ];
+
+    for (const pageUrl of pagesToTry) {
+      try {
+        const res = await fetch('/api/fetch-url', {
+          method: 'POST',
+          headers: getApiHeaders(),
+          body: JSON.stringify({ url: pageUrl }),
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        const text = data.text || '';
+
+        // Look for US address patterns: number + street + city + state + zip
+        const addressPatterns = [
+          // "123 Main St, City, ST 12345" or "123 Main St City ST 12345"
+          /\d{1,6}\s+[\w\s.]{2,40}(?:St|Street|Ave|Avenue|Blvd|Boulevard|Dr|Drive|Rd|Road|Way|Ln|Lane|Ct|Court|Pl|Place|Pkwy|Parkway|Cir|Circle|Hwy|Highway)\.?\s*,?\s*(?:Suite|Ste|#|Apt|Unit)?\s*\d{0,5}\s*,?\s*[\w\s]{2,30},?\s*[A-Z]{2}\s+\d{5}(?:-\d{4})?/i,
+          // Broader: any line with a 5-digit zip preceded by a 2-letter state
+          /\d{1,6}\s+[^<\n]{5,60}[A-Z]{2}\s+\d{5}/i,
+        ];
+
+        for (const pattern of addressPatterns) {
+          const match = text.match(pattern);
+          if (match) {
+            const addr = match[0].replace(/\s+/g, ' ').trim();
+            // Sanity check: must have at least 15 chars and a zip code
+            if (addr.length >= 15 && /\d{5}/.test(addr)) {
+              return addr;
+            }
+          }
+        }
+      } catch (e) { /* skip this page */ }
+    }
+    return null;
+  } catch (e) {
+    console.warn('Address scrape failed:', e.message);
+    return null;
+  }
+}
+
+// Fallback: use Gemini with search grounding to find the business address
+async function lookupAddressViaGemini(companyName, url) {
+  try {
+    const res = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({
+        prompt: `What is the street address of "${companyName}" (website: ${url})? Look up their Google Business Profile or any business directory listing. Return ONLY the full street address including street number, city, state, and zip code. If you cannot find a verified address, return "NOT FOUND". Do not guess or make up an address.`,
+        model: 'gemini-2.5-flash-lite'
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const text = (data.candidates || [{}])[0]?.content?.parts
+      ?.filter(p => p.text).map(p => p.text).join('').trim() || '';
+    if (!text || text.includes('NOT FOUND') || text.length < 10 || text.length > 200) return null;
+    // Clean up — remove any surrounding quotes or extra text
+    const cleaned = text.replace(/^["']|["']$/g, '').trim();
+    // Verify it looks like an address (has a number and a zip)
+    if (/\d/.test(cleaned) && /\d{5}/.test(cleaned)) return cleaned;
+    return null;
+  } catch (e) {
+    console.warn('Gemini address lookup failed:', e.message);
+    return null;
+  }
+}
+
 let propVertical = null;
 let propRGS = 'included';
 let propType = 'new_website';
@@ -189,15 +266,39 @@ async function propFetchClient() {
     if (data.founded)      document.getElementById('prop-founded').value = data.founded;
     if (data.differentiators) document.getElementById('prop-differentiators').value = data.differentiators;
     // Scrape the ACTUAL homepage for the real logo URL (don't trust Claude's guess)
-    setStatus('Scraping homepage for logo…', 'searching');
-    const scrapedLogo = await scrapeLogoFromHomepage(url);
+    setStatus('Scraping homepage for logo and address…', 'searching');
+    const [scrapedLogo, scrapedAddress] = await Promise.all([
+      scrapeLogoFromHomepage(url),
+      scrapeAddressFromSite(url),
+    ]);
+
+    // Address: use scraped > Claude's research > Gemini lookup
+    let finalAddress = scrapedAddress || data.address || '';
+    let addressSource = scrapedAddress ? 'website' : (data.address ? 'research' : '');
+
+    if (!finalAddress) {
+      setStatus('Looking up business address via Google…', 'searching');
+      const geminiAddress = await lookupAddressViaGemini(
+        data.company_name || document.getElementById('prop-name').value,
+        url
+      );
+      if (geminiAddress) {
+        finalAddress = geminiAddress;
+        addressSource = 'google';
+      }
+    }
+
+    if (finalAddress) document.getElementById('prop-address').value = finalAddress;
+
     const logoUrl = scrapedLogo || data.logo_url || '';
     const hasLogo = !!logoUrl;
-    const hasAddress = !!data.address;
+    const hasAddress = !!finalAddress;
     if (logoUrl) document.getElementById('prop-logo').value = logoUrl;
     let statusParts = ['✓ Client info populated — scroll down to review and generate proposal.'];
-    if (!hasAddress) statusParts.push('<span style="color:#fb923c">No address found automatically — paste it in the Address field below.</span>');
-    if (!hasLogo) statusParts.push('<span style="color:#fb923c">No logo found automatically — paste a logo URL in the Logo field below.</span>');
+    if (!hasAddress) statusParts.push('<span style="color:#fb923c">No address found — paste it in the Address field below.</span>');
+    if (hasAddress && addressSource === 'google') statusParts.push('<span style="color:#fb923c">Address found via Google — please verify it\'s correct.</span>');
+    if (hasAddress && addressSource === 'website') statusParts.push('<span style="color:#2dd4bf">Address found on website.</span>');
+    if (!hasLogo) statusParts.push('<span style="color:#fb923c">No logo found — paste a logo URL in the Logo field below.</span>');
     if (scrapedLogo) statusParts.push('<span style="color:#2dd4bf">Logo found from homepage source code.</span>');
     status.innerHTML = '<span style="color:#2dd4bf">' + statusParts.join(' ') + '</span>';
   } catch(e) {
