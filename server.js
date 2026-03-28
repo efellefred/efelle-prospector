@@ -309,9 +309,16 @@ const REPORTS_DIR = path.join(__dirname, 'data', 'reports');
 const INDEX_FILE = path.join(REPORTS_DIR, 'index.json');
 
 // Ensure reports directory exists on startup
-if (!fs.existsSync(REPORTS_DIR)) {
-  fs.mkdirSync(REPORTS_DIR, { recursive: true });
-  console.log('  Created reports directory:', REPORTS_DIR);
+try {
+  if (!fs.existsSync(path.join(__dirname, 'data'))) {
+    fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
+  }
+  if (!fs.existsSync(REPORTS_DIR)) {
+    fs.mkdirSync(REPORTS_DIR, { recursive: true });
+  }
+  console.log('  Reports dir:', REPORTS_DIR, '(exists:', fs.existsSync(REPORTS_DIR), ')');
+} catch (e) {
+  console.error('  Failed to create reports directory:', e.message);
 }
 
 function readIndex() {
