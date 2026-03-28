@@ -44,6 +44,7 @@ const loginLimiter = rateLimit({
 
 app.post('/auth/login', loginLimiter, (req, res) => {
   const { password } = req.body;
+  console.log('[AUTH] Expected pw length:', TEAM_PASSWORD.length, '| Received pw length:', (password || '').length, '| Match:', password === TEAM_PASSWORD);
   if (password === TEAM_PASSWORD) {
     const token = crypto.randomUUID();
     sessions.set(token, Date.now() + 24 * 60 * 60 * 1000); // 24h
