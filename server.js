@@ -308,6 +308,12 @@ app.post('/api/orchestrate', requireAuth, async (req, res) => {
 const REPORTS_DIR = path.join(__dirname, 'data', 'reports');
 const INDEX_FILE = path.join(REPORTS_DIR, 'index.json');
 
+// Ensure reports directory exists on startup
+if (!fs.existsSync(REPORTS_DIR)) {
+  fs.mkdirSync(REPORTS_DIR, { recursive: true });
+  console.log('  Created reports directory:', REPORTS_DIR);
+}
+
 function readIndex() {
   try { return JSON.parse(fs.readFileSync(INDEX_FILE, 'utf8')); }
   catch (e) { return []; }

@@ -555,21 +555,28 @@ document.getElementById('wsr-chat-send').addEventListener('click', async () => {
       headers: getApiHeaders(),
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 8192,
-        system: 'You are a report editor. The user will give you an HTML report and an edit instruction. Apply the edit and return the COMPLETE modified HTML. Return ONLY the HTML, no explanation, no markdown fences.',
-        messages: [{ role: 'user', content: `Here is the current report HTML:\n\n${wsrReportHtml}\n\nEdit instruction: ${instruction}\n\nReturn the complete modified HTML:` }]
+        max_tokens: 4096,
+        system: `You are a report editor. The user gives you HTML and an edit instruction.\n\nReturn ONLY a JSON array of find-and-replace operations. Each operation has:\n- "find": the exact text/HTML to find in the document (must be unique enough to match only once)\n- "replace": the replacement text/HTML\n\nExample response:\n[{"find":"$4,500/mo","replace":"$2,850/mo"}]\n\nRules:\n- Return ONLY the JSON array, no explanation, no markdown fences\n- Use the minimum number of replacements needed\n- Match the exact HTML including tags and attributes\n- Keep all styling intact unless the user specifically asks to change it`,
+        messages: [{ role: 'user', content: `Here is the current report HTML:\n\n${wsrReportHtml}\n\nEdit instruction: ${instruction}` }]
       })
     });
     if (!res.ok) throw new Error('API ' + res.status);
     const d = await res.json();
-    let newHtml = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
-    newHtml = newHtml.replace(/^```html?\n?/i, '').replace(/\n?```$/i, '').trim();
-    const hStart = newHtml.indexOf('<!DOCTYPE');
-    const hEnd = newHtml.lastIndexOf('</html>');
-    if (hStart !== -1 && hEnd !== -1) newHtml = newHtml.slice(hStart, hEnd + 7);
-    wsrReportHtml = newHtml;
+    let raw = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    raw = raw.replace(/^```json?\n?/i, '').replace(/\n?```$/i, '').trim();
+    const ops = JSON.parse(raw);
+    let updatedHtml = wsrReportHtml;
+    let changeCount = 0;
+    for (const op of ops) {
+      if (updatedHtml.includes(op.find)) {
+        updatedHtml = updatedHtml.replace(op.find, op.replace);
+        changeCount++;
+      }
+    }
+    if (changeCount === 0) throw new Error('No matching text found to replace — try being more specific');
+    wsrReportHtml = updatedHtml;
     document.getElementById('wsr-report-frame').srcdoc = wsrReportHtml;
-    thinkMsg.textContent = '✓ Change applied';
+    thinkMsg.textContent = `✓ ${changeCount} change(s) applied`;
     thinkMsg.style.color = '#34d399';
   } catch (e) {
     thinkMsg.textContent = '⚠ ' + (e.message || 'Failed to edit');

@@ -121,6 +121,27 @@ function propGoStage1() {
   document.getElementById('prop-stage-1').classList.add('active');
 }
 
+// Reset form when navigating back to proposal engine from another screen
+function propReset() {
+  propGoStage1();
+  propReportHtml = '';
+  propClientData = {};
+  // Clear form fields
+  ['prop-client-url','prop-name','prop-contact','prop-address','prop-phone',
+   'prop-location','prop-services','prop-area','prop-differentiators',
+   'prop-founded','prop-logo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const statusEl = document.getElementById('prop-url-status');
+  if (statusEl) statusEl.innerHTML = '';
+  const chatPanel = document.getElementById('prop-chat-panel');
+  if (chatPanel) chatPanel.style.display = 'none';
+  const chatMessages = document.getElementById('prop-chat-messages');
+  if (chatMessages) chatMessages.innerHTML = '';
+}
+window.propReset = propReset;
+
 function propGoStage2() {
   if (!propVertical) {
     alert('Please select an industry vertical first.');
@@ -712,38 +733,61 @@ document.getElementById('prop-chat-send').addEventListener('click', async () => 
   messagesEl.scrollTop = messagesEl.scrollHeight;
 
   try {
+    // Use find-and-replace approach so the model doesn't need to reproduce the entire HTML
     const res = await fetch('/api/messages', {
       method: 'POST',
       headers: getApiHeaders(),
       body: JSON.stringify({
         model: API_MODEL,
-        max_tokens: 8192,
-        system: `You are a proposal editor. The user will give you an HTML proposal and an edit instruction. Apply the edit and return the COMPLETE modified HTML. Return ONLY the HTML, no explanation, no markdown fences. Keep all existing styling, structure, and content intact except for the requested change.`,
+        max_tokens: 4096,
+        system: `You are a proposal editor. The user gives you HTML and an edit instruction.
+
+Return ONLY a JSON array of find-and-replace operations. Each operation has:
+- "find": the exact text/HTML to find in the document (must be unique enough to match only once)
+- "replace": the replacement text/HTML
+
+Example response:
+[{"find":"$4,500/mo","replace":"$2,850/mo"}]
+
+Rules:
+- Return ONLY the JSON array, no explanation, no markdown fences
+- Use the minimum number of replacements needed
+- Match the exact HTML including tags and attributes
+- Keep all styling intact unless the user specifically asks to change it`,
         messages: [{
           role: 'user',
-          content: `Here is the current proposal HTML:\n\n${propReportHtml}\n\nEdit instruction: ${instruction}\n\nReturn the complete modified HTML:`
+          content: `Here is the current proposal HTML:\n\n${propReportHtml}\n\nEdit instruction: ${instruction}`
         }]
       })
     });
 
     if (!res.ok) throw new Error('API ' + res.status);
     const d = await res.json();
-    let newHtml = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    let responseText = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
 
-    // Clean up any markdown fences
-    newHtml = newHtml.replace(/^```html?\n?/i, '').replace(/\n?```$/i, '').trim();
+    // Clean up markdown fences
+    responseText = responseText.replace(/^```json?\n?/i, '').replace(/\n?```$/i, '').trim();
 
-    // Extract just the HTML document
-    const hStart = newHtml.indexOf('<!DOCTYPE');
-    const hEnd = newHtml.lastIndexOf('</html>');
-    if (hStart !== -1 && hEnd !== -1) newHtml = newHtml.slice(hStart, hEnd + 7);
+    // Parse the replacements
+    const replacements = JSON.parse(responseText);
+    let updatedHtml = propReportHtml;
+    let changeCount = 0;
+
+    for (const op of replacements) {
+      if (op.find && op.replace !== undefined && updatedHtml.includes(op.find)) {
+        updatedHtml = updatedHtml.replace(op.find, op.replace);
+        changeCount++;
+      }
+    }
+
+    if (changeCount === 0) throw new Error('No matching text found to replace — try being more specific');
 
     // Update the proposal
-    propReportHtml = newHtml;
+    propReportHtml = updatedHtml;
     await writeToFrame(document.getElementById('prop-report-frame'), propReportHtml);
 
     // Show success
-    thinkMsg.textContent = '✓ Change applied';
+    thinkMsg.textContent = '✓ ' + changeCount + ' change' + (changeCount > 1 ? 's' : '') + ' applied';
     thinkMsg.style.color = '#2dd4bf';
   } catch (e) {
     thinkMsg.textContent = '⚠ ' + (e.message || 'Failed to edit');

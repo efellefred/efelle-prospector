@@ -54,6 +54,8 @@ export function showScreen(id) {
 export function showEngine(id) {
   setCurrentEngine(id);
   showScreen(id);
+  // Reset proposal form when navigating to it fresh (so old proposals don't linger)
+  if (id === 'prop' && typeof window.propReset === 'function') window.propReset();
 }
 
 // Attach to window for onclick compatibility
