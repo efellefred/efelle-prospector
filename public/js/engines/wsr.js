@@ -37,16 +37,16 @@ function buildWSRReportHTML(d) {
   }
 
 
-  const cover = '<div style="background:#000;background-image:radial-gradient(ellipse at top right,rgba(5,150,105,0.2) 0%,#000 60%);padding:44px 64px 40px;">' +
-    '<div style="margin-bottom:48px;">' +
+  const cover = '<div style="background:#000;background-image:radial-gradient(ellipse at top right,rgba(5,150,105,0.2) 0%,#000 60%);padding:32px 48px 28px;">' +
+    '<div style="margin-bottom:32px;">' +
       '<svg version="1.1" id="efelle_creative" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 551 275" style="width:120px;height:auto;display:block;" xml:space="preserve"><style type="text/css">.st0{fill:#F05128;}.st1{fill:#5A5F63;}</style><g><path class="st0" d="M103.6,88.8c-8.8-5.5-18.7-8.2-29.2-8.2c-9.8,0-19,2.4-27.5,7.2c-8.5,4.8-15.3,11.3-20.2,19.6c-4.9,8.2-7.4,17.2-7.4,26.7s2.5,18.5,7.5,26.8c4.9,8.3,11.7,14.9,20.2,19.6c8.4,4.7,17.6,7.1,27.3,7.1c11.9,0,22.8-3.4,32.4-10.2c4.2-3,6.1-4.8,6.1-7.3c0-3.1-2.3-5.4-5.4-5.4c-2.2,0-3.7,1.4-4.3,1.9c-3.6,3.1-8,5.5-13.3,7.4s-10.6,2.8-15.5,2.8c-7.7,0-15-1.9-21.9-5.8c-6.8-3.8-12.3-9.2-16.3-15.8s-6-13.7-6-21.1c0-7.6,2-14.7,6-21.3c4-6.6,9.5-11.9,16.2-15.7c6.7-3.8,14.1-5.7,22-5.7c9.2,0,17.7,2.6,25.3,7.7c6.7,4.5,11.7,10.3,15,17.5c1.3,2.7,2.2,5.3,2.9,7.9c0.3,1.2,0.5,2.4,0.7,3.7H42.5c-3.7,0-5.7,2.7-5.7,5.4c0,3.2,2.4,5.5,5.7,5.5h80.2c3.9,0,6.6-2.6,6.6-6.3c0-7.3-1.8-14.6-5.3-21.6C119.3,101.8,112.5,94.3,103.6,88.8z"/><path class="st0" d="M293.6,88.8c-8.8-5.5-18.7-8.2-29.2-8.2c-9.8,0-19,2.4-27.5,7.2c-8.5,4.8-15.3,11.3-20.2,19.6c-4.9,8.2-7.4,17.2-7.4,26.7s2.5,18.5,7.5,26.8c4.9,8.3,11.7,14.9,20.2,19.6c8.4,4.7,17.6,7.1,27.3,7.1c11.9,0,22.8-3.4,32.4-10.2c4.2-3,6.1-4.8,6.1-7.3c0-3.1-2.3-5.4-5.4-5.4c-2.2,0-3.7,1.4-4.3,1.9c-3.6,3.1-8,5.5-13.3,7.4s-10.6,2.8-15.5,2.8c-7.7,0-15-1.9-21.9-5.8c-6.8-3.8-12.3-9.2-16.3-15.8s-6-13.7-6-21.1c0-7.6,2-14.7,6-21.3c4-6.6,9.5-11.9,16.2-15.7c6.7-3.8,14.1-5.7,22-5.7c9.2,0,17.7,2.6,25.3,7.7c6.7,4.5,11.7,10.3,15,17.5c1.3,2.7,2.2,5.3,2.9,7.9c0.3,1.2,0.5,2.4,0.7,3.7h-75.7c-3.7,0-5.7,2.7-5.7,5.4c0,3.2,2.4,5.5,5.7,5.5h80.2c3.9,0,6.6-2.6,6.6-6.3c0-7.3-1.8-14.6-5.3-21.6C309.3,101.8,302.5,94.3,293.6,88.8z"/><path class="st0" d="M489,111.2c-4.7-9.4-11.5-16.9-20.4-22.3c-8.8-5.5-18.7-8.2-29.2-8.2c-9.8,0-19,2.4-27.5,7.2c-8.5,4.8-15.3,11.3-20.2,19.6c-4.9,8.2-7.4,17.2-7.4,26.7s2.5,18.5,7.5,26.8c4.9,8.3,11.7,14.9,20.2,19.6c8.4,4.7,17.6,7.1,27.3,7.1c11.9,0,22.8-3.4,32.4-10.2c4.2-3,6.1-4.8,6.1-7.3c0-3.1-2.3-5.4-5.4-5.4c-2.2,0-3.7,1.4-4.3,1.9c-3.6,3.1-8,5.5-13.3,7.4s-10.6,2.8-15.5,2.8c-7.7,0-15-1.9-21.9-5.8c-6.8-3.8-12.3-9.2-16.3-15.8s-6-13.7-6-21.1c0-7.6,2-14.7,6-21.3c4-6.6,9.5-11.9,16.2-15.7c6.7-3.8,14.1-5.7,22-5.7c9.2,0,17.7,2.6,25.3,7.7c6.7,4.5,11.7,10.3,15,17.5c1.3,2.7,2.2,5.3,2.9,7.9c0.3,1.2,0.5,2.4,0.7,3.7h-75.7c-3.7,0-5.7,2.7-5.7,5.4c0,3.2,2.4,5.5,5.7,5.5h80.2c3.9,0,6.6-2.6,6.6-6.3C494.3,125.5,492.5,118.2,489,111.2z"/><path class="st0" d="M154.6,86.6c2.1-5.7,5.7-10.8,10.7-15.3c4-3.6,8.5-6.3,13.1-8.2c5.2-2.1,10.8-3.1,16.8-3.1c3.9,0,5.9-2.8,5.9-5.5c0-3.1-2.3-5.4-5.4-5.4h-1.3c-7.5,0-14.8,1.5-21.4,4.4c-5.9,2.6-11.5,6.3-16.4,11.2c-5.7,5.5-9.9,11.8-12.4,18.6c-2.4,6.7-3.7,14.9-3.7,24.4V252c0,3.3,2.3,5.7,5.4,5.7s5.4-2.4,5.4-5.7V139.6h44.1c3.3,0,5.7-2.3,5.7-5.4s-2.4-5.4-5.7-5.4h-44.1V110C151.4,100.3,152.5,92.4,154.6,86.6z"/><path class="st0" d="M337.5,11.9c-3.2,0-5.5,2.4-5.5,5.7v37.1v7.5V182v0.6c0.5,3.6,3.1,5.2,5.5,5.2c2.7,0,5.4-2,5.4-5.7V62.2v-7.5V17.6C343,13.9,340.2,11.9,337.5,11.9z"/><path class="st0" d="M365.5,11.9c-3.2,0-5.5,2.4-5.5,5.7v37.1v7.5V182v0.6c0.5,3.6,3.1,5.2,5.5,5.2c2.7,0,5.4-2,5.4-5.7V62.2v-7.5V17.6C371,13.9,368.2,11.9,365.5,11.9z"/></g><g><path class="st1" d="M355.5,238.7l-2.3,1.4c-2-2.7-4.8-4-8.2-4c-2.8,0-5.1,0.9-6.9,2.7s-2.8,4-2.8,6.5c0,1.7,0.4,3.2,1.3,4.7c0.8,1.5,2,2.6,3.5,3.4c1.5,0.8,3.1,1.2,5,1.2c3.4,0,6.1-1.3,8.2-4l2.3,1.5c-1.1,1.6-2.6,2.9-4.4,3.8s-3.9,1.4-6.3,1.4c-3.6,0-6.6-1.1-9-3.4c-2.4-2.3-3.6-5.1-3.6-8.4c0-2.2,0.6-4.3,1.7-6.2s2.6-3.4,4.6-4.4c1.9-1.1,4.1-1.6,6.5-1.6c1.5,0,3,0.2,4.4,0.7s2.6,1.1,3.6,1.8C354,236.6,354.8,237.6,355.5,238.7z"/></g><g><path class="st1" d="M365.4,234h3v3.3c0.9-1.3,1.8-2.3,2.8-2.9c1-0.7,2-1,3.1-1c0.8,0,1.7,0.3,2.6,0.8l-1.5,2.5c-0.6-0.3-1.1-0.4-1.6-0.4c-1,0-1.9,0.4-2.8,1.2s-1.6,2.1-2.1,3.7c-0.4,1.3-0.5,3.9-0.5,7.9v7.7h-3V234z"/></g><g><path class="st1" d="M441,234v22.8h-2.9v-3.9c-1.2,1.5-2.6,2.6-4.1,3.4s-3.2,1.1-5,1.1c-3.2,0-6-1.2-8.3-3.5c-2.3-2.3-3.4-5.2-3.4-8.6c0-3.3,1.2-6.1,3.5-8.4c2.3-2.3,5.1-3.5,8.3-3.5c1.9,0,3.6,0.4,5.1,1.2s2.9,2,4,3.6V234H441z M429.3,236.2c-1.6,0-3.1,0.4-4.5,1.2s-2.5,1.9-3.3,3.4s-1.2,3-1.2,4.6s0.4,3.1,1.2,4.6c0.8,1.5,1.9,2.6,3.3,3.4c1.4,0.8,2.9,1.2,4.5,1.2s3.1-0.4,4.6-1.2c1.4-0.8,2.5-1.9,3.3-3.3c0.8-1.4,1.2-2.9,1.2-4.7c0-2.6-0.9-4.9-2.6-6.6C434,237.1,431.8,236.2,429.3,236.2z"/></g><g><path class="st1" d="M455.6,225.5h2.9v8.5h4.7v2.5h-4.7v20.3h-2.9v-20.3h-4V234h4V225.5z"/></g><g><path class="st1" d="M474.1,224.6c0.7,0,1.2,0.2,1.7,0.7s0.7,1,0.7,1.7s-0.2,1.2-0.7,1.7s-1,0.7-1.7,0.7s-1.2-0.2-1.7-0.7s-0.7-1-0.7-1.7s0.2-1.2,0.7-1.7S473.4,224.6,474.1,224.6z M472.6,234h2.9v22.8h-2.9V234z"/></g><g><path class="st1" d="M484.9,234h3.1l7.7,16.7l7.6-16.7h3.1L496,256.8h-0.5L484.9,234z"/></g><path class="st1" d="M536.7,240.1c-1-2.1-2.5-3.8-4.5-5c-1.9-1.2-4.1-1.9-6.4-1.9c-2.2,0-4.2,0.5-6,1.6c-1.9,1.1-3.3,2.6-4.4,4.4c-1.1,1.9-1.6,3.9-1.6,6s0.5,4.2,1.6,6c1.1,1.9,2.6,3.4,4.4,4.4c1.9,1.1,3.9,1.6,6,1.6c2.6,0,5-0.8,7.1-2.3c0.8-0.6,1.4-1.1,1.4-1.8c0-0.8-0.6-1.4-1.4-1.4c-0.4,0-0.8,0.2-1.1,0.5c-0.8,0.7-1.7,1.2-2.8,1.6c-2.9,1-5.5,0.7-7.9-0.6c-1.5-0.8-2.6-2-3.4-3.4c-0.8-1.4-1.3-3-1.3-4.6c0-1.7,0.4-3.2,1.3-4.7c0.8-1.4,2-2.6,3.4-3.4c1.4-0.8,3-1.2,4.6-1.2c2,0,3.7,0.5,5.3,1.7c1.4,1,2.5,2.3,3.2,3.8c0.3,0.6,0.5,1.2,0.6,1.7c0,0.2,0.1,0.4,0.1,0.6h-16.1c-0.8,0-1.4,0.6-1.4,1.4c0,0.8,0.6,1.4,1.4,1.4h17.3c1,0,1.6-0.6,1.6-1.6C537.8,243.3,537.4,241.7,536.7,240.1z"/><path class="st1" d="M407.7,240.1c-1-2.1-2.5-3.8-4.5-5c-1.9-1.2-4.1-1.9-6.4-1.9c-2.2,0-4.2,0.5-6,1.6c-1.9,1.1-3.3,2.6-4.4,4.4c-1.1,1.9-1.6,3.9-1.6,6s0.5,4.2,1.6,6c1.1,1.9,2.6,3.4,4.4,4.4c1.9,1.1,3.9,1.6,6,1.6c2.6,0,5-0.8,7.1-2.3c0.8-0.6,1.4-1.1,1.4-1.8c0-0.8-0.6-1.4-1.4-1.4c-0.4,0-0.8,0.2-1.1,0.5c-0.8,0.7-1.7,1.2-2.8,1.6c-2.9,1-5.5,0.7-7.9-0.6c-1.5-0.8-2.6-2-3.4-3.4s-1.3-3-1.3-4.6c0-1.7,0.4-3.2,1.3-4.7c0.8-1.4,2-2.6,3.4-3.4c1.4-0.8,3-1.2,4.6-1.2c2,0,3.7,0.5,5.3,1.7c1.4,1,2.5,2.3,3.2,3.8c0.3,0.6,0.5,1.2,0.6,1.7c0,0.2,0.1,0.4,0.1,0.6h-16.1c-0.8,0-1.4,0.6-1.4,1.4c0,0.8,0.6,1.4,1.4,1.4h17.3c1,0,1.6-0.6,1.6-1.6C408.8,243.3,408.4,241.7,407.7,240.1z"/></svg>' +
     '</div>' +
     '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:' + OG + ';margin-bottom:16px;">Website Audit &amp; Recommendations</div>' +
-      '<div style="font-size:13px;color:#6E6E73;">' + date + '</div>' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:' + OG + ';margin-bottom:16px;">Website Audit &amp; Recommendations (W.A.R.) Report</div>' +
+      '<div style="font-size:11px;color:#6E6E73;">' + date + '</div>' +
     '</div>' +
-    '<div style="font-size:48px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:16px;">' + esc(d.client_name||'Website') + '</div>' +
-    '<div style="font-size:15px;color:#AEAEB2;margin-bottom:0;">Custom website audit and digital health assessment &amp; recommendations for your current website' + (d.website ? ' <span style="color:#6E6E73;">[' + esc(d.website) + ']</span>' : '') + '.</div>' +
+    '<div style="font-size:44px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:14px;">' + esc(d.client_name||'Website') + '</div>' +
+    '<div style="font-size:14px;color:#AEAEB2;margin-bottom:0;">Custom website audit and digital health assessment &amp; recommendations for your current website' + (d.website ? ' <span style="color:#6E6E73;">' + esc(d.website) + '</span>' : '') + '.</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px;">' +
       '<div><div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:6px;">Prepared For</div>' +
     '<div style="font-size:14px;color:#fff;line-height:1.8;">' + esc(d.prepared_for||d.client_name||'') + '</div></div>' +
@@ -57,15 +57,15 @@ function buildWSRReportHTML(d) {
     '</div>' +
   '</div>';
 
-  const summary = '<div style="padding:32px 64px 40px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
-    '<div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:8px;">Executive Summary</div>' +
-    '<h2 style="font-size:28px;font-weight:800;color:#1D1D1F;margin:0 0 24px;">How ' + esc(d.client_name||'This Website') + ' Performs Today</h2>' +
-    '<p style="font-size:15px;color:#6E6E73;line-height:1.8;margin-bottom:32px;">' + esc(d.executive_summary||'') + '</p>' +
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' +
+  const summary = '<div style="padding:24px 48px 28px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
+    '<div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:6px;">Executive Summary</div>' +
+    '<h2 style="font-size:22px;font-weight:800;color:#1D1D1F;margin:0 0 16px;">How ' + esc(d.client_name||'This Website') + ' Performs Today</h2>' +
+    '<p style="font-size:13px;color:#6E6E73;line-height:1.7;margin-bottom:20px;">' + esc(d.executive_summary||'') + '</p>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">' +
     cats.map(c =>
-      '<div style="background:#F5F5F7;border-radius:12px;padding:18px 20px;text-align:center;">' +
-        scoreRing(c.score||0, 52) +
-    '<div style="font-size:11px;font-weight:700;color:#6E6E73;margin-top:8px;letter-spacing:0.05em;text-transform:uppercase;">' + esc(c.label||'') + '</div>' +
+      '<div style="background:#F5F5F7;border-radius:10px;padding:12px 14px;text-align:center;">' +
+        scoreRing(c.score||0, 44) +
+    '<div style="font-size:9px;font-weight:700;color:#6E6E73;margin-top:6px;letter-spacing:0.05em;text-transform:uppercase;">' + esc(c.label||'') + '</div>' +
       '</div>'
     ).join('') +
     '</div>' +
@@ -74,41 +74,41 @@ function buildWSRReportHTML(d) {
 
   const catSections = cats.map(function(cat, ci) {
     const issuesHtml = (cat.issues||[]).map(issue =>
-      '<div style="border:1px solid #D2D2D7;border-radius:10px;padding:16px 20px;margin-bottom:10px;">' +
-    '<div style="display:flex;align-items:flex-start;gap:12px;">' +
-    '<div style="width:8px;height:8px;border-radius:50%;background:' + (severityColor[issue.severity]||'#6b7280') + ';flex-shrink:0;margin-top:5px;"></div>' +
+      '<div style="border:1px solid #D2D2D7;border-radius:8px;padding:10px 14px;margin-bottom:6px;">' +
+    '<div style="display:flex;align-items:flex-start;gap:8px;">' +
+    '<div style="width:6px;height:6px;border-radius:50%;background:' + (severityColor[issue.severity]||'#6b7280') + ';flex-shrink:0;margin-top:5px;"></div>' +
     '<div style="flex:1;">' +
-    '<div style="font-size:13px;font-weight:700;color:#1D1D1F;margin-bottom:3px;">' + esc(issue.title||'') + '</div>' +
-    '<div style="font-size:13px;color:#6E6E73;line-height:1.6;">' + esc(issue.description||'') + '</div>' +
+    '<div style="font-size:11px;font-weight:700;color:#1D1D1F;margin-bottom:2px;">' + esc(issue.title||'') + '</div>' +
+    '<div style="font-size:11px;color:#6E6E73;line-height:1.5;">' + esc(issue.description||'') + '</div>' +
     '</div>' +
-    '<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:' + (severityColor[issue.severity]||'#6b7280') + ';white-space:nowrap;flex-shrink:0;">' + (issue.severity||'') + '</div>' +
+    '<div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:' + (severityColor[issue.severity]||'#6b7280') + ';white-space:nowrap;flex-shrink:0;">' + (issue.severity||'') + '</div>' +
     '</div>' +
       '</div>'
     ).join('');
 
     const recsHtml = (cat.recommendations||[]).map(rec =>
-      '<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #F5F5F7;">' +
-    '<div style="width:24px;height:24px;border-radius:6px;background:' + (impactColor[rec.impact]||'#6b7280') + '20;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">' +
-    '<div style="width:7px;height:7px;border-radius:50%;background:' + (impactColor[rec.impact]||'#6b7280') + ';"></div>' +
+      '<div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #F5F5F7;">' +
+    '<div style="width:18px;height:18px;border-radius:4px;background:' + (impactColor[rec.impact]||'#6b7280') + '20;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">' +
+    '<div style="width:5px;height:5px;border-radius:50%;background:' + (impactColor[rec.impact]||'#6b7280') + ';"></div>' +
     '</div>' +
     '<div>' +
-    '<div style="font-size:13px;font-weight:700;color:#1D1D1F;margin-bottom:2px;">' + esc(rec.title||'') + '</div>' +
-    '<div style="font-size:12px;color:#6E6E73;line-height:1.6;">' + esc(rec.description||'') + '</div>' +
+    '<div style="font-size:11px;font-weight:700;color:#1D1D1F;margin-bottom:1px;">' + esc(rec.title||'') + '</div>' +
+    '<div style="font-size:10px;color:#6E6E73;line-height:1.5;">' + esc(rec.description||'') + '</div>' +
     '</div>' +
-    '<div style="margin-left:auto;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:' + (impactColor[rec.impact]||'#6b7280') + ';white-space:nowrap;flex-shrink:0;padding-top:2px;">' + (rec.impact||'') + ' impact</div>' +
+    '<div style="margin-left:auto;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:' + (impactColor[rec.impact]||'#6b7280') + ';white-space:nowrap;flex-shrink:0;padding-top:2px;">' + (rec.impact||'') + '</div>' +
       '</div>'
     ).join('');
 
-    return '<div style="padding:40px 64px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">' +
+    return '<div style="padding:24px 48px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
     '<div>' +
-    '<div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:6px;">Section 0' + (ci+1) + '</div>' +
-    '<h2 style="font-size:24px;font-weight:800;color:#1D1D1F;margin:0;">' + esc(cat.label||'') + '</h2>' +
+    '<div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:4px;">Section 0' + (ci+1) + '</div>' +
+    '<h2 style="font-size:20px;font-weight:800;color:#1D1D1F;margin:0;">' + esc(cat.label||'') + '</h2>' +
     '</div>' +
-        scoreRing(cat.score||0, 58) +
+        scoreRing(cat.score||0, 48) +
       '</div>' +
-      (issuesHtml ? '<div style="margin-bottom:24px;"><div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:12px;">Issues Found</div>' + issuesHtml + '</div>' : '') +
-      (recsHtml ? '<div><div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + GR + ';margin-bottom:4px;">Recommendations</div>' + recsHtml + '</div>' : '') +
+      (issuesHtml ? '<div style="margin-bottom:16px;"><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:8px;">Issues Found</div>' + issuesHtml + '</div>' : '') +
+      (recsHtml ? '<div><div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + GR + ';margin-bottom:4px;">Recommendations</div>' + recsHtml + '</div>' : '') +
     '</div>';
   }).join('');
 
@@ -212,33 +212,54 @@ function buildWSRReportHTML(d) {
     '</div>'
   ).join('');
 
-  const prioritySection = actionsHtml ? '<div style="padding:40px 64px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
-    '<div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:8px;">Recommendations</div>' +
-    '<h2 style="font-size:28px;font-weight:800;color:#1D1D1F;margin:0 0 8px;">Priority Action Plan</h2>' +
-    '<p style="font-size:14px;color:#6E6E73;margin-bottom:4px;">Ranked by impact and effort — start here.</p>' +
+  const prioritySection = actionsHtml ? '<div style="padding:24px 48px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
+    '<div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:6px;">Recommendations</div>' +
+    '<h2 style="font-size:22px;font-weight:800;color:#1D1D1F;margin:0 0 6px;">Priority Action Plan</h2>' +
+    '<p style="font-size:12px;color:#6E6E73;margin-bottom:4px;">Ranked by impact and effort — start here.</p>' +
     actionsHtml + '</div>' : '';
 
 
   // Screenshots section (if available)
+  // Screenshots in Apple device mockups
   let screenshotSection = '';
   if (d._screenshots && (d._screenshots.desktop || d._screenshots.mobile)) {
-    screenshotSection = '<div style="padding:40px 64px 48px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:8px;">Current Website</div>' +
-      '<h2 style="font-size:28px;font-weight:800;color:#1D1D1F;margin:0 0 8px;">Homepage Screenshots</h2>' +
-      '<p style="font-size:14px;color:#6E6E73;margin-bottom:28px;">Captured during this audit — desktop (1280px) and mobile (375px) viewports.</p>' +
-      '<div style="display:flex;gap:24px;align-items:flex-start;">' +
-        '<div style="flex:2;">' +
-          '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:8px;">Desktop View</div>' +
-          '<div style="border:1px solid #D2D2D7;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">' +
-            '<img src="' + (d._screenshots.desktop || '') + '" style="width:100%;display:block;" alt="Desktop homepage">' +
-          '</div>' +
+    // MacBook mockup (silver bezel + bottom bar)
+    const macbook = '<div style="flex:3;max-width:480px;">' +
+      '<div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:8px;text-align:center;">MacBook Pro</div>' +
+      '<div style="background:#1D1D1F;border-radius:12px 12px 0 0;padding:8px 8px 0;box-shadow:0 4px 20px rgba(0,0,0,0.15);">' +
+        '<div style="display:flex;align-items:center;justify-content:center;margin-bottom:6px;">' +
+          '<div style="width:6px;height:6px;border-radius:50%;background:#3a3a3c;"></div>' +
         '</div>' +
-        '<div style="flex:0 0 140px;">' +
-          '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:8px;">Mobile View</div>' +
-          '<div style="border:1px solid #D2D2D7;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">' +
-            '<img src="' + (d._screenshots.mobile || '') + '" style="width:100%;display:block;" alt="Mobile homepage">' +
-          '</div>' +
+        '<div style="border-radius:4px;overflow:hidden;">' +
+          '<img src="' + (d._screenshots.desktop || '') + '" style="width:100%;display:block;" alt="Desktop homepage">' +
         '</div>' +
+      '</div>' +
+      '<div style="background:#1D1D1F;height:12px;border-radius:0 0 4px 4px;"></div>' +
+      '<div style="background:#2a2a2c;height:6px;width:35%;margin:0 auto;border-radius:0 0 6px 6px;"></div>' +
+    '</div>';
+
+    // iPhone mockup (rounded corners + notch)
+    const iphone = '<div style="flex:0 0 100px;">' +
+      '<div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:8px;text-align:center;">iPhone</div>' +
+      '<div style="background:#1D1D1F;border-radius:20px;padding:10px 5px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">' +
+        '<div style="display:flex;justify-content:center;margin-bottom:4px;">' +
+          '<div style="width:30%;height:4px;background:#2a2a2c;border-radius:4px;"></div>' +
+        '</div>' +
+        '<div style="border-radius:8px;overflow:hidden;">' +
+          '<img src="' + (d._screenshots.mobile || '') + '" style="width:100%;display:block;" alt="Mobile homepage">' +
+        '</div>' +
+        '<div style="display:flex;justify-content:center;margin-top:4px;">' +
+          '<div style="width:28%;height:3px;background:#2a2a2c;border-radius:3px;"></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+    screenshotSection = '<div style="padding:28px 48px 32px;border-bottom:1px solid #D2D2D7;">' +
+      '<div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:6px;">Current Website</div>' +
+      '<h2 style="font-size:22px;font-weight:800;color:#1D1D1F;margin:0 0 6px;">Homepage Screenshots</h2>' +
+      '<p style="font-size:12px;color:#6E6E73;margin-bottom:20px;">Captured during this audit — desktop and mobile viewports.</p>' +
+      '<div style="display:flex;gap:32px;align-items:flex-start;justify-content:center;">' +
+        macbook + iphone +
       '</div>' +
     '</div>';
   }
