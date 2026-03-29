@@ -303,9 +303,68 @@ app.post('/api/extract-company', requireAuth, async (req, res) => {
       if (schemaMatch) name = schemaMatch[1].trim();
     }
 
-    res.json({ name: name || null });
+    // Detect industry from page content
+    let industry = '';
+
+    // Check meta description and keywords
+    const metaDesc = (html.match(/<meta[^>]*name="description"[^>]*content="([^"]+)"/i) || [])[1] || '';
+    const metaKeywords = (html.match(/<meta[^>]*name="keywords"[^>]*content="([^"]+)"/i) || [])[1] || '';
+
+    // Check schema.org @type for industry hints
+    const schemaType = (html.match(/"@type"\s*:\s*"([^"]+)"/g) || []).join(' ');
+
+    // Strip HTML for text analysis
+    const pageText = html
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .slice(0, 10000)
+      .toLowerCase();
+
+    // Industry keyword matching (ordered by specificity)
+    const industryPatterns = [
+      { keywords: ['roofing', 'roof repair', 'shingle', 'roofer'], label: 'Roofing' },
+      { keywords: ['plumbing', 'plumber', 'drain', 'water heater'], label: 'Plumbing' },
+      { keywords: ['hvac', 'heating', 'air conditioning', 'furnace', 'cooling'], label: 'HVAC' },
+      { keywords: ['electrician', 'electrical', 'wiring', 'panel upgrade'], label: 'Electrical' },
+      { keywords: ['landscaping', 'lawn care', 'hardscape', 'irrigation'], label: 'Landscaping' },
+      { keywords: ['pest control', 'exterminator', 'termite', 'pest management'], label: 'Pest Control' },
+      { keywords: ['dental', 'dentist', 'orthodont', 'oral surgery'], label: 'Dental' },
+      { keywords: ['veterinar', 'animal hospital', 'pet care', 'vet clinic'], label: 'Veterinary' },
+      { keywords: ['real estate', 'realtor', 'property', 'homes for sale', 'mls'], label: 'Real Estate' },
+      { keywords: ['construction', 'general contractor', 'remodel', 'renovation', 'builder'], label: 'Construction' },
+      { keywords: ['painting', 'painter', 'interior painting', 'exterior painting'], label: 'Painting' },
+      { keywords: ['moving', 'movers', 'relocation', 'storage'], label: 'Moving & Storage' },
+      { keywords: ['auto repair', 'mechanic', 'auto body', 'car repair'], label: 'Auto Repair' },
+      { keywords: ['cleaning', 'janitorial', 'maid service', 'house cleaning'], label: 'Cleaning Services' },
+      { keywords: ['law firm', 'attorney', 'lawyer', 'legal'], label: 'Legal' },
+      { keywords: ['restaurant', 'dining', 'menu', 'reservations', 'cuisine'], label: 'Restaurant' },
+      { keywords: ['salon', 'hair', 'beauty', 'spa', 'skincare'], label: 'Beauty & Wellness' },
+      { keywords: ['fitness', 'gym', 'personal training', 'workout'], label: 'Fitness' },
+      { keywords: ['insurance', 'coverage', 'policy', 'claims'], label: 'Insurance' },
+      { keywords: ['accounting', 'accountant', 'tax', 'bookkeeping', 'cpa'], label: 'Accounting' },
+      { keywords: ['ecommerce', 'shop', 'add to cart', 'buy now', 'products'], label: 'E-Commerce' },
+      { keywords: ['medical', 'healthcare', 'clinic', 'patient', 'physician'], label: 'Healthcare' },
+    ];
+
+    const combinedText = (metaDesc + ' ' + metaKeywords + ' ' + schemaType + ' ' + pageText).toLowerCase();
+    let bestMatch = null;
+    let bestCount = 0;
+
+    for (const p of industryPatterns) {
+      const count = p.keywords.filter(k => combinedText.includes(k)).length;
+      if (count > bestCount) {
+        bestCount = count;
+        bestMatch = p.label;
+      }
+    }
+
+    if (bestMatch && bestCount >= 1) industry = bestMatch;
+
+    res.json({ name: name || null, industry: industry || null });
   } catch (err) {
-    res.json({ name: null });
+    res.json({ name: null, industry: null });
   }
 });
 

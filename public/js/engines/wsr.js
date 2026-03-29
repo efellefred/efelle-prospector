@@ -280,6 +280,11 @@ document.getElementById('wsr-lookup-btn').addEventListener('click', async () => 
       document.getElementById('wsr-client-name').value = companyData.name;
     }
 
+    // Populate industry
+    if (companyData.industry) {
+      document.getElementById('wsr-industry').value = companyData.industry;
+    }
+
     // Populate sitemaps
     const sitemaps = sitemapData.sitemaps || [];
     const sitemapCountEl = document.getElementById('wsr-sitemap-count');
@@ -299,6 +304,7 @@ document.getElementById('wsr-lookup-btn').addEventListener('click', async () => 
     const parts = [];
     if (companyData.name) parts.push('✓ Company: ' + companyData.name);
     else parts.push('⚠ Could not detect company name — enter it manually');
+    if (companyData.industry) parts.push('✓ Industry: ' + companyData.industry);
     parts.push('✓ ' + sitemaps.length + ' sitemap(s) found');
     statusEl.innerHTML = '<span style="color:#34d399">' + parts.join(' · ') + '</span>';
   } catch (err) {
