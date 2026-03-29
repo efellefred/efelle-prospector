@@ -111,6 +111,20 @@ if (loginBtn) {
   });
 }
 
+// ---------- Logout ----------
+
+window.doLogout = async function() {
+  const token = sessionStorage.getItem('prospector_token');
+  try {
+    await fetch('/auth/logout', {
+      method: 'POST',
+      headers: { 'x-session-token': token }
+    });
+  } catch (e) {}
+  sessionStorage.removeItem('prospector_token');
+  location.reload();
+};
+
 // ---------- Model Display ----------
 
 export function updateModelDisplay() {

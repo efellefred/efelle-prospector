@@ -204,10 +204,25 @@ function propReset() {
   propGoStage1();
   propReportHtml = '';
   propClientData = {};
+  propVertical = '';
   // Clear form fields
   ['prop-client-url','prop-name','prop-contact','prop-address','prop-phone',
    'prop-location','prop-services','prop-area','prop-differentiators',
    'prop-founded','prop-logo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  // Reset vertical selection
+  document.querySelectorAll('.vertical-card').forEach(c => c.classList.remove('selected'));
+  // Reset previous-report dropdown
+  const prevSelect = document.getElementById('prop-prev-report');
+  if (prevSelect) prevSelect.selectedIndex = 0;
+  // Reset RGS toggle
+  document.querySelectorAll('.rgs-opt').forEach(o => o.classList.remove('selected'));
+  const rgsDefault = document.querySelector('.rgs-opt[data-val="yes"]');
+  if (rgsDefault) rgsDefault.classList.add('selected');
+  // Reset price fields
+  ['prop-price-website','prop-price-monthly','prop-price-rgs'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -217,6 +232,9 @@ function propReset() {
   if (chatPanel) chatPanel.style.display = 'none';
   const chatMessages = document.getElementById('prop-chat-messages');
   if (chatMessages) chatMessages.innerHTML = '';
+  // Reset report frame
+  const frame = document.getElementById('prop-report-frame');
+  if (frame) frame.srcdoc = '';
 }
 window.propReset = propReset;
 

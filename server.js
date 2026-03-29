@@ -63,6 +63,12 @@ app.get('/auth/check', (req, res) => {
   }
 });
 
+app.post('/auth/logout', (req, res) => {
+  const token = req.headers['x-session-token'];
+  if (token) sessions.delete(token);
+  res.json({ loggedOut: true });
+});
+
 function requireAuth(req, res, next) {
   const token = req.headers['x-session-token'];
   const expiry = sessions.get(token);
@@ -174,6 +180,115 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('URL fetch error:', err.message);
     res.status(502).json({ error: 'Failed to fetch URL: ' + err.message });
+  }
+});
+
+// ─── Extract address from a website ──────────────────────────────────
+
+app.post('/api/extract-address', requireAuth, async (req, res) => {
+  const { url, companyName } = req.body;
+  if (!url) return res.status(400).json({ error: 'url is required' });
+
+  try {
+    // Try homepage and /contact page
+    const pagesToTry = [url];
+    const contactUrl = url.replace(/\/$/, '') + '/contact';
+    const contactUsUrl = url.replace(/\/$/, '') + '/contact-us';
+    pagesToTry.push(contactUrl, contactUsUrl);
+
+    let allText = '';
+    let rawHtml = '';
+
+    for (const pageUrl of pagesToTry) {
+      try {
+        const response = await fetch(pageUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'text/html,application/xhtml+xml',
+          },
+          redirect: 'follow',
+          signal: AbortSignal.timeout(10000),
+        });
+        if (response.ok) {
+          const html = await response.text();
+          if (pageUrl === url) rawHtml = html; // save homepage HTML for schema check
+          else rawHtml += html;
+          const text = html
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          allText += ' ' + text;
+        }
+      } catch (e) { /* skip failed pages */ }
+    }
+
+    // Check for schema.org LocalBusiness address
+    let schemaAddress = null;
+    const schemaMatch = rawHtml.match(/"streetAddress"\s*:\s*"([^"]+)"/);
+    const schemaCity = rawHtml.match(/"addressLocality"\s*:\s*"([^"]+)"/);
+    const schemaState = rawHtml.match(/"addressRegion"\s*:\s*"([^"]+)"/);
+    const schemaZip = rawHtml.match(/"postalCode"\s*:\s*"([^"]+)"/);
+    if (schemaMatch) {
+      schemaAddress = {
+        street: schemaMatch[1],
+        city: schemaCity ? schemaCity[1] : '',
+        state: schemaState ? schemaState[1] : '',
+        zip: schemaZip ? schemaZip[1] : '',
+        source: 'schema.org'
+      };
+    }
+
+    // Regex for US street addresses
+    const addressRegex = /(\d{1,5}\s+(?:[NSEW]\.?\s+)?(?:[A-Z][a-z]+\s*){1,3}(?:St|Street|Ave|Avenue|Blvd|Boulevard|Dr|Drive|Rd|Road|Ln|Lane|Way|Ct|Court|Pl|Place|Pkwy|Parkway|Hwy|Highway|Cir|Circle)\.?(?:\s*#?\s*\d+)?)\s*[,\s]+\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\s*[,\s]+\s*([A-Z]{2})\s+(\d{5}(?:-\d{4})?)/g;
+    let regexMatch = addressRegex.exec(allText);
+    let regexAddress = null;
+    if (regexMatch) {
+      regexAddress = {
+        street: regexMatch[1].trim(),
+        city: regexMatch[2].trim(),
+        state: regexMatch[3].trim(),
+        zip: regexMatch[4].trim(),
+        source: 'page-text'
+      };
+    }
+
+    // Use schema address first, then regex, then try Gemini
+    let address = schemaAddress || regexAddress;
+
+    if (!address && GEMINI_KEY && companyName) {
+      // Fall back to Gemini with search grounding
+      try {
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: `What is the physical street address of "${companyName}"? Website: ${url}. Return ONLY the address in this format: street|city|state|zip. Example: 123 Main St|Seattle|WA|98101. If unknown, return: UNKNOWN` }] }],
+              tools: [{ google_search: {} }],
+            }),
+            signal: AbortSignal.timeout(30000),
+          }
+        );
+        if (geminiRes.ok) {
+          const geminiData = await geminiRes.json();
+          const geminiText = (geminiData.candidates || [{}])[0]?.content?.parts?.map(p => p.text).join('').trim() || '';
+          if (geminiText && !geminiText.includes('UNKNOWN')) {
+            const parts = geminiText.split('|').map(s => s.trim());
+            if (parts.length >= 4) {
+              address = { street: parts[0], city: parts[1], state: parts[2], zip: parts[3], source: 'gemini-search' };
+            }
+          }
+        }
+      } catch (e) { console.error('Gemini address lookup error:', e.message); }
+    }
+
+    res.json({ address: address || null });
+  } catch (err) {
+    console.error('Address extraction error:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -376,10 +491,19 @@ app.post('/api/reports', requireAuth, (req, res) => {
 
 // List all reports (optional ?type= filter)
 app.get('/api/reports', requireAuth, (req, res) => {
-  const index = readIndex();
-  const type = req.query.type;
-  const filtered = type ? index.filter(r => r.type === type) : index;
-  res.json(filtered);
+  try {
+    // Ensure directory exists (volume may have been reattached)
+    if (!fs.existsSync(REPORTS_DIR)) {
+      fs.mkdirSync(REPORTS_DIR, { recursive: true });
+    }
+    const index = readIndex();
+    const type = req.query.type;
+    const filtered = type ? index.filter(r => r.type === type) : index;
+    res.json(filtered);
+  } catch (err) {
+    console.error('Report list error:', err.message);
+    res.json([]); // Return empty array instead of crashing
+  }
 });
 
 // Get report engine data
