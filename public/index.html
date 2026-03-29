@@ -296,11 +296,16 @@
     <div id="wsr-stage-2" style="display:none;">
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
         <span style="font-size:10px;font-family:monospace;color:#34d399;letter-spacing:0.12em;text-transform:uppercase">// Report Ready</span>
+        <style>
+          .wsr-toolbar-btn{padding:7px 14px;border-radius:6px;border:1px solid #333;background:transparent;color:#9ca3af;font-size:11px;font-family:monospace;cursor:pointer;transition:all 0.15s;}
+          .wsr-toolbar-btn:hover{border-color:#34d399;color:#34d399;}
+          .wsr-toolbar-btn:active{background:rgba(52,211,153,0.1);}
+        </style>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <button style="padding:7px 14px;border-radius:6px;border:1px solid #34d399;background:transparent;color:#9ca3af;font-size:11px;font-family:monospace;cursor:pointer;transition:all 0.15s;" id="wsr-back-btn">← Edit</button>
-          <button style="padding:7px 14px;border-radius:6px;border:1px solid #34d399;background:transparent;color:#9ca3af;font-size:11px;font-family:monospace;cursor:pointer;transition:all 0.15s;" id="wsr-chat-toggle-btn" title="Edit report with AI chat">💬 Edit with AI</button>
-          <button style="padding:7px 14px;border-radius:6px;border:1px solid #34d399;background:transparent;color:#9ca3af;font-size:11px;font-family:monospace;cursor:pointer;transition:all 0.15s;" id="wsr-save-pdf-btn">📄 Save as PDF</button>
-          <button style="padding:7px 14px;border-radius:6px;border:1px solid #34d399;background:transparent;color:#9ca3af;font-size:11px;font-family:monospace;cursor:pointer;transition:all 0.15s;" id="wsr-download-btn">↓ Download HTML</button>
+          <button class="wsr-toolbar-btn" id="wsr-back-btn">← Edit</button>
+          <button class="wsr-toolbar-btn" id="wsr-chat-toggle-btn" title="Edit report with AI chat">☐ Edit with AI</button>
+          <button class="wsr-toolbar-btn" id="wsr-save-pdf-btn">☐ Save as PDF</button>
+          <button class="wsr-toolbar-btn" id="wsr-download-btn">↓ Download HTML</button>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;height:calc(100vh - 200px);">
