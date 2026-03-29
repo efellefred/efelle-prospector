@@ -815,6 +815,15 @@
         <button class="library-filter-btn" data-type="wsr" onclick="filterLibrary('wsr')" style="background:none;border:1px solid #333;color:#34d399;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">WSR</button>
       </div>
     </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <span style="font-size:10px;font-family:monospace;color:#4b5563;letter-spacing:0.1em;text-transform:uppercase;">Created by:</span>
+      <div style="display:flex;gap:6px;">
+        <button class="library-user-btn active" data-user="" onclick="filterLibraryUser('')" style="background:#252d3d;border:1px solid #333;color:#e2ddd4;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">All</button>
+        <button class="library-user-btn" data-user="fred@efelle.com" onclick="filterLibraryUser('fred@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Fred</button>
+        <button class="library-user-btn" data-user="doug@efelle.com" onclick="filterLibraryUser('doug@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Doug</button>
+        <button class="library-user-btn" data-user="christian@efelle.com" onclick="filterLibraryUser('christian@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Christian</button>
+      </div>
+    </div>
     <div id="library-list">
       <p style="color:#666;text-align:center;padding:40px;">Click a filter or navigate here to see your saved reports.</p>
     </div>

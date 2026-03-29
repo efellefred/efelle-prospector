@@ -28,6 +28,16 @@ export async function showLibrary() {
 }
 window.showLibrary = showLibrary;
 
+// Track current filters
+let currentTypeFilter = '';
+let currentUserFilter = '';
+
+const USER_NAMES = {
+  'fred@efelle.com': 'Fred',
+  'doug@efelle.com': 'Doug',
+  'christian@efelle.com': 'Christian',
+};
+
 /**
  * Render the report list into #library-list.
  * @param {string} [filterType] – optional type key to filter by
@@ -40,7 +50,12 @@ async function renderLibrary(filterType) {
     '<p style="color:#666;text-align:center;padding:40px;">Loading\u2026</p>';
 
   try {
-    const reports = await listReports(filterType);
+    let reports = await listReports(filterType);
+
+    // Apply user filter client-side
+    if (currentUserFilter) {
+      reports = reports.filter(r => r.createdBy === currentUserFilter);
+    }
 
     if (!reports.length) {
       container.innerHTML =
@@ -65,6 +80,10 @@ async function renderLibrary(filterType) {
             details.push(PROP_TYPE_LABELS[r.metadata.type]);
           }
         }
+        // Add creator name
+        const creatorName = r.createdBy ? (USER_NAMES[r.createdBy] || r.createdBy) : '';
+        if (creatorName) details.push('by ' + creatorName);
+
         const detailHtml = details.length
           ? `<span style="color:#666;font-size:11px;font-style:italic;">${details.join(' · ')}</span>`
           : '';
@@ -73,7 +92,7 @@ async function renderLibrary(filterType) {
         const safeName = (r.clientName || 'Unknown').replace(/'/g, "\\'");
 
         return `<div class="library-row" style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:#1a1f2e;border-radius:10px;margin-bottom:8px;">
-        <span style="background:${t.color}22;color:${t.color};padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;">${t.label}</span>
+        <span onclick="showEngine('${r.type}')" style="background:${t.color}22;color:${t.color};padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;cursor:pointer;" title="Open ${t.label} engine">${t.label}</span>
         <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
           <span style="color:#e2ddd4;font-size:14px;font-weight:600;">${r.clientName || 'Unknown'}</span>
           ${detailHtml}
@@ -154,9 +173,19 @@ window.libraryEditReport = libraryEditReport;
  * @param {string} [type] – type key, or falsy to clear filter
  */
 export function filterLibrary(type) {
+  currentTypeFilter = type || '';
   renderLibrary(type || undefined);
   document.querySelectorAll('.library-filter-btn').forEach((b) => {
     b.classList.toggle('active', b.dataset.type === (type || ''));
   });
 }
 window.filterLibrary = filterLibrary;
+
+export function filterLibraryUser(user) {
+  currentUserFilter = user || '';
+  renderLibrary(currentTypeFilter || undefined);
+  document.querySelectorAll('.library-user-btn').forEach((b) => {
+    b.classList.toggle('active', b.dataset.user === (user || ''));
+  });
+}
+window.filterLibraryUser = filterLibraryUser;
