@@ -222,26 +222,31 @@
       </div>
 
       <p class="error-msg" id="wsr-build-error" style="display:none;margin-bottom:10px;"></p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="generate-btn" id="wsr-run-full-audit-btn" style="flex:1;background:linear-gradient(135deg,#065f46,#047857);box-shadow:0 4px 16px rgba(0,0,0,0.3);">⚡ Run Full Audit →</button>
-        <button class="generate-btn" id="wsr-gen-prompt-btn" style="flex:0;padding:11px 18px;background:linear-gradient(135deg,#1a2030,#2d3748);box-shadow:0 4px 16px rgba(0,0,0,0.3);font-size:12px;">Manual Mode →</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;">
+        <button class="generate-btn" id="wsr-run-full-audit-btn" style="padding:13px 28px;background:linear-gradient(135deg,#065f46,#047857);box-shadow:0 4px 16px rgba(0,0,0,0.3);">⚡ Run Full Audit</button>
         <button id="wsr-skip-to-paste-btn" style="padding:11px 18px;border-radius:7px;border:1px solid #252d3d;background:transparent;color:#4b5563;font-size:11px;font-family:monospace;cursor:pointer;white-space:nowrap;transition:all 0.15s;">Already have output? Paste it →</button>
+        <button class="generate-btn" id="wsr-gen-prompt-btn" style="padding:11px 22px;background:linear-gradient(135deg,#1a2030,#2d3748);box-shadow:0 4px 16px rgba(0,0,0,0.3);font-size:12px;white-space:nowrap;">Manual Prompt Mode →</button>
       </div>
       <!-- Full audit progress -->
+      <style>
+        @keyframes wsrPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+        .wsr-step-active .wsr-step-text { animation: wsrPulse 1.5s ease-in-out infinite; }
+        .wsr-step-active .wsr-step-icon { animation: wsrPulse 1.5s ease-in-out infinite; }
+      </style>
       <div id="wsr-full-audit-progress" style="display:none;margin-top:20px;background:#0e1018;border:1px solid rgba(52,211,153,0.3);border-radius:10px;padding:24px 26px;">
         <div class="field-label" style="margin-bottom:14px;color:#34d399;">// Full Audit in Progress</div>
         <div id="wsr-audit-steps">
           <div id="wsr-step-1" class="wsr-audit-step" style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;font-family:monospace;color:#4b5563;">
-            <span class="wsr-step-icon">○</span> Building audit prompt…
+            <span class="wsr-step-icon">○</span><span class="wsr-step-text">Building audit prompt…</span>
           </div>
           <div id="wsr-step-2" class="wsr-audit-step" style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;font-family:monospace;color:#4b5563;">
-            <span class="wsr-step-icon">○</span> Sending to Gemini API…
+            <span class="wsr-step-icon">○</span><span class="wsr-step-text">Sending to Gemini API…</span>
           </div>
           <div id="wsr-step-3" class="wsr-audit-step" style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;font-family:monospace;color:#4b5563;">
-            <span class="wsr-step-icon">○</span> Claude validating & structuring…
+            <span class="wsr-step-icon">○</span><span class="wsr-step-text">Claude validating & structuring…</span>
           </div>
           <div id="wsr-step-4" class="wsr-audit-step" style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;font-family:monospace;color:#4b5563;">
-            <span class="wsr-step-icon">○</span> Generating report…
+            <span class="wsr-step-icon">○</span><span class="wsr-step-text">Generating report…</span>
           </div>
         </div>
       </div>
