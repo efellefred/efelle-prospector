@@ -145,6 +145,93 @@ export async function deleteReport(id) {
 }
 
 // ---------------------------------------------------------------------------
+// Searchable Client Dropdown
+// ---------------------------------------------------------------------------
+
+/**
+ * Initialize a searchable client dropdown.
+ * @param {string} inputId       – ID of the search input
+ * @param {string} resultsId     – ID of the results dropdown div
+ * @param {string|string[]} types – report type(s) to search ('cca', 'prop', etc. or array)
+ * @param {function} onSelect    – callback(report) when a client is selected
+ */
+export async function initSearchableClientDropdown(inputId, resultsId, types, onSelect) {
+  const input = document.getElementById(inputId);
+  const results = document.getElementById(resultsId);
+  if (!input || !results) return;
+
+  // Load all reports of the given type(s)
+  let allReports = [];
+  try {
+    const typeArr = Array.isArray(types) ? types : [types];
+    const promises = typeArr.map(t => listReports(t));
+    const lists = await Promise.all(promises);
+    allReports = lists.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } catch (e) { console.warn('Failed to load reports for search:', e); }
+
+  // De-duplicate by clientName (keep most recent)
+  const seen = new Map();
+  const uniqueReports = [];
+  for (const r of allReports) {
+    const key = (r.clientName || 'Unknown').toLowerCase();
+    if (!seen.has(key)) {
+      seen.set(key, true);
+      uniqueReports.push(r);
+    }
+  }
+
+  function renderResults(filter) {
+    const term = (filter || '').toLowerCase();
+    const matches = term
+      ? uniqueReports.filter(r => (r.clientName || '').toLowerCase().includes(term))
+      : uniqueReports;
+    if (matches.length === 0) {
+      results.innerHTML = '<div style="padding:10px 14px;color:#4b5563;font-size:13px;">No matching clients</div>';
+      results.style.display = 'block';
+      return;
+    }
+    results.innerHTML = matches.map(r => {
+      const date = new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const typeBadge = r.type === 'cca' ? 'Strategy' : r.type === 'cap' ? 'Action Plan' : r.type === 'prop' ? 'Proposal' : 'W.A.R.';
+      return `<div class="search-result-item" data-id="${r.id}" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #1a1f2e;display:flex;justify-content:space-between;align-items:center;transition:background 0.15s;">
+        <span style="color:#e2ddd4;font-size:14px;">${r.clientName || 'Unknown'}</span>
+        <span style="color:#4b5563;font-size:11px;font-family:monospace;">${typeBadge} · ${date}</span>
+      </div>`;
+    }).join('');
+    results.style.display = 'block';
+
+    // Attach click handlers
+    results.querySelectorAll('.search-result-item').forEach(item => {
+      item.addEventListener('mouseenter', () => { item.style.background = '#1a1f2e'; });
+      item.addEventListener('mouseleave', () => { item.style.background = 'none'; });
+      item.addEventListener('click', async () => {
+        const reportId = item.dataset.id;
+        const clientName = item.querySelector('span').textContent;
+        input.value = clientName;
+        results.style.display = 'none';
+        try {
+          const report = await getReport(reportId);
+          if (report && onSelect) onSelect(report);
+        } catch (e) { console.error('Failed to load report:', e); }
+      });
+    });
+  }
+
+  // Show all on focus
+  input.addEventListener('focus', () => renderResults(input.value));
+
+  // Filter on input
+  input.addEventListener('input', () => renderResults(input.value));
+
+  // Close on click outside
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !results.contains(e.target)) {
+      results.style.display = 'none';
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Attach to window for onclick compatibility
 // ---------------------------------------------------------------------------
 window.saveReport     = saveReport;
@@ -153,3 +240,4 @@ window.getReport      = getReport;
 window.downloadReport = downloadReport;
 window.getClients     = getClients;
 window.deleteReport   = deleteReport;
+window.initSearchableClientDropdown = initSearchableClientDropdown;

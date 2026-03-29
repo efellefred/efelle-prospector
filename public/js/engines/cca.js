@@ -3,7 +3,7 @@ import { API_MODEL, CSP_MODEL } from '../core/state.js';
 import { GEMINI_PROMPT_SYSTEM, VALIDATE_SYSTEM, CCA_RESEARCH_SYSTEM, CCA_SECONDARY_SYSTEM, CCA_REVIEWS_SYSTEM, CCA_REPORT_SYSTEM_A, CCA_REPORT_SYSTEM_B, CCA_REPORT_SYSTEM_C, CCA_REPORT_SYSTEM } from '../data/prompts.js';
 import { dbg } from '../core/debug.js';
 import { writeToFrame } from '../core/utils.js';
-import { saveReport } from '../core/reports.js';
+import { saveReport, getReport, initSearchableClientDropdown } from '../core/reports.js';
 
 function buildCCAReportHTML(d) {
   var P = ['#6366f1','#06b6d4','#8b5cf6','#10b981','#f59e0b','#ec4899'];
@@ -1655,3 +1655,24 @@ document.getElementById('cca-chat-send').addEventListener('click', async () => {
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 });
+
+// ---------------------------------------------------------------------------
+// Searchable client dropdown — load previous clients into CCA
+// ---------------------------------------------------------------------------
+initSearchableClientDropdown(
+  'cca-client-search',
+  'cca-client-search-results',
+  ['cca', 'cap', 'wsr', 'prop'],  // search across all report types
+  (report) => {
+    const d = report.engineData || {};
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    setVal('cca-client-name', d.company_name || d.name || report.clientName || '');
+    setVal('cca-url-input', d.prospect_url || d.website_url || d.url || '');
+    // Auto-fill competitor URLs if available
+    const comps = d.competitors || [];
+    const compInputs = document.querySelectorAll('.cca-comp-url-input');
+    comps.forEach((c, i) => {
+      if (i < compInputs.length && c.url) compInputs[i].value = c.url;
+    });
+  }
+);

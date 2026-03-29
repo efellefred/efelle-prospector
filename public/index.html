@@ -364,6 +364,14 @@
       <div class="cca-stage-eyebrow">Stage 01 of 03 — Step 1 of 2</div>
       <h2 class="cca-stage-title">Build the Research Prompt</h2>
       <p class="cca-stage-sub">Enter the prospect URL and any known competitor URLs. Claude writes a structured research prompt for Gemini with Google Search grounding. You paste it into Gemini, then bring the output back here.</p>
+      <div style="margin-bottom:20px;">
+        <label style="font-family:monospace;font-size:10px;color:#a78bfa;letter-spacing:0.12em;text-transform:uppercase;">SELECT A PREVIOUS CLIENT</label>
+        <div style="position:relative;" id="cca-client-search-wrap">
+          <input type="text" id="cca-client-search" placeholder="Search by company name..." autocomplete="off"
+            style="width:100%;padding:10px 14px;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;color:#e2ddd4;font-size:14px;font-family:inherit;margin-top:4px;" />
+          <div id="cca-client-search-results" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:#0c0f16;border:1px solid #252d3d;border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;"></div>
+        </div>
+      </div>
       <div class="cca-url-card">
         <div class="form-grid-2" style="margin-bottom:0;">
           <div class="field">
@@ -716,9 +724,11 @@
     <div class="prop-stage" id="prop-stage-2">
       <div style="margin-bottom:20px;">
         <label style="font-family:monospace;font-size:10px;color:#f56300;letter-spacing:0.12em;text-transform:uppercase;">LOAD FROM PREVIOUS STRATEGY BUILDER OR ACTION PLAN</label>
-        <select id="prop-client-select" onchange="loadPropClient(this.value)" style="width:100%;padding:10px 14px;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;color:#e2ddd4;font-size:14px;font-family:inherit;margin-top:4px;cursor:pointer;">
-          <option value="">— Select a previous client —</option>
-        </select>
+        <div style="position:relative;" id="prop-client-search-wrap">
+          <input type="text" id="prop-client-search" placeholder="Search by company name..." autocomplete="off"
+            style="width:100%;padding:10px 14px;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;color:#e2ddd4;font-size:14px;font-family:inherit;margin-top:4px;" />
+          <div id="prop-client-search-results" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:#0c0f16;border:1px solid #252d3d;border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;"></div>
+        </div>
       </div>
       <div class="section-divider" style="margin-top:0">Client Website</div>
       <div class="url-row">

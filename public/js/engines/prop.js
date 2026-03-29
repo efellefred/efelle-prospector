@@ -5,7 +5,7 @@ import { VERTICALS, VERTICAL_PORTFOLIO_DEFAULTS, GENERIC_P1, GENERIC_P2, GENERIC
 import { PROPOSAL_TEMPLATE, FEATURE_ICONS } from '../data/proposal-template.js';
 import { dbg } from '../core/debug.js';
 import { fmt, fetchImageAsDataURI, inlineImages, writeToFrame } from '../core/utils.js';
-import { saveReport, listReports, getReport } from '../core/reports.js';
+import { saveReport, listReports, getReport, initSearchableClientDropdown } from '../core/reports.js';
 
 const TYPE_LABELS = {
   cca: { label: 'Strategy Plan' },
@@ -952,23 +952,14 @@ window.propGoStage2 = propGoStage2;
 window.propFetchClient = propFetchClient;
 window.propGenerate = propGenerate;
 
-async function populatePropClientSelect() {
-  const select = document.getElementById('prop-client-select');
-  if (!select) return;
-  try {
-    const reports = await listReports();
-    select.innerHTML = '<option value="">— Select a previous client —</option>';
-    // Only show Strategy Plans and Action Plans (not proposals or WSRs)
-    const strategyAndCap = reports.filter(r => r.type === 'cca' || r.type === 'cap');
-    strategyAndCap.forEach(r => {
-      const t = TYPE_LABELS[r.type] || { label: r.type };
-      const date = new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const opt = document.createElement('option');
-      opt.value = r.id;
-      opt.textContent = `${r.clientName} — ${t.label} (${date})`;
-      select.appendChild(opt);
-    });
-  } catch (e) { console.warn('Failed to load clients:', e); }
+function populatePropClientSelect() {
+  // Now uses searchable dropdown instead of basic select
+  initSearchableClientDropdown(
+    'prop-client-search',
+    'prop-client-search-results',
+    ['cca', 'cap'],  // Only strategy plans and action plans
+    (report) => loadPropClient(report.id)
+  );
 }
 
 async function loadPropClient(reportId) {
