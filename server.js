@@ -42,22 +42,39 @@ const loginLimiter = rateLimit({
 
 // ─── Auth ───────────────────────────────────────────────────────────
 
+// Authorized users (email → display name)
+const AUTHORIZED_USERS = {
+  'fred@efelle.com': 'Fred',
+  'doug@efelle.com': 'Doug',
+  'christian@efelle.com': 'Christian',
+};
+
 app.post('/auth/login', loginLimiter, (req, res) => {
-  const { password } = req.body;
-  if (password === TEAM_PASSWORD) {
-    const token = crypto.randomUUID();
-    sessions.set(token, Date.now() + 24 * 60 * 60 * 1000); // 24h
-    res.json({ token });
-  } else {
-    res.status(401).json({ error: 'Invalid password' });
+  const { email, password } = req.body;
+  const emailLower = (email || '').toLowerCase().trim();
+
+  if (!AUTHORIZED_USERS[emailLower]) {
+    return res.status(401).json({ error: 'Email not authorized' });
   }
+  if (password !== TEAM_PASSWORD) {
+    return res.status(401).json({ error: 'Invalid password' });
+  }
+
+  const token = crypto.randomUUID();
+  sessions.set(token, {
+    expiry: Date.now() + 24 * 60 * 60 * 1000, // 24h
+    email: emailLower,
+    name: AUTHORIZED_USERS[emailLower],
+  });
+  console.log(`  [AUTH] ${emailLower} logged in`);
+  res.json({ token, email: emailLower, name: AUTHORIZED_USERS[emailLower] });
 });
 
 app.get('/auth/check', (req, res) => {
   const token = req.headers['x-session-token'];
-  const expiry = sessions.get(token);
-  if (expiry && Date.now() < expiry) {
-    res.json({ valid: true });
+  const session = sessions.get(token);
+  if (session && Date.now() < session.expiry) {
+    res.json({ valid: true, email: session.email, name: session.name });
   } else {
     res.status(401).json({ valid: false });
   }
@@ -71,10 +88,13 @@ app.post('/auth/logout', (req, res) => {
 
 function requireAuth(req, res, next) {
   const token = req.headers['x-session-token'];
-  const expiry = sessions.get(token);
-  if (!expiry || Date.now() > expiry) {
+  const session = sessions.get(token);
+  if (!session || Date.now() > session.expiry) {
     return res.status(401).json({ error: 'Session expired — please log in again' });
   }
+  // Attach user info to request for downstream use
+  req.userEmail = session.email;
+  req.userName = session.name;
   next();
 }
 
@@ -463,6 +483,7 @@ app.post('/api/reports', requireAuth, (req, res) => {
       type,
       clientName,
       createdAt: new Date().toISOString(),
+      createdBy: req.userEmail || 'unknown',
       metadata: metadata || {},
       htmlFile: `${id}.html`,
     };

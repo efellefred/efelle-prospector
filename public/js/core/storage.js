@@ -2,11 +2,11 @@ import { _savedApiKey, setSavedApiKey, API_MODEL, setApiModel, CSP_MODEL } from 
 
 // ---------- Auth / Login Flow ----------
 
-export async function loginUser(password) {
+export async function loginUser(email, password) {
   const res = await fetch('/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password })
+    body: JSON.stringify({ email, password })
   });
   if (!res.ok) {
     const err = await res.text();
@@ -15,6 +15,9 @@ export async function loginUser(password) {
   const data = await res.json();
   if (data.token) {
     sessionStorage.setItem('prospector_token', data.token);
+  }
+  if (data.email) {
+    sessionStorage.setItem('prospector_user', data.email);
   }
   return data;
 }
@@ -85,28 +88,34 @@ function hideLoginOverlay() {
 const loginBtn = document.getElementById('login-btn');
 if (loginBtn) {
   loginBtn.addEventListener('click', async () => {
+    const emailInput = document.getElementById('login-email');
     const pwInput = document.getElementById('login-password');
     const errEl = document.getElementById('login-error');
+    const email = (emailInput ? emailInput.value : '').trim();
     const pw = (pwInput ? pwInput.value : '').trim();
 
+    if (!email) {
+      if (errEl) { errEl.textContent = 'Enter your email'; errEl.style.display = 'block'; }
+      return;
+    }
     if (!pw) {
-      if (errEl) { errEl.textContent = 'Enter the team password'; errEl.style.display = 'block'; }
+      if (errEl) { errEl.textContent = 'Enter the password'; errEl.style.display = 'block'; }
       return;
     }
 
     loginBtn.disabled = true;
-    loginBtn.textContent = 'Logging in…';
+    loginBtn.textContent = 'Signing in…';
     if (errEl) errEl.style.display = 'none';
 
     try {
-      await loginUser(pw);
+      await loginUser(email, pw);
       hideLoginOverlay();
       _updateKeyBannerVisibility();
     } catch (err) {
-      if (errEl) { errEl.textContent = 'Invalid password'; errEl.style.display = 'block'; }
+      if (errEl) { errEl.textContent = 'Invalid email or password'; errEl.style.display = 'block'; }
     } finally {
       loginBtn.disabled = false;
-      loginBtn.textContent = 'Log In';
+      loginBtn.textContent = 'Sign In';
     }
   });
 }
