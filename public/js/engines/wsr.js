@@ -219,6 +219,30 @@ function buildWSRReportHTML(d) {
     actionsHtml + '</div>' : '';
 
 
+  // Screenshots section (if available)
+  let screenshotSection = '';
+  if (d._screenshots && (d._screenshots.desktop || d._screenshots.mobile)) {
+    screenshotSection = '<div style="padding:40px 64px 48px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:8px;">Current Website</div>' +
+      '<h2 style="font-size:28px;font-weight:800;color:#1D1D1F;margin:0 0 8px;">Homepage Screenshots</h2>' +
+      '<p style="font-size:14px;color:#6E6E73;margin-bottom:28px;">Captured during this audit — desktop (1280px) and mobile (375px) viewports.</p>' +
+      '<div style="display:flex;gap:24px;align-items:flex-start;">' +
+        '<div style="flex:2;">' +
+          '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:8px;">Desktop View</div>' +
+          '<div style="border:1px solid #D2D2D7;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">' +
+            '<img src="' + (d._screenshots.desktop || '') + '" style="width:100%;display:block;" alt="Desktop homepage">' +
+          '</div>' +
+        '</div>' +
+        '<div style="flex:0 0 140px;">' +
+          '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E6E73;margin-bottom:8px;">Mobile View</div>' +
+          '<div style="border:1px solid #D2D2D7;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">' +
+            '<img src="' + (d._screenshots.mobile || '') + '" style="width:100%;display:block;" alt="Mobile homepage">' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
   const closing = '<div style="background:#000;padding:64px;text-align:center;">' +
     '<div style="font-size:28px;font-weight:800;color:#fff;margin-bottom:12px;line-height:1.2;">Ready to fix these issues?</div>' +
     '<p style="font-size:15px;color:#AEAEB2;margin-bottom:0;line-height:1.7;max-width:460px;margin-left:auto;margin-right:auto;">' + esc(d.closing||"Let's build a plan together. Schedule a strategy session with the efelle team to turn these insights into results.") + '</p>' +
@@ -240,7 +264,7 @@ function buildWSRReportHTML(d) {
     '<title>' + esc(d.client_name||'') + ' — Website Suggestions Report — efelle creative</title>' +
     '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">' +
     '<style>' + CSS + '</style></head>' +
-    '<body>' + cover + summary + prioritySection + aiSection + otherCatSections + closing + '</body></html>';
+    '<body>' + cover + summary + prioritySection + aiSection + otherCatSections + screenshotSection + closing + '</body></html>';
 }
 
 function wsrShowStage(stage) {
@@ -415,9 +439,15 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
     document.getElementById('wsr-prompt-output').value = promptText;
     setStep(1, 'done', 'Prompt built' + (client ? ' for ' + client : ''));
 
-    // Step 2: Send to Gemini API automatically
-    setStep(2, 'active', 'Sending to Gemini API… (60-90 seconds)');
+    // Step 2: Send to Gemini API + capture screenshots in parallel
+    setStep(2, 'active', 'Sending to Gemini API & capturing screenshots… (60-90 seconds)');
     progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Launch both in parallel — screenshots don't block the audit
+    const screenshotPromise = fetch('/api/screenshot', {
+      method: 'POST', headers: getApiHeaders(),
+      body: JSON.stringify({ url }),
+    }).then(r => r.ok ? r.json() : null).catch(() => null);
 
     const geminiRes = await fetch('/api/gemini', {
       method: 'POST', headers: getApiHeaders(),
@@ -431,7 +461,10 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
     const geminiResult = (geminiData.candidates || [{}])[0]?.content?.parts
       ?.map(p => p.text).join('').trim() || '';
     if (!geminiResult) throw new Error('Gemini returned empty result — try again');
-    setStep(2, 'done', 'Gemini audit complete');
+
+    // Collect screenshots (may still be loading)
+    const screenshots = await screenshotPromise;
+    setStep(2, 'done', 'Gemini audit complete' + (screenshots ? ' + screenshots captured' : ''));
 
     // Step 3: Claude validate & structure
     setStep(3, 'active', 'Claude validating & structuring findings…');
@@ -465,6 +498,7 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
 
     // Step 4: Build report
     setStep(4, 'active', 'Generating report…');
+    if (screenshots) parsed._screenshots = screenshots;
     wsrReportHtml = buildWSRReportHTML(parsed);
     document.getElementById('wsr-report-frame').srcdoc = wsrReportHtml;
 

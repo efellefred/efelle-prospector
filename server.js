@@ -6,6 +6,8 @@ const crypto = require('crypto');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+let puppeteer;
+try { puppeteer = require('puppeteer'); } catch (e) { console.warn('Puppeteer not available — screenshot endpoint disabled'); }
 
 // Load .env manually (no dotenv dependency)
 const fs = require('fs');
@@ -207,6 +209,49 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
 });
 
 // ─── Discover sitemaps from a website ────────────────────────────────
+
+// ─── Screenshot a website (desktop + mobile) ────────────────────────
+
+app.post('/api/screenshot', requireAuth, async (req, res) => {
+  if (!puppeteer) return res.status(501).json({ error: 'Puppeteer not available on this server' });
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'url is required' });
+
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+    });
+
+    // Desktop screenshot (1280x800)
+    const desktopPage = await browser.newPage();
+    await desktopPage.setViewport({ width: 1280, height: 800 });
+    await desktopPage.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });
+    await new Promise(r => setTimeout(r, 1500)); // let animations settle
+    const desktopBuffer = await desktopPage.screenshot({ type: 'jpeg', quality: 75 });
+    await desktopPage.close();
+
+    // Mobile screenshot (375x812, iPhone)
+    const mobilePage = await browser.newPage();
+    await mobilePage.setViewport({ width: 375, height: 812, isMobile: true });
+    await mobilePage.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1');
+    await mobilePage.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });
+    await new Promise(r => setTimeout(r, 1500));
+    const mobileBuffer = await mobilePage.screenshot({ type: 'jpeg', quality: 75 });
+    await mobilePage.close();
+
+    const desktopBase64 = 'data:image/jpeg;base64,' + desktopBuffer.toString('base64');
+    const mobileBase64 = 'data:image/jpeg;base64,' + mobileBuffer.toString('base64');
+
+    res.json({ desktop: desktopBase64, mobile: mobileBase64 });
+  } catch (err) {
+    console.error('Screenshot error:', err.message);
+    res.status(500).json({ error: 'Screenshot failed: ' + err.message });
+  } finally {
+    if (browser) await browser.close().catch(() => {});
+  }
+});
 
 app.post('/api/discover-sitemaps', requireAuth, async (req, res) => {
   const { url } = req.body;
