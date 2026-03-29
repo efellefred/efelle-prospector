@@ -275,71 +275,54 @@ function wsrShowStage(stage) {
 }
 window.wsrShowStage = wsrShowStage;
 
-// ── WSR Lookup: auto-detect company name & sitemaps ──
+// ── WSR Lookup: auto-detect company name, sitemaps, then auto-start audit ──
 document.getElementById('wsr-lookup-btn').addEventListener('click', async () => {
   const url = document.getElementById('wsr-url').value.trim();
-  if (!url) return;
+  const errEl = document.getElementById('wsr-build-error');
+  if (!url) { errEl.textContent = '⚠ Please enter a website URL first.'; errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+
   const btn = document.getElementById('wsr-lookup-btn');
   const statusEl = document.getElementById('wsr-lookup-status');
   btn.disabled = true;
-  btn.textContent = 'Looking up…';
+  btn.textContent = 'Looking up site…';
   statusEl.style.display = 'block';
   statusEl.textContent = '⏳ Fetching company info and sitemaps…';
 
   try {
-    // Run company name and sitemap discovery in parallel
     const [companyRes, sitemapRes] = await Promise.all([
-      fetch('/api/extract-company', {
-        method: 'POST', headers: getApiHeaders(),
-        body: JSON.stringify({ url }),
-      }),
-      fetch('/api/discover-sitemaps', {
-        method: 'POST', headers: getApiHeaders(),
-        body: JSON.stringify({ url }),
-      }),
+      fetch('/api/extract-company', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url }) }),
+      fetch('/api/discover-sitemaps', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url }) }),
     ]);
 
     const companyData = await companyRes.json();
     const sitemapData = await sitemapRes.json();
 
-    // Populate company name
-    if (companyData.name) {
-      document.getElementById('wsr-client-name').value = companyData.name;
-    }
+    if (companyData.name) document.getElementById('wsr-client-name').value = companyData.name;
+    if (companyData.industry) document.getElementById('wsr-industry').value = companyData.industry;
 
-    // Populate industry
-    if (companyData.industry) {
-      document.getElementById('wsr-industry').value = companyData.industry;
-    }
-
-    // Populate sitemaps
     const sitemaps = sitemapData.sitemaps || [];
-    const sitemapCountEl = document.getElementById('wsr-sitemap-count');
     const sitemapsGroup = document.getElementById('wsr-sitemaps-group');
     const sitemapsEl = document.getElementById('wsr-sitemaps');
-
     if (sitemaps.length > 0) {
-      sitemapCountEl.value = sitemaps.length + ' sitemap(s) found';
       sitemapsEl.value = sitemaps.join('\n');
       sitemapsGroup.style.display = 'block';
-    } else {
-      sitemapCountEl.value = 'No sitemaps found';
-      sitemapsEl.value = '';
-      sitemapsGroup.style.display = 'none';
     }
 
     const parts = [];
-    if (companyData.name) parts.push('✓ Company: ' + companyData.name);
-    else parts.push('⚠ Could not detect company name — enter it manually');
-    if (companyData.industry) parts.push('✓ Industry: ' + companyData.industry);
-    parts.push('✓ ' + sitemaps.length + ' sitemap(s) found');
-    statusEl.innerHTML = '<span style="color:#34d399">' + parts.join(' · ') + '</span>';
+    if (companyData.name) parts.push('✓ ' + companyData.name);
+    if (companyData.industry) parts.push('✓ ' + companyData.industry);
+    parts.push(sitemaps.length + ' sitemap(s)');
+    statusEl.innerHTML = '<span style="color:#34d399">' + parts.join(' · ') + ' — starting audit…</span>';
+
   } catch (err) {
-    statusEl.innerHTML = '<span style="color:#f87171">⚠ Lookup failed: ' + err.message + '</span>';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🔍 Lookup';
+    statusEl.innerHTML = '<span style="color:#f87171">⚠ Lookup failed: ' + err.message + ' — starting audit anyway…</span>';
   }
+
+  // Auto-trigger the full audit
+  btn.textContent = 'Running audit…';
+  document.getElementById('wsr-run-full-audit-btn').click();
+  // The full audit handler will re-enable the button when done
 });
 
 // ── WSR Run Full Audit (automated: Lookup→Prompt→Gemini→Claude→Report) ──
@@ -372,12 +355,12 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
   }
 
   try {
-    // Step 1: Auto-lookup + build prompt
-    setStep(1, 'active', 'Looking up site & building audit prompt…');
+    // Step 1: Build prompt (lookup already done by the lookup button)
+    setStep(1, 'active', 'Building audit prompt…');
 
-    // Auto-lookup if company name empty
     let client = document.getElementById('wsr-client-name').value.trim();
-    if (!client) {
+    // Only run lookup if called directly (not from lookup button) and name is empty
+    if (!client && !document.getElementById('wsr-lookup-btn').disabled) {
       try {
         const [companyRes, sitemapRes] = await Promise.all([
           fetch('/api/extract-company', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url }) }),
@@ -531,6 +514,9 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
   } finally {
     btn.disabled = false;
     btn.textContent = '⚡ Run Full Audit →';
+    // Re-enable the lookup button too
+    const lookupBtn = document.getElementById('wsr-lookup-btn');
+    if (lookupBtn) { lookupBtn.disabled = false; lookupBtn.textContent = '⟳ Lookup & Run Full Audit'; }
   }
 });
 

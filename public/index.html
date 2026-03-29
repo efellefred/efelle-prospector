@@ -185,24 +185,17 @@
       <p style="color:#374151;font-size:13px;margin-bottom:24px;line-height:1.6;max-width:540px;">Enter the website URL below. We'll auto-detect the company name, find sitemaps, run a full audit via Gemini, and build the report.</p>
 
       <div style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:24px 26px;margin-bottom:14px;">
-        <div class="field" style="margin-bottom:14px;">
-          <label class="field-label">Website URL</label>
-          <div class="url-row" style="margin-bottom:0;">
-            <input type="url" id="wsr-url" placeholder="https://www.clientsite.com" />
-            <button class="url-fetch-btn" id="wsr-lookup-btn">⟳ Lookup Site</button>
-          </div>
-          <div id="wsr-lookup-status" style="display:none;font-size:11px;font-family:monospace;color:#6b7a94;margin-top:8px;padding:8px 12px;background:#0c0f16;border:1px solid #1a1f2e;border-radius:6px;"></div>
-        </div>
         <div class="form-grid-2" style="margin-bottom:14px;">
           <div class="field">
-            <label class="field-label">Client / Company Name</label>
-            <input type="text" id="wsr-client-name" placeholder="Auto-detected from website" />
+            <label class="field-label">Website URL</label>
+            <input type="url" id="wsr-url" placeholder="https://www.clientsite.com" />
           </div>
           <div class="field">
-            <label class="field-label">Sitemaps Found <span style="color:#4b5563;font-weight:400;text-transform:none;letter-spacing:0;">(auto-detected)</span></label>
-            <input type="text" id="wsr-sitemap-count" readonly placeholder="Click Lookup to scan" style="color:#34d399;cursor:default;" />
+            <label class="field-label">Client / Company Name</label>
+            <input type="text" id="wsr-client-name" placeholder="Auto-detected on lookup" />
           </div>
         </div>
+        <div id="wsr-lookup-status" style="display:none;font-size:11px;font-family:monospace;color:#6b7a94;margin-bottom:14px;padding:8px 12px;background:#0c0f16;border:1px solid #1a1f2e;border-radius:6px;"></div>
         <div class="field" style="margin-bottom:14px;display:none;" id="wsr-sitemaps-group">
           <label class="field-label">Sitemap URLs <span style="color:#4b5563;font-weight:400;text-transform:none;letter-spacing:0;">(auto-detected — edit if needed)</span></label>
           <textarea id="wsr-sitemaps" rows="3" placeholder=""></textarea>
@@ -223,10 +216,12 @@
 
       <p class="error-msg" id="wsr-build-error" style="display:none;margin-bottom:10px;"></p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;">
-        <button class="generate-btn" id="wsr-run-full-audit-btn" style="padding:13px 28px;background:linear-gradient(135deg,#065f46,#047857);box-shadow:0 4px 16px rgba(0,0,0,0.3);">⚡ Run Full Audit</button>
+        <button class="generate-btn" id="wsr-lookup-btn" style="flex:1;padding:13px 28px;background:linear-gradient(135deg,#065f46,#047857);box-shadow:0 4px 16px rgba(0,0,0,0.3);">⟳ Lookup & Run Full Audit</button>
         <button id="wsr-skip-to-paste-btn" style="padding:11px 18px;border-radius:7px;border:1px solid #252d3d;background:transparent;color:#4b5563;font-size:11px;font-family:monospace;cursor:pointer;white-space:nowrap;transition:all 0.15s;">Already have output? Paste it →</button>
         <button class="generate-btn" id="wsr-gen-prompt-btn" style="padding:11px 22px;background:linear-gradient(135deg,#1a2030,#2d3748);box-shadow:0 4px 16px rgba(0,0,0,0.3);font-size:12px;white-space:nowrap;">Manual Prompt Mode →</button>
       </div>
+      <!-- Hidden button for programmatic use -->
+      <button id="wsr-run-full-audit-btn" style="display:none;"></button>
       <!-- Full audit progress -->
       <style>
         @keyframes wsrPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
