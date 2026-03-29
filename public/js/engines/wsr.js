@@ -248,6 +248,153 @@ function wsrShowStage(stage) {
 }
 window.wsrShowStage = wsrShowStage;
 
+// ── WSR Lookup: auto-detect company name & sitemaps ──
+document.getElementById('wsr-lookup-btn').addEventListener('click', async () => {
+  const url = document.getElementById('wsr-url').value.trim();
+  if (!url) return;
+  const btn = document.getElementById('wsr-lookup-btn');
+  const statusEl = document.getElementById('wsr-lookup-status');
+  btn.disabled = true;
+  btn.textContent = 'Looking up…';
+  statusEl.style.display = 'block';
+  statusEl.textContent = '⏳ Fetching company info and sitemaps…';
+
+  try {
+    // Run company name and sitemap discovery in parallel
+    const [companyRes, sitemapRes] = await Promise.all([
+      fetch('/api/extract-company', {
+        method: 'POST', headers: getApiHeaders(),
+        body: JSON.stringify({ url }),
+      }),
+      fetch('/api/discover-sitemaps', {
+        method: 'POST', headers: getApiHeaders(),
+        body: JSON.stringify({ url }),
+      }),
+    ]);
+
+    const companyData = await companyRes.json();
+    const sitemapData = await sitemapRes.json();
+
+    // Populate company name
+    if (companyData.name) {
+      document.getElementById('wsr-client-name').value = companyData.name;
+    }
+
+    // Populate sitemaps
+    const sitemaps = sitemapData.sitemaps || [];
+    const sitemapCountEl = document.getElementById('wsr-sitemap-count');
+    const sitemapsGroup = document.getElementById('wsr-sitemaps-group');
+    const sitemapsEl = document.getElementById('wsr-sitemaps');
+
+    if (sitemaps.length > 0) {
+      sitemapCountEl.value = sitemaps.length + ' sitemap(s) found';
+      sitemapsEl.value = sitemaps.join('\n');
+      sitemapsGroup.style.display = 'block';
+    } else {
+      sitemapCountEl.value = 'No sitemaps found';
+      sitemapsEl.value = '';
+      sitemapsGroup.style.display = 'none';
+    }
+
+    const parts = [];
+    if (companyData.name) parts.push('✓ Company: ' + companyData.name);
+    else parts.push('⚠ Could not detect company name — enter it manually');
+    parts.push('✓ ' + sitemaps.length + ' sitemap(s) found');
+    statusEl.innerHTML = '<span style="color:#34d399">' + parts.join(' · ') + '</span>';
+  } catch (err) {
+    statusEl.innerHTML = '<span style="color:#f87171">⚠ Lookup failed: ' + err.message + '</span>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔍 Lookup';
+  }
+});
+
+// ── WSR Run Full Audit (automated Claude→Gemini→Claude→Report) ──
+document.getElementById('wsr-run-full-audit-btn').addEventListener('click', async () => {
+  const url = document.getElementById('wsr-url').value.trim();
+  const errEl = document.getElementById('wsr-build-error');
+  if (!url) { errEl.textContent = '⚠ Please enter a website URL first.'; errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+
+  const btn = document.getElementById('wsr-run-full-audit-btn');
+  const progress = document.getElementById('wsr-full-audit-progress');
+  btn.disabled = true;
+  btn.textContent = 'Running audit…';
+  progress.style.display = 'block';
+
+  function setStep(n, status) {
+    const el = document.getElementById('wsr-step-' + n);
+    const icon = el.querySelector('.wsr-step-icon');
+    if (status === 'active') { icon.textContent = '◉'; el.style.color = '#34d399'; }
+    else if (status === 'done') { icon.textContent = '✓'; el.style.color = '#6b7a94'; }
+    else if (status === 'error') { icon.textContent = '✗'; el.style.color = '#f87171'; }
+  }
+
+  try {
+    // Step 0: Auto-lookup if company name empty
+    const client = document.getElementById('wsr-client-name').value.trim();
+    if (!client) {
+      const lookupBtn = document.getElementById('wsr-lookup-btn');
+      lookupBtn.click();
+      await new Promise(r => setTimeout(r, 3000)); // wait for lookup
+    }
+
+    // Step 1: Build prompt
+    setStep(1, 'active');
+    document.getElementById('wsr-gen-prompt-btn').click();
+    await new Promise(r => setTimeout(r, 200)); // let prompt build
+    const promptText = document.getElementById('wsr-prompt-output').value.trim();
+    if (!promptText) throw new Error('Failed to build prompt');
+    setStep(1, 'done');
+
+    // Step 2: Send to Gemini
+    setStep(2, 'active');
+    const geminiRes = await fetch('/api/gemini', {
+      method: 'POST', headers: getApiHeaders(),
+      body: JSON.stringify({ prompt: promptText }),
+    });
+    if (!geminiRes.ok) {
+      const err = await geminiRes.json();
+      throw new Error('Gemini error: ' + (err.error || geminiRes.status));
+    }
+    const geminiData = await geminiRes.json();
+    const geminiResult = (geminiData.candidates || [{}])[0]?.content?.parts
+      ?.map(p => p.text).join('').trim() || '';
+    if (!geminiResult) throw new Error('Gemini returned empty result');
+    setStep(2, 'done');
+
+    // Step 3: Claude validate & structure
+    setStep(3, 'active');
+    wsrShowStage('1b');
+    document.getElementById('wsr-gemini-paste').value = geminiResult;
+    // Trigger import programmatically
+    const importBtn = document.getElementById('wsr-import-btn');
+    if (importBtn) {
+      importBtn.click();
+      // Wait for import to complete (poll for stage 2 visibility)
+      for (let i = 0; i < 120; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const stage2 = document.getElementById('wsr-stage-2');
+        if (stage2 && stage2.style.display !== 'none') break;
+      }
+    }
+    setStep(3, 'done');
+    setStep(4, 'done');
+
+  } catch (err) {
+    errEl.textContent = '⚠ ' + err.message;
+    errEl.style.display = 'block';
+    // Mark current step as error
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('wsr-step-' + i);
+      if (el.querySelector('.wsr-step-icon').textContent === '◉') setStep(i, 'error');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Run Full Audit →';
+  }
+});
+
 // ── WSR Stage 1a: Build Gemini Audit Prompt (local, no API call) ──
 document.getElementById('wsr-gen-prompt-btn').addEventListener('click', () => {
   const url      = document.getElementById('wsr-url').value.trim();

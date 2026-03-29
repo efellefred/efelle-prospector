@@ -206,6 +206,109 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
   }
 });
 
+// ─── Discover sitemaps from a website ────────────────────────────────
+
+app.post('/api/discover-sitemaps', requireAuth, async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'url is required' });
+
+  const baseUrl = url.replace(/\/$/, '');
+  const commonPaths = [
+    '/sitemap.xml',
+    '/sitemap_index.xml',
+    '/page-sitemap.xml',
+    '/post-sitemap.xml',
+    '/location-sitemap.xml',
+    '/service-sitemap.xml',
+    '/wp-sitemap.xml',
+    '/robots.txt',
+  ];
+
+  const found = [];
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Accept': 'text/xml,application/xml,text/plain,text/html',
+  };
+
+  // Check robots.txt first for sitemap references
+  try {
+    const robotsRes = await fetch(baseUrl + '/robots.txt', {
+      headers, redirect: 'follow', signal: AbortSignal.timeout(8000),
+    });
+    if (robotsRes.ok) {
+      const robotsTxt = await robotsRes.text();
+      const sitemapMatches = robotsTxt.match(/Sitemap:\s*(.+)/gi) || [];
+      sitemapMatches.forEach(m => {
+        const sitemapUrl = m.replace(/Sitemap:\s*/i, '').trim();
+        if (sitemapUrl && !found.includes(sitemapUrl)) found.push(sitemapUrl);
+      });
+    }
+  } catch (e) { /* skip */ }
+
+  // Check common sitemap URLs
+  for (const p of commonPaths) {
+    if (p === '/robots.txt') continue; // already checked
+    const sitemapUrl = baseUrl + p;
+    if (found.some(f => f.toLowerCase() === sitemapUrl.toLowerCase())) continue;
+    try {
+      const r = await fetch(sitemapUrl, {
+        method: 'HEAD', headers, redirect: 'follow', signal: AbortSignal.timeout(5000),
+      });
+      if (r.ok) {
+        const ct = r.headers.get('content-type') || '';
+        if (ct.includes('xml') || ct.includes('text') || p.endsWith('.xml')) {
+          found.push(sitemapUrl);
+        }
+      }
+    } catch (e) { /* skip */ }
+  }
+
+  res.json({ sitemaps: found });
+});
+
+// ─── Extract company name from homepage ─────────────────────────────
+
+app.post('/api/extract-company', requireAuth, async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'url is required' });
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'text/html',
+      },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) return res.json({ name: null });
+    const html = await response.text();
+
+    // Try <title> tag first
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    let name = titleMatch ? titleMatch[1].trim() : '';
+    // Clean up common title patterns
+    name = name.split('|')[0].split('–')[0].split('-')[0].split('—')[0].trim();
+    // Remove common suffixes
+    name = name.replace(/\s*(Home|Homepage|Welcome|Official Site|Official Website)$/i, '').trim();
+
+    // Try og:site_name as backup
+    if (!name || name.length < 2) {
+      const ogMatch = html.match(/<meta[^>]*property="og:site_name"[^>]*content="([^"]+)"/i);
+      if (ogMatch) name = ogMatch[1].trim();
+    }
+
+    // Try schema.org name
+    if (!name || name.length < 2) {
+      const schemaMatch = html.match(/"name"\s*:\s*"([^"]+)"/);
+      if (schemaMatch) name = schemaMatch[1].trim();
+    }
+
+    res.json({ name: name || null });
+  } catch (err) {
+    res.json({ name: null });
+  }
+});
+
 // ─── Extract address from a website ──────────────────────────────────
 
 app.post('/api/extract-address', requireAuth, async (req, res) => {
