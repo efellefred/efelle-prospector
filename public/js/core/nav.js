@@ -4,7 +4,7 @@ export const ENGINES = {
   wsr: {
     iconSvg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>',
     iconBg: '#059669',
-    eyebrow: 'Sales Tool &middot; Website Suggestions Report',
+    eyebrow: 'Sales Tool &middot; Website Audit &amp; Recommendations',
     eyebrowColor: '#34d399',
     accent: '#34d399'
   },
@@ -37,9 +37,11 @@ export function showScreen(id) {
   if (s) s.classList.add('visible');
   setCurrentScreen(id);
   const isHome = id === 'home';
+  const isLibrary = id === 'library';
+  const hideEngineHeader = isHome || isLibrary;
   document.getElementById('back-btn').style.display = isHome ? 'none' : 'inline-block';
-  document.getElementById('engine-header').style.display = isHome ? 'none' : 'flex';
-  if (!isHome && ENGINES[id]) {
+  document.getElementById('engine-header').style.display = hideEngineHeader ? 'none' : 'flex';
+  if (!hideEngineHeader && ENGINES[id]) {
     const e = ENGINES[id];
     const iconEl = document.getElementById('eng-header-icon');
     iconEl.innerHTML = e.iconSvg;

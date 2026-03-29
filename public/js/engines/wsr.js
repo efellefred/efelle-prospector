@@ -261,7 +261,7 @@ function buildWSRReportHTML(d) {
     '@media print{div[style*="break-after:page"]{break-after:page;page-break-after:always;}div[style*="border:1px solid #D2D2D7;border-radius:10px"]{break-inside:avoid;page-break-inside:avoid;}div[style*="display:flex;gap:20px;align-items:flex-start;padding:20px 0"]{break-inside:avoid;page-break-inside:avoid;}div[style*="display:flex;gap:12px;padding:14px 0"]{break-inside:avoid;page-break-inside:avoid;}@page{size:letter;margin:0.5in}}';
 
   return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<title>' + esc(d.client_name||'') + ' — Website Suggestions Report — efelle creative</title>' +
+    '<title>' + esc(d.client_name||'') + ' — Website Audit & Recommendations — efelle creative</title>' +
     '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">' +
     '<style>' + CSS + '</style></head>' +
     '<body>' + cover + summary + prioritySection + aiSection + otherCatSections + screenshotSection + closing + '</body></html>';
@@ -449,18 +449,27 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
       body: JSON.stringify({ url }),
     }).then(r => r.ok ? r.json() : null).catch(() => null);
 
-    const geminiRes = await fetch('/api/gemini', {
-      method: 'POST', headers: getApiHeaders(),
-      body: JSON.stringify({ prompt: promptText }),
-    });
-    if (!geminiRes.ok) {
-      const err = await geminiRes.json();
-      throw new Error('Gemini error: ' + (typeof err.error === 'string' ? err.error : JSON.stringify(err.error) || geminiRes.status));
+    // Try Gemini with retry + fallback to Flash Lite
+    let geminiResult = '';
+    const geminiModels = ['gemini-2.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+    for (let attempt = 0; attempt < geminiModels.length; attempt++) {
+      if (attempt > 0) {
+        setStep(2, 'active', attempt === 2 ? 'Retrying with Gemini 2.0 Flash…' : 'Retrying Gemini… (attempt ' + (attempt + 1) + ')');
+        await new Promise(r => setTimeout(r, 3000));
+      }
+      try {
+        const geminiRes = await fetch('/api/gemini', {
+          method: 'POST', headers: getApiHeaders(),
+          body: JSON.stringify({ prompt: promptText, model: geminiModels[attempt] }),
+        });
+        if (!geminiRes.ok) continue;
+        const geminiData = await geminiRes.json();
+        geminiResult = (geminiData.candidates || [{}])[0]?.content?.parts
+          ?.map(p => p.text).join('').trim() || '';
+        if (geminiResult) break;
+      } catch (e) { continue; }
     }
-    const geminiData = await geminiRes.json();
-    const geminiResult = (geminiData.candidates || [{}])[0]?.content?.parts
-      ?.map(p => p.text).join('').trim() || '';
-    if (!geminiResult) throw new Error('Gemini returned empty result — try again');
+    if (!geminiResult) throw new Error('Gemini returned empty after 3 attempts — please try again');
 
     // Collect screenshots (may still be loading)
     const screenshots = await screenshotPromise;
