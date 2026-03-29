@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROSPECTOR — Team User Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:           #FAFAF8;
+    --surface:      #FFFFFF;
+    --surface-2:    #F5F4F1;
+    --border:       #E8E5E0;
+    --border-dark:  #D1CCC5;
+    --text:         #0D1117;
+    --text-2:       #4B5563;
+    --text-3:       #9CA3AF;
+    --accent:       #F56300;
+    --accent-light: #FFF5EE;
+    --accent-dark:  #C44D00;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    background: #0D1117;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover-chart {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .cover-chart svg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+  /* efelle logo — top right of cover */
+  .cover-logo-img {
+    position: absolute;
+    top: 48px;
+    right: 80px;
+    z-index: 2;
+  }
+  .cover-logo-img img {
+    height: 52px;
+    width: auto;
+    display: block;
+    opacity: 0.92;
+  }
+
+  .cover-content { position: relative; z-index: 1; max-width: 900px; }
+
+  .cover-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cover-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .cover-title {
+    font-family: 'Lora', serif;
+    font-size: clamp(52px, 7vw, 88px);
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+  }
+
+  .cover-title .o-letter { color: var(--accent); }
+
+  .cover-title-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.14em;
+    margin-bottom: 40px;
+  }
+
+  .cover-desc {
+    font-size: 20px;
+    color: rgba(255,255,255,0.6);
+    max-width: 560px;
+    line-height: 1.6;
+    font-weight: 300;
+    margin-bottom: 32px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .cover-meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .cover-meta-value {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 500;
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+
+  /* ── TOC ── */
+  .toc-page {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    padding: 72px 0;
+  }
+
+  .toc-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .toc-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .toc-title {
+    font-family: 'Lora', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .toc-item:hover { background: var(--border); }
+
+  .toc-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    min-width: 24px;
+    font-weight: 500;
+  }
+
+  .toc-label {
+    font-size: 14px;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    padding: 80px 0 0;
+    margin-bottom: 48px;
+    border-top: 2px solid var(--border);
+  }
+
+  .section-header:first-of-type { border-top: none; padding-top: 0; }
+
+  .section-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-eyebrow .num {
+    background: var(--accent);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Lora', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .section-lead {
+    font-size: 18px;
+    color: var(--text-2);
+    line-height: 1.65;
+    max-width: 640px;
+    font-weight: 300;
+  }
+
+  /* ── PROSE ── */
+  .prose p {
+    font-size: 16px;
+    color: var(--text-2);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .prose p strong { color: var(--text); font-weight: 600; }
+
+  .prose h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 36px 0 12px;
+  }
+
+  .prose h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 28px 0 8px;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 20px 24px;
+    margin: 28px 0;
+  }
+
+  .callout-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .callout p {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .callout p strong { color: var(--accent-dark); }
+
+  /* ── STEP FLOW ── */
+  .step-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 32px 0;
+    position: relative;
+  }
+
+  .step-flow::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 40px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 0;
+    position: relative;
+  }
+
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-body { padding-top: 8px; }
+
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .step-desc {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  /* ── PROPOSAL TYPE CARDS ── */
+  .proposal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 32px 0;
+  }
+
+  .proposal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 26px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .proposal-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-color, var(--accent));
+  }
+
+  .proposal-card.new  { --card-color: #2563EB; }
+  .proposal-card.wo   { --card-color: #7C3AED; }
+
+  .proposal-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .proposal-card-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .proposal-card-desc {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .proposal-card-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    background: var(--surface-2);
+    color: var(--text-3);
+    border: 1px solid var(--border);
+  }
+
+  /* ── VERTICAL GRID ── */
+  .vertical-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 28px 0;
+  }
+
+  .vertical-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 14px;
+    text-align: center;
+  }
+
+  .vertical-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vertical-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  /* ── PRICING BREAKDOWN ── */
+  .pricing-block {
+    background: var(--text);
+    border-radius: 14px;
+    padding: 32px 36px;
+    margin: 32px 0;
+    color: white;
+  }
+
+  .pricing-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .pricing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .pricing-row:last-child { border-bottom: none; }
+
+  .pricing-row-label {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pricing-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(245,99,0,0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .pricing-row-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: white;
+    font-weight: 500;
+  }
+
+  .pricing-formula {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── FEATURE TABLE ── */
+  .feature-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0;
+    font-size: 14px;
+  }
+
+  .feature-table thead tr {
+    border-bottom: 2px solid var(--border-dark);
+  }
+
+  .feature-table th {
+    text-align: left;
+    padding: 10px 16px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .feature-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  .feature-table tbody tr:hover { background: var(--surface-2); }
+
+  .feature-table td {
+    padding: 13px 16px;
+    color: var(--text-2);
+    vertical-align: top;
+  }
+
+  .feature-table td:first-child {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* ── TIPS BOX ── */
+  .tips {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 32px 0;
+  }
+
+  .tips-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  .tips ul { list-style: none; padding: 0; }
+
+  .tips ul li {
+    font-size: 14px;
+    color: var(--text-2);
+    padding: 8px 0 8px 24px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    line-height: 1.55;
+  }
+
+  .tips ul li:last-child { border-bottom: none; }
+
+  .tips ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .tips ul li strong { color: var(--text); }
+
+  /* ── RGS MODES ── */
+  .rgs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 28px 0;
+  }
+
+  .rgs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .rgs-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  .rgs-badge.optional { background: #FFF5EE; color: var(--accent-dark); border: 1px solid rgba(245,99,0,0.2); }
+  .rgs-badge.included { background: #ECFDF5; color: #065F46; border: 1px solid rgba(16,185,129,0.2); }
+
+  .rgs-card-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .rgs-card-desc {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .rgs-placement {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    padding: 8px 12px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── WARNING ── */
+  .warning {
+    background: #FFFBEB;
+    border: 1px solid #FCD34D;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 28px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .warning-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .warning-title { font-size: 14px; font-weight: 700; color: #92400E; margin-bottom: 4px; }
+  .warning p { font-size: 13px; color: #78350F; line-height: 1.55; margin: 0; }
+
+  /* ── SEPARATOR ── */
+  .sep-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 48px 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .sep-label::before, .sep-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── FOOTER ── */
+  .guide-footer {
+    background: var(--text);
+    padding: 56px 40px;
+    text-align: center;
+  }
+
+  .guide-footer-title {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+  }
+
+  .guide-footer-title .o { color: var(--accent); }
+
+  .guide-footer-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 28px;
+  }
+
+  .guide-footer-line {
+    font-size: 12px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* ── INLINE CODE ── */
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--accent-dark);
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .cover { min-height: auto; padding: 60px; page-break-after: always; }
+    .toc-page { page-break-after: always; }
+    .section-header { page-break-before: always; }
+    .section-header:first-of-type { page-break-before: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<div class="cover">
+
+  <!-- sales funnel line art — right side of hero -->
+  <div class="cover-chart">
+    <svg viewBox="0 0 1440 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- fade mask so funnel fades out left toward text -->
+        <linearGradient id="funnelFade" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="white" stop-opacity="0"/>
+          <stop offset="30%"  stop-color="white" stop-opacity="0.3"/>
+          <stop offset="60%"  stop-color="white" stop-opacity="1"/>
+          <stop offset="100%" stop-color="white" stop-opacity="1"/>
+        </linearGradient>
+        <mask id="fadeMask">
+          <rect width="1440" height="700" fill="url(#funnelFade)"/>
+        </mask>
+
+        <!-- Stage colors matching proposal type palette -->
+        <!-- Stage 1: Prospect — warm orange (brand) -->
+        <!-- Stage 2: New Website — blue -->
+        <!-- Stage 3: WO + RGS — purple -->
+        <!-- Stage 4: RGS Only — green -->
+        <!-- Stage 5: Closed — bright orange accent -->
+      </defs>
+
+      <g mask="url(#fadeMask)">
+
+        <!-- ── FUNNEL BODY ──
+             Wide at top (prospects), narrows through each stage, exits bottom as a pipe.
+             Centered around x=1100, top at y=40, bottom pipe exits at y=680.
+             Each stage is a trapezoid band with its own stroke color.
+        -->
+
+        <!-- Stage 1 — PROSPECT (top, widest) — brand orange -->
+        <!-- Left wall -->
+        <line x1="700" y1="60"  x2="760" y2="165" stroke="#F56300" stroke-width="1.5" opacity="0.5"/>
+        <!-- Right wall -->
+        <line x1="1400" y1="60" x2="1340" y2="165" stroke="#F56300" stroke-width="1.5" opacity="0.5"/>
+        <!-- Top edge -->
+        <line x1="700" y1="60"  x2="1400" y2="60"  stroke="#F56300" stroke-width="1.5" opacity="0.5"/>
+        <!-- Bottom divider -->
+        <line x1="760" y1="165" x2="1340" y2="165" stroke="#F56300" stroke-width="1"   opacity="0.35"/>
+        <!-- Stage fill — very subtle -->
+        <polygon points="700,60 1400,60 1340,165 760,165" fill="#F56300" fill-opacity="0.04"/>
+        <!-- Stage label line + dot -->
+        <circle cx="760" cy="112" r="3" fill="#F56300" opacity="0.5"/>
+        <line x1="763" y1="112" x2="820" y2="112" stroke="#F56300" stroke-width="1" opacity="0.3"/>
+
+        <!-- Stage 2 — NEW WEBSITE — blue -->
+        <line x1="760"  y1="165" x2="820"  y2="275" stroke="#2563EB" stroke-width="1.5" opacity="0.55"/>
+        <line x1="1340" y1="165" x2="1280" y2="275" stroke="#2563EB" stroke-width="1.5" opacity="0.55"/>
+        <line x1="820"  y1="275" x2="1280" y2="275" stroke="#2563EB" stroke-width="1"   opacity="0.38"/>
+        <polygon points="760,165 1340,165 1280,275 820,275" fill="#2563EB" fill-opacity="0.05"/>
+        <circle cx="820" cy="220" r="3" fill="#2563EB" opacity="0.55"/>
+        <line x1="823" y1="220" x2="880" y2="220" stroke="#2563EB" stroke-width="1" opacity="0.3"/>
+
+        <!-- Stage 3 — WORK ORDER + RGS — purple -->
+        <line x1="820"  y1="275" x2="880"  y2="385" stroke="#7C3AED" stroke-width="1.5" opacity="0.55"/>
+        <line x1="1280" y1="275" x2="1220" y2="385" stroke="#7C3AED" stroke-width="1.5" opacity="0.55"/>
+        <line x1="880"  y1="385" x2="1220" y2="385" stroke="#7C3AED" stroke-width="1"   opacity="0.38"/>
+        <polygon points="820,275 1280,275 1220,385 880,385" fill="#7C3AED" fill-opacity="0.05"/>
+        <circle cx="880" cy="330" r="3" fill="#7C3AED" opacity="0.55"/>
+        <line x1="883" y1="330" x2="940" y2="330" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+
+        <!-- Stage 4 — RGS ONLY — green -->
+        <line x1="880"  y1="385" x2="950"  y2="490" stroke="#10B981" stroke-width="1.5" opacity="0.55"/>
+        <line x1="1220" y1="385" x2="1150" y2="490" stroke="#10B981" stroke-width="1.5" opacity="0.55"/>
+        <line x1="950"  y1="490" x2="1150" y2="490" stroke="#10B981" stroke-width="1"   opacity="0.38"/>
+        <polygon points="880,385 1220,385 1150,490 950,490" fill="#10B981" fill-opacity="0.05"/>
+        <circle cx="950" cy="438" r="3" fill="#10B981" opacity="0.55"/>
+        <line x1="953" y1="438" x2="1010" y2="438" stroke="#10B981" stroke-width="1" opacity="0.3"/>
+
+        <!-- Stage 5 — CLOSED / WON — bright accent orange, narrowest -->
+        <line x1="950"  y1="490" x2="1010" y2="580" stroke="#F56300" stroke-width="1.5" opacity="0.65"/>
+        <line x1="1150" y1="490" x2="1090" y2="580" stroke="#F56300" stroke-width="1.5" opacity="0.65"/>
+        <line x1="1010" y1="580" x2="1090" y2="580" stroke="#F56300" stroke-width="1.5" opacity="0.5"/>
+        <polygon points="950,490 1150,490 1090,580 1010,580" fill="#F56300" fill-opacity="0.07"/>
+
+        <!-- Exit pipe from bottom of funnel -->
+        <line x1="1010" y1="580" x2="1010" y2="680" stroke="#F56300" stroke-width="1.5" opacity="0.5"/>
+        <line x1="1090" y1="580" x2="1090" y2="680" stroke="#F56300" stroke-width="1.5" opacity="0.5"/>
+        <!-- pipe fill -->
+        <rect x="1010" y="580" width="80" height="100" fill="#F56300" fill-opacity="0.06"/>
+
+        <!-- Glow at pipe exit — "deals closed" indicator -->
+        <ellipse cx="1050" cy="685" rx="50" ry="10" fill="#F56300" opacity="0.18"/>
+        <ellipse cx="1050" cy="685" rx="28" ry="6"  fill="#F56300" opacity="0.28"/>
+
+        <!-- Stage label dots on right wall — subtle tick marks -->
+        <circle cx="1340" cy="112" r="2.5" fill="#F56300"  opacity="0.4"/>
+        <circle cx="1280" cy="220" r="2.5" fill="#2563EB"  opacity="0.4"/>
+        <circle cx="1220" cy="330" r="2.5" fill="#7C3AED"  opacity="0.4"/>
+        <circle cx="1150" cy="438" r="2.5" fill="#10B981"  opacity="0.4"/>
+        <circle cx="1090" cy="535" r="2.5" fill="#F56300"  opacity="0.5"/>
+
+        <!-- Stage labels (right side, small) -->
+        <text x="1350" y="117" font-family="'DM Mono', monospace" font-size="11" fill="#F56300" fill-opacity="0.5" letter-spacing="1.5">PROSPECT</text>
+        <text x="1290" y="225" font-family="'DM Mono', monospace" font-size="11" fill="#2563EB" fill-opacity="0.55" letter-spacing="1.5">NEW BUILD</text>
+        <text x="1230" y="335" font-family="'DM Mono', monospace" font-size="11" fill="#7C3AED" fill-opacity="0.55" letter-spacing="1.5">WO + RGS</text>
+        <text x="1160" y="443" font-family="'DM Mono', monospace" font-size="11" fill="#10B981" fill-opacity="0.55" letter-spacing="1.5">RGS ONLY</text>
+        <text x="1100" y="540" font-family="'DM Mono', monospace" font-size="11" fill="#F56300" fill-opacity="0.65" letter-spacing="1.5">CLOSED</text>
+
+        <!-- subtle entry particles at funnel top — prospects coming in -->
+        <circle cx="860"  cy="30" r="2"   fill="#F56300" opacity="0.3"/>
+        <circle cx="980"  cy="22" r="1.5" fill="#F56300" opacity="0.22"/>
+        <circle cx="1100" cy="18" r="2.5" fill="#F56300" opacity="0.28"/>
+        <circle cx="1220" cy="25" r="1.5" fill="#F56300" opacity="0.2"/>
+        <circle cx="1310" cy="32" r="2"   fill="#F56300" opacity="0.25"/>
+        <!-- drop lines from particles into funnel -->
+        <line x1="860"  y1="32" x2="860"  y2="58" stroke="#F56300" stroke-width="1" opacity="0.15" stroke-dasharray="2 3"/>
+        <line x1="1100" y1="21" x2="1100" y2="58" stroke="#F56300" stroke-width="1" opacity="0.12" stroke-dasharray="2 3"/>
+        <line x1="1310" y1="34" x2="1310" y2="58" stroke="#F56300" stroke-width="1" opacity="0.12" stroke-dasharray="2 3"/>
+
+      </g>
+    </svg>
+  </div>
+
+  <!-- efelle logo — top right -->
+  <div class="cover-logo-img">
+    <img src="https://www.seattlewebdesign.com/uploads/_proposal/portfolio/e-logo-white.png" alt="efelle creative" />
+  </div>
+
+  <div class="cover-content">
+    <div class="cover-eyebrow">Team User Guide</div>
+    <h1 class="cover-title">Prosp<span style="color:var(--accent)">e</span>ctor</h1>
+    <div class="cover-title-sub">// AI-POWERED SALES PROPOSAL GENERATOR</div>
+    <p class="cover-desc">Generate polished, client-ready website proposals in minutes — website scrape, auto-populate, branded PDF output, done.</p>
+    <div style="margin-bottom: 40px;">
+      <a href="https://Prospector.efelle.com" style="display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:0.1em;text-decoration:none;border:1px solid rgba(245,99,0,0.4);padding:10px 18px;border-radius:6px;transition:all 0.15s;" onmouseover="this.style.background='rgba(245,99,0,0.1)'" onmouseout="this.style.background='transparent'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Prospector.efelle.com
+      </a>
+    </div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Version</div>
+        <div class="cover-meta-value">2.1 — Production</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Audience</div>
+        <div class="cover-meta-value">Sales Team</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Updated</div>
+        <div class="cover-meta-value">March 2026</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TOC ══════════════════════ -->
+<div class="toc-page">
+  <div class="toc-inner">
+    <div class="toc-eyebrow">Contents</div>
+    <h2 class="toc-title">What's in this guide</h2>
+    <div class="toc-grid">
+      <a class="toc-item" href="#why">
+        <span class="toc-num">01</span>
+        <span class="toc-label">Why We Built This</span>
+      </a>
+      <a class="toc-item" href="#what">
+        <span class="toc-num">02</span>
+        <span class="toc-label">What Prospector Is</span>
+      </a>
+      <a class="toc-item" href="#workflow">
+        <span class="toc-num">03</span>
+        <span class="toc-label">The Six-Step Workflow</span>
+      </a>
+      <a class="toc-item" href="#types">
+        <span class="toc-num">04</span>
+        <span class="toc-label">Proposal Types</span>
+      </a>
+      <a class="toc-item" href="#verticals">
+        <span class="toc-num">05</span>
+        <span class="toc-label">Industry Verticals</span>
+      </a>
+      <a class="toc-item" href="#rgs">
+        <span class="toc-num">06</span>
+        <span class="toc-label">RGS — Revenue Growth Service</span>
+      </a>
+      <a class="toc-item" href="#pricing">
+        <span class="toc-num">07</span>
+        <span class="toc-label">Pricing & Payment Breakdown</span>
+      </a>
+      <a class="toc-item" href="#output">
+        <span class="toc-num">08</span>
+        <span class="toc-label">Output & Delivery</span>
+      </a>
+      <a class="toc-item" href="#tips">
+        <span class="toc-num">09</span>
+        <span class="toc-label">Pro Tips & Best Practices</span>
+      </a>
+      <a class="toc-item" href="#faq">
+        <span class="toc-num">10</span>
+        <span class="toc-label">FAQ & Troubleshooting</span>
+      </a>
+      <a class="toc-item" href="#future">
+        <span class="toc-num">11</span>
+        <span class="toc-label">Digital Signatures, HubSpot & What's Next</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ MAIN CONTENT ══════════════════════ -->
+<div class="page">
+
+  <!-- ── 01 WHY ── -->
+  <div class="section-header" id="why">
+    <div class="section-eyebrow"><span class="num">01</span> Background</div>
+    <h2 class="section-title">Why we built this</h2>
+    <p class="section-lead">The sales process used to require several tools to audit a site, compare to competitors and the strategy was a manual process — plus, a sales proposal used to take 45–90 minutes to assemble. Prospector gets it down to under five.</p>
+  </div>
+
+  <div class="prose">
+    <p>Before Prospector, building a proposal meant opening a template, hunting for the client's logo, writing a custom About section from scratch, manually calculating the 30/30/40 payment breakdown, and hoping nothing was out of date by the time it landed in the prospect's inbox. Every rep had a slightly different version of the template. Quality was inconsistent. Time was wasted on logistics instead of strategy.</p>
+
+    <p>The problem wasn't effort — it was tooling. We had the efelle brand story, the verticals, the pricing structure, and the process. We just didn't have a fast way to assemble it around a specific prospect.</p>
+
+    <p><strong>Prospector solves that.</strong> You enter a client URL, confirm a few settings, and the tool scrapes their site, populates all the client-specific fields, selects the right vertical copy, applies your pricing, and outputs a complete, branded, print-ready proposal in minutes. Every proposal looks like it was built by hand — because structurally it was, just without the manual assembly.</p>
+
+    <p>The tool also handles the two proposal types the sales team uses: a full <strong>New Website</strong> build, and a <strong>Work Order + RGS</strong> engagement for clients with existing sites who need targeted improvements plus ongoing marketing support.</p>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">The core idea</div>
+    <p>Enter a URL, confirm your settings, get a professional proposal. The client feels like you spent hours on it. You spent five minutes.</p>
+  </div>
+
+
+  <!-- ── 02 WHAT ── -->
+  <div class="section-header" id="what">
+    <div class="section-eyebrow"><span class="num">02</span> Overview</div>
+    <h2 class="section-title">What Prospector is</h2>
+    <p class="section-lead">A guided, six-step proposal generator that auto-populates client details, applies vertical-specific copy, and produces a download-ready HTML proposal file.</p>
+  </div>
+
+  <div class="prose">
+    <p>Prospector is a browser-based internal tool that runs on efelle's infrastructure. It calls the Anthropic AI API to process client website data and populate proposal fields, and it connects directly to efelle's branded proposal template system. There's no login required — just open it, work through the intake, and download your file.</p>
+
+    <p>The tool has four core capabilities:</p>
+  </div>
+
+  <div class="step-flow">
+    <div class="step">
+      <div class="step-num" style="background:var(--accent);border-color:var(--accent);color:white;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Guided intake in six steps</div>
+        <div class="step-desc">A linear wizard that collects everything the proposal needs: proposal type, industry vertical, RGS mode, pricing, client name, and website URL. Each step is a single decision — no form overwhelm, no skipped fields.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:var(--accent);border-color:var(--accent);color:white;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Automatic website research</div>
+        <div class="step-desc">Paste the client's URL and Prospector fetches their site, extracting company name, location, services, service area, years in business, differentiators, and logo URL. No copy-pasting from another tab. If the site is JS-heavy or blocks scraping, a manual fallback lets you paste a description instead.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:var(--accent);border-color:var(--accent);color:white;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 10h16M4 14h10"/><path d="M17 17l2 2 4-4" stroke-width="2"/></svg>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Vertical-matched copy</div>
+        <div class="step-desc">The proposal copy automatically matches the selected industry vertical — hero headlines, offer language, feature cards, process steps, and RGS messaging are all written specifically for Home Services, Plumbing, Roofing, HVAC, or Landscaping. No editing required for standard engagements.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:var(--accent);border-color:var(--accent);color:white;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h4"/></svg>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Branded, print-ready output</div>
+        <div class="step-desc">The output is a complete, self-contained HTML file — efelle branding, client logo, all pricing calculated, payment breakdown included, SOW copy locked in, awards and portfolio images loaded from the server. Open in Chrome, print to PDF, send.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── 03 WORKFLOW ── -->
+  <div class="section-header" id="workflow">
+    <div class="section-eyebrow"><span class="num">03</span> Workflow</div>
+    <h2 class="section-title">The six-step workflow</h2>
+    <p class="section-lead">Every proposal follows the same six steps. The whole intake takes under five minutes on a typical engagement.</p>
+  </div>
+
+  <div class="step-flow">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Choose a proposal type</div>
+        <div class="step-desc">Select <strong>New Website</strong> (full build for a client with no site or starting over) or <strong>Work Order + RGS</strong> (targeted improvements to an existing site plus ongoing marketing). The proposal type determines the SOW copy, section structure, and payment terms.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Select the industry vertical</div>
+        <div class="step-desc">Choose from Home Services (generic), Plumbing, Roofing, HVAC, or Landscaping. This determines the hero headline, offer language, feature card copy, process section, RGS messaging, and portfolio lead text. If the client's industry doesn't fit a specific vertical, use Home Services.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Set RGS mode</div>
+        <div class="step-desc">Choose whether the Revenue Growth Service is <strong>Optional</strong> (shown near the end as an upsell, with a green badge) or <strong>Included</strong> (shown prominently after The Offer section, framed as part of the core engagement). See Section 06 for full guidance on which to use when.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Enter pricing</div>
+        <div class="step-desc">Confirm or override the default pricing: <strong>$7,500</strong> website / <strong>$125/mo</strong> hosting &amp; support / <strong>$2,500/mo</strong> RGS. The tool automatically calculates the 30/30/40 payment breakdown. All amounts display as whole dollars — no cents.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Paste the client's URL</div>
+        <div class="step-desc">The tool fetches the client's website and extracts: company name, location, services offered, service area, years in business, differentiators, and logo URL. Review the extracted data — it auto-populates the proposal's About section and client header. If scraping fails, paste a short company description as a fallback.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <div class="step-title">Confirm the logo URL</div>
+        <div class="step-desc">The tool presents the logo URL it found (or asks for one). Confirm it, paste a different URL, or type "skip" to leave a placeholder. The logo appears in the proposal header and is loaded live from the URL — no image upload needed. Confirm and generate.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">Scrape quality check</div>
+    <p>After fetching the client's site, Prospector evaluates whether it pulled enough content to write a meaningful About section. If the site is JavaScript-heavy, behind a login, or returns minimal text, it will tell you and offer the manual paste fallback. <strong>Don't skip this check</strong> — a thin scrape means thin proposal copy.</p>
+  </div>
+
+
+  <!-- ── 04 PROPOSAL TYPES ── -->
+  <div class="section-header" id="types">
+    <div class="section-eyebrow"><span class="num">04</span> Proposal Types</div>
+    <h2 class="section-title">Two proposal types</h2>
+    <p class="section-lead">Prospector handles both of efelle's core sales scenarios. Choose the right type before anything else — it determines the entire proposal structure.</p>
+  </div>
+
+  <div class="proposal-grid">
+    <div class="proposal-card new">
+      <div class="proposal-card-label">Proposal Type A</div>
+      <div class="proposal-card-name">New Website Build</div>
+      <div class="proposal-card-desc">For prospects who need a full website — either they have nothing, their current site is beyond salvaging, or they're starting over in a new direction. Full SOW, full process section, full 50/50 interest-free payment schedule.</div>
+      <div class="proposal-card-tag">Full build · Complete SOW</div>
+    </div>
+    <div class="proposal-card wo">
+      <div class="proposal-card-label">Proposal Type B</div>
+      <div class="proposal-card-name">Work Order + RGS</div>
+      <div class="proposal-card-desc">For prospects with an existing website who need targeted improvements — UX fixes, new pages, performance work, conversion optimization — combined with the Revenue Growth Service for ongoing marketing. Scoped work + monthly engagement.</div>
+      <div class="proposal-card-tag">Scoped work · RGS required</div>
+    </div>
+    <div class="proposal-card" style="--card-color:#10B981;grid-column:1/-1;display:flex;gap:28px;align-items:flex-start">
+      <div style="flex:1">
+        <div class="proposal-card-label" style="display:flex;align-items:center;gap:8px">Proposal Type C <span style="background:#ECFDF5;color:#065F46;border:1px solid rgba(16,185,129,0.3);font-family:'DM Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px">Coming Soon</span></div>
+        <div class="proposal-card-name">RGS Only</div>
+        <div class="proposal-card-desc">For prospects who already have a solid website and aren't looking to redesign — but are ready to invest in growth. This proposal leads entirely with the Revenue Growth Service: SEO, content, paid media, and performance management. No build, no SOW, monthly-only pricing. Designed for the prospect who says "our site is fine, we just need more leads."</div>
+      </div>
+      <div style="flex-shrink:0;padding-top:4px">
+        <div class="proposal-card-tag">RGS only · No build required</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>How to decide which type to use</h3>
+    <p>If the prospect's site is fundamentally broken, dated, or needs a complete rebuild — use <strong>New Website</strong>. If their site is working but underperforming, or they want specific improvements without a full rebuild — use <strong>Work Order + RGS</strong>.</p>
+
+    <p>The WO + RGS proposal type assumes RGS is included, not optional — the ongoing marketing component is what makes a targeted work order worthwhile for both parties. Don't use the WO type without including RGS.</p>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠️</div>
+    <div class="warning-body">
+      <div class="warning-title">Proposal type cannot be changed after generation</div>
+      <p>The proposal type is set in Step 1 and determines the entire document structure, SOW copy, and payment terms. If you realize you selected the wrong type after generating, you'll need to run the intake again. Takes two minutes — faster than trying to manually edit the output.</p>
+    </div>
+  </div>
+
+
+  <!-- ── 05 VERTICALS ── -->
+  <div class="section-header" id="verticals">
+    <div class="section-eyebrow"><span class="num">05</span> Industry Verticals</div>
+    <h2 class="section-title">Five industry verticals</h2>
+    <p class="section-lead">Each vertical has its own hero headline, offer framing, feature card copy, and RGS messaging — written specifically for that industry's buyer psychology.</p>
+  </div>
+
+  <div class="vertical-grid">
+    <div class="vertical-card">
+      <div class="vertical-icon">
+        <!-- Home Services: house outline matching app -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="vertical-name">Home Services</div>
+    </div>
+    <div class="vertical-card">
+      <div class="vertical-icon">
+        <!-- Plumbing: wrench matching app -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="vertical-name">Plumbing</div>
+    </div>
+    <div class="vertical-card">
+      <div class="vertical-icon">
+        <!-- Roofing: chevron/roof angle matching app -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 12 6 20 14"/></svg>
+      </div>
+      <div class="vertical-name">Roofing</div>
+    </div>
+    <div class="vertical-card">
+      <div class="vertical-icon">
+        <!-- HVAC: asterisk/sun spinner matching app -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+      </div>
+      <div class="vertical-name">HVAC</div>
+    </div>
+    <div class="vertical-card">
+      <div class="vertical-icon">
+        <!-- Landscaping: garden trowel/tool matching app -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l9-9"/><path d="M12.5 3.5l8 8-1.5 1.5-2-1-4.5 4.5-1-2L7 19l-4-4 4.5-4.5-1-2 4.5-4.5-1-2 2.5-2.5z"/></svg>
+      </div>
+      <div class="vertical-name">Landscaping</div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>Every vertical controls a specific set of copy fields in the proposal:</p>
+  </div>
+
+  <table class="feature-table">
+    <thead>
+      <tr>
+        <th>Copy Element</th>
+        <th>What changes per vertical</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Hero headline</td>
+        <td>The main value proposition in the proposal header — written for that industry's buyer</td>
+      </tr>
+      <tr>
+        <td>Offer section</td>
+        <td>The "what we're building" framing paragraph — references industry-specific outcomes</td>
+      </tr>
+      <tr>
+        <td>Feature cards</td>
+        <td>The 3–4 highlighted capabilities shown as icon cards — tailored to industry priorities</td>
+      </tr>
+      <tr>
+        <td>Process lead</td>
+        <td>The intro sentence of the Our Process section</td>
+      </tr>
+      <tr>
+        <td>RGS messaging</td>
+        <td>The Revenue Growth Service copy — what "growth" means in that industry context</td>
+      </tr>
+      <tr>
+        <td>Portfolio lead</td>
+        <td>The intro sentence above the portfolio images</td>
+      </tr>
+      <tr>
+        <td>Why closing</td>
+        <td>Roofing has its own unique closing argument; all other verticals share the Home Services version</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="callout-label">When to use Home Services</div>
+    <p>If the client is in a home services category that isn't one of the four specific verticals — electrical, pest control, painting, windows, etc. — use <strong>Home Services (generic)</strong>. The copy is written broadly enough to work for any residential service company without feeling off-brand.</p>
+  </div>
+
+
+  <!-- ── 06 RGS ── -->
+  <div class="section-header" id="rgs">
+    <div class="section-eyebrow"><span class="num">06</span> Revenue Growth Service</div>
+    <h2 class="section-title">RGS — Optional vs. Included</h2>
+    <p class="section-lead">The Revenue Growth Service is efelle's managed digital marketing program. How you present it in the proposal is a strategic decision that changes the entire framing of the engagement.</p>
+  </div>
+
+  <div class="prose">
+    <p>RGS is a monthly marketing engagement — SEO, content, paid, and performance management — designed to generate leads and grow the client's digital presence after the website launches. Every proposal includes RGS in some form. The question is whether it's positioned as an upsell or as part of the core offering.</p>
+  </div>
+
+  <div class="rgs-grid">
+    <div class="rgs-card">
+      <div class="rgs-badge optional">Optional</div>
+      <div class="rgs-card-name">RGS as an Optional Add-On</div>
+      <div class="rgs-card-desc">RGS appears near the end of the proposal, before the signature page, with a green "Optional" badge. It's framed as a smart next step the client can choose to add — not a requirement. Best for prospects who are price-sensitive on the initial build, or who aren't yet sold on ongoing marketing spend.</div>
+      <div class="rgs-placement">Placement → Before signature page</div>
+    </div>
+    <div class="rgs-card">
+      <div class="rgs-badge included">Included</div>
+      <div class="rgs-card-name">RGS as an Included Service</div>
+      <div class="rgs-card-desc">RGS appears prominently immediately after The Offer section — right at the top, before SOW details. It's framed as core to what efelle does, not a bolt-on. Best for prospects where growth is clearly part of the conversation, or for Work Order + RGS proposals where RGS is the ongoing component.</div>
+      <div class="rgs-placement">Placement → After The Offer section</div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>How to decide</h3>
+    <p>Default to <strong>Optional</strong> for most New Website proposals unless the conversation has already included a strong discussion about marketing and growth. When a prospect says "we really need to show up on Google" or "our current site gets no traffic," that's a signal to use Included — they've already told you growth is the goal.</p>
+
+    <p>For <strong>Work Order + RGS</strong> proposals, always use Included. The work order and the marketing program are one engagement — separating them undercuts the positioning.</p>
+
+    <p>RGS runs at <strong>$2,500/month</strong> by default with a three-month minimum term, then continues month-to-month with 30 days' notice to cancel. The pricing is set in Step 4 and can be overridden if your engagement calls for a different rate.</p>
+  </div>
+
+
+  <!-- ── 07 PRICING ── -->
+  <div class="section-header" id="pricing">
+    <div class="section-eyebrow"><span class="num">07</span> Pricing</div>
+    <h2 class="section-title">Pricing & payment breakdown</h2>
+    <p class="section-lead">Prospector calculates the payment structure automatically from the website price you enter. Default pricing is set and ready to confirm or override.</p>
+  </div>
+
+  <div class="prose">
+    <h3>Default pricing</h3>
+    <p>At Step 4, Prospector shows the standard defaults and asks you to confirm or override:</p>
+  </div>
+
+  <table class="feature-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Default</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Website project</td>
+        <td>$7,500</td>
+        <td>Base build price — override for larger or custom engagements</td>
+      </tr>
+      <tr>
+        <td>Monthly hosting &amp; support</td>
+        <td>$125/mo</td>
+        <td>Post-launch hosting, updates, and support plan</td>
+      </tr>
+      <tr>
+        <td>RGS monthly program</td>
+        <td>$2,500/mo</td>
+        <td>Ongoing marketing engagement — override per deal</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="prose">
+    <h3>The 50/50 interest-free payment structure</h3>
+    <p>All New Website proposals use a two-payment structure calculated automatically from the website project price. The balance is split evenly — half up front, half financed interest-free over 24 months:</p>
+  </div>
+
+  <div class="pricing-block">
+    <div class="pricing-label">Payment Structure — based on $7,500 example</div>
+    <div class="pricing-row" style="align-items:flex-start">
+      <div class="pricing-row-label">
+        <span class="pricing-pct">50%</span>
+        Deposit — due to initiate project
+      </div>
+      <div style="text-align:right;flex-shrink:0;min-width:140px">
+        <div class="pricing-row-value">$3,750</div>
+        <div class="pricing-formula">$7,500 × 0.50</div>
+      </div>
+    </div>
+    <div class="pricing-row" style="align-items:flex-start">
+      <div class="pricing-row-label">
+        <span class="pricing-pct">50%</span>
+        Balance — interest-free over 24 months
+      </div>
+      <div style="text-align:right;flex-shrink:0;min-width:140px">
+        <div class="pricing-row-value">$156/mo</div>
+        <div class="pricing-formula">($7,500 × 0.50) ÷ 24, rounded down</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>All payment amounts display as whole dollars — no cents. The monthly balance amount is always rounded down to the nearest dollar. The tool handles all of this math automatically; you never need to calculate it manually.</p>
+
+    <p>For <strong>Work Order + RGS</strong> proposals, the payment structure is different: 50% due to initiate work, 50% due within 45 days. This is baked into the WO proposal type automatically.</p>
+  </div>
+
+
+  <!-- ── 08 OUTPUT ── -->
+  <div class="section-header" id="output">
+    <div class="section-eyebrow"><span class="num">08</span> Output & Delivery</div>
+    <h2 class="section-title">Output, PDF export & sending</h2>
+    <p class="section-lead">The proposal generates as a self-contained HTML file. Getting it to PDF and to the client takes about 60 seconds.</p>
+  </div>
+
+  <div class="prose">
+    <h3>What the output file contains</h3>
+    <p>The generated <code>.htm</code> file is a complete, standalone document. Everything is self-contained — no external dependencies that could break. It includes:</p>
+  </div>
+
+  <div class="tips">
+    <div class="tips-label">What's in every proposal</div>
+    <ul>
+      <li><strong>Client logo</strong> — loaded from the URL you confirmed in Step 6, displayed in the proposal header</li>
+      <li><strong>Client About section</strong> — populated from the website scrape: company name, location, services, years in business, differentiators</li>
+      <li><strong>Vertical-matched copy</strong> — hero, offer, feature cards, process, RGS messaging — all matched to your selected industry</li>
+      <li><strong>Calculated payment schedule</strong> — 30/30/40 breakdown with exact dollar amounts, no manual math</li>
+      <li><strong>SOW copy</strong> — locked scope of work language, adjusted for proposal type (New Build vs. Work Order)</li>
+      <li><strong>RGS section</strong> — positioned and badged according to your Optional/Included selection</li>
+      <li><strong>efelle awards & portfolio images</strong> — loaded from the efelle server; no local assets needed</li>
+      <li><strong>Signature/authorization page</strong> — ready for the client to sign</li>
+    </ul>
+  </div>
+
+  <div class="prose">
+    <h3>Saving as PDF</h3>
+    <p>The proposal is designed to print cleanly as a PDF from Chrome. The process:</p>
+  </div>
+
+  <div class="step-flow">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Download the .htm file</div>
+        <div class="step-desc">Click the download button in Prospector after generation. Save the file to your desktop or client folder.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Open in Chrome</div>
+        <div class="step-desc">Double-click the file — it opens in your default browser. If it doesn't open in Chrome, right-click → Open With → Google Chrome. Let all images load before printing.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">File → Print → Save as PDF</div>
+        <div class="step-desc">Use Chrome's print dialog. Set: Destination → Save as PDF, Layout → Portrait, Margins → None, check Background graphics. Click Save. The proposal is optimized for Chrome's print engine — other browsers may produce slightly different results.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Send to prospect</div>
+        <div class="step-desc">Email the PDF directly, or share via DocuSign/PandaDoc if your workflow uses e-signature. Name the file clearly: <code>efelle-[ClientName]-Proposal.pdf</code></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠️</div>
+    <div class="warning-body">
+      <div class="warning-title">Use Chrome, not Safari or Edge</div>
+      <p>The proposal's print CSS is tuned specifically for Chrome's rendering engine. Printing from Safari or Edge may produce misaligned sections, broken page breaks, or cut-off content. Always use Chrome for the final PDF export.</p>
+    </div>
+  </div>
+
+
+  <!-- ── 09 TIPS ── -->
+  <div class="section-header" id="tips">
+    <div class="section-eyebrow"><span class="num">09</span> Best Practices</div>
+    <h2 class="section-title">Pro tips for better proposals</h2>
+    <p class="section-lead">While building, testing and evolving this tool here's some things I've learned about getting the most out of Prospector, in real sales situations:</p>
+  </div>
+
+  <div class="prose">
+    <h3>On the intake</h3>
+  </div>
+
+  <div class="tips">
+    <div class="tips-label">Intake tips</div>
+    <ul>
+      <li><strong>Always check the scrape results before generating</strong> — the tool flags thin scrapes, but give the extracted About section a quick read before confirming. A client who's been in business 22 years should say 22 years, not "recently founded."</li>
+      <li><strong>When the URL scrape fails, the paste fallback is just as good</strong> — copy 2–3 sentences from the client's About page and paste them in. The AI extracts from text just as effectively as from a live fetch.</li>
+      <li><strong>Have the logo URL ready</strong> — if you already know the client's logo URL from their site, you can paste it directly when the tool asks rather than waiting for it to be extracted. Saves one round-trip.</li>
+      <li><strong>RGS mode is a sales strategy decision, not a template setting</strong> — think about where the conversation has been before you click. Included RGS means you're leading with growth. Optional RGS means you're letting the build speak first.</li>
+    </ul>
+  </div>
+
+  <div class="prose">
+    <h3>On pricing and positioning</h3>
+  </div>
+
+  <div class="tips">
+    <div class="tips-label">Pricing tips</div>
+    <ul>
+      <li><strong>The defaults exist for a reason — use them for standard engagements</strong> — the $7,500 / $125 / $2,500 defaults are calibrated for the typical home services prospect. Resist the urge to discount before you've had the value conversation.</li>
+      <li><strong>Override pricing confidently — don't apologize for it</strong> — if the project is $15,000, enter $15,000. The proposal is built to make any price look considered and justified, not arbitrary.</li>
+      <li><strong>The interest-free balance is a feature, not just a term</strong> — splitting 50/50 with 24-month interest-free financing lowers the barrier to saying yes. The prospect pays half to start and the rest disappears into their monthly overhead. Lead with that framing.</li>
+    </ul>
+  </div>
+
+  <div class="prose">
+    <h3>On output and delivery</h3>
+  </div>
+
+  <div class="tips">
+    <div class="tips-label">Delivery tips</div>
+    <ul>
+      <li><strong>Always preview the HTML file before printing to PDF</strong> — scroll through the full proposal once in the browser. Confirm the logo loaded, the client name is correct throughout, and the payment numbers look right.</li>
+      <li><strong>Send the PDF the same day as the discovery call</strong> — proposals sent within 24 hours have significantly higher close rates than those sent 3–5 days later. Prospector makes same-day delivery possible — use that advantage.</li>
+      <li><strong>Save the .htm file, not just the PDF</strong> — if a client asks for a revised price or a different RGS structure, it's faster to re-run the intake than to edit a PDF. But having the original file helps you remember what you sent.</li>
+      <li><strong>Name files consistently</strong> — use <code>efelle-[ClientName]-[Date]-Proposal.pdf</code>. When you're managing 10+ active proposals, file naming discipline pays off.</li>
+    </ul>
+  </div>
+
+
+  <!-- ── 10 FAQ ── -->
+  <div class="section-header" id="faq">
+    <div class="section-eyebrow"><span class="num">10</span> FAQ</div>
+    <h2 class="section-title">Frequently asked questions</h2>
+  </div>
+
+  <table class="feature-table">
+    <thead>
+      <tr>
+        <th>Question</th>
+        <th>Answer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>The website scrape returned nothing useful</td>
+        <td>Some sites block automated fetching (especially WordPress sites with aggressive caching or JavaScript-heavy builders like Webflow). Use the manual paste fallback — copy a few sentences from the client's About and Services pages and paste when prompted. The AI extracts from text just as accurately.</td>
+      </tr>
+      <tr>
+        <td>The client logo didn't load in the proposal</td>
+        <td>The logo is loaded from a URL at print time — if the URL is broken, expired, or on a slow server, it won't appear. Right-click the logo area in the browser to inspect the URL, then find a working direct image URL from the client's site and re-run with that URL in Step 6.</td>
+      </tr>
+      <tr>
+        <td>I selected the wrong proposal type — can I fix it without starting over?</td>
+        <td>No — the proposal type is structural and affects the SOW, section order, and payment terms throughout the document. The fastest fix is to re-run the intake, which takes about two minutes if you already have the client's URL and pricing ready.</td>
+      </tr>
+      <tr>
+        <td>The PDF has page break issues — content is cut off mid-section</td>
+        <td>This is a known intermittent issue with Chrome's print engine on certain viewport widths. Try: zoom the browser to 90% before printing, or try a different Chrome window size. The tool is optimized for standard desktop Chrome — avoid printing from a zoomed-in or unusually narrow window.</td>
+      </tr>
+      <tr>
+        <td>Can I customize the proposal copy for a specific client?</td>
+        <td>The generated HTML file can be edited in any text editor before printing. For light edits (correcting a detail, adding a specific line), open the file in VS Code or similar, make the change, save, and re-open in Chrome to print. For major customizations, consider whether a standard proposal with a well-crafted cover email is sufficient.</td>
+      </tr>
+      <tr>
+        <td>The client is in an industry we don't have a vertical for</td>
+        <td>Use Home Services (generic). The copy is written broadly enough to apply to any residential or commercial service business — HVAC-adjacent trades, pest control, cleaning services, painting, electrical — without sounding off. It's been used successfully across 20+ industry types.</td>
+      </tr>
+      <tr>
+        <td>What's the difference between hosting & support and RGS?</td>
+        <td>Hosting & support ($125/mo) covers server infrastructure, security updates, CMS maintenance, and basic support. RGS ($2,500/mo) is a fully managed growth program — SEO, content marketing, paid campaigns, analytics, and ongoing optimization. They're separate line items and separate conversations.</td>
+      </tr>
+      <tr>
+        <td>Can I use Prospector on my phone or tablet?</td>
+        <td>The intake wizard works on mobile browsers, but the output HTML file is designed for desktop viewing and printing. Complete the intake on any device, then open the downloaded file on a desktop Chrome browser to generate the final PDF.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── 11 FUTURE ── -->
+  <div class="section-header" id="future">
+    <div class="section-eyebrow"><span class="num">11</span> What's Next</div>
+    <h2 class="section-title">Digital signatures, HubSpot & the future of Prospector</h2>
+    <p class="section-lead">Prospector is already replacing Proposify for most engagements. Here's where it's headed next — from embedded signatures to Slack-native proposal generation.</p>
+  </div>
+
+  <div class="prose">
+    <h3>Replacing Proposify with a native signature block</h3>
+    <p>The current workflow requires exporting to PDF and either printing for wet signature or routing through Proposify or DocuSign as a separate step. The next version of Prospector will embed a digital signature block directly into the proposal output — no third-party tool required.</p>
+
+    <p>The signature block will be generated as part of the HTML output and include: client name and company, signature field (drawn or typed), date field, and an "I agree to the terms above" checkbox. When the client completes the signature in-browser, the signed version will be captured and can be sent back as a finalized PDF. This removes Proposify from the workflow entirely for standard engagements — reducing both cost and friction.</p>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">Proposify replacement status</div>
+    <p>For standard home services proposals, Prospector already produces a more polished and faster output than Proposify. The remaining gap is the e-signature step. Once the native signature block is live, Proposify can be deprecated for this use case. <strong>Higher-complexity enterprise proposals</strong> with custom terms or multi-party signatures will continue to use Proposify or DocuSign until those edge cases are covered.</p>
+  </div>
+
+  <div class="prose">
+    <h3>HubSpot integration</h3>
+    <p>The proposal generation workflow currently lives outside the CRM. The next integration milestone connects Prospector directly to HubSpot so that:</p>
+  </div>
+
+  <div class="tips">
+    <div class="tips-label">HubSpot integration goals</div>
+    <ul>
+      <li><strong>Proposals attach to deals automatically</strong> — when a proposal is generated, it logs against the HubSpot deal record with a timestamp, proposal type, and pricing snapshot</li>
+      <li><strong>Deal stage advances on signature</strong> — when the embedded signature block is completed, the HubSpot deal automatically moves from "Proposal Sent" to "Proposal Signed"</li>
+      <li><strong>Pricing flows into deal value</strong> — website price, hosting MRR, and RGS MRR populate the HubSpot deal value fields automatically from Prospector's intake</li>
+      <li><strong>Follow-up sequences trigger on send</strong> — sending a proposal kicks off a HubSpot sequence for proposal follow-up, so no deal falls through the cracks after the PDF goes out</li>
+      <li><strong>Proposal history visible in CRM</strong> — every version sent to a prospect is accessible from their HubSpot contact record, with a link back to the generated file</li>
+    </ul>
+  </div>
+
+  <div class="prose">
+    <h3>Future state: Slack-native proposal generation</h3>
+    <p>The long-term vision for Prospector is that generating a proposal should be as fast as sending a Slack message. The goal is a slash command that handles the entire workflow in one line:</p>
+  </div>
+
+  <!-- Slack command mockup -->
+  <div style="background:#1a1d21;border-radius:12px;padding:28px 32px;margin:28px 0;font-family:'DM Mono',monospace;">
+    <div style="font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:16px;">Slack — #sales channel</div>
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:20px">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:700;color:white">F</div>
+      <div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:6px">Fred · Sales Guy</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.85);background:#2a2d31;padding:12px 16px;border-radius:8px;border-left:3px solid var(--accent);line-height:1.6">
+          <span style="color:var(--accent)">/proposal</span> <span style="color:rgba(255,255,255,0.6)">nwroofingllc.com</span> <span style="color:rgba(255,255,255,0.35)">@</span> <span style="color:#7de2b8">$7,500</span> <span style="color:rgba(255,255,255,0.35)">/</span> <span style="color:#60a5fa">$2,500</span> <span style="color:rgba(255,255,255,0.35)">/</span> <span style="color:#e879f9">$125</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#F56300;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:6px">Prospector · App</div>
+        <div style="background:#2a2d31;border-radius:8px;padding:16px 20px;border:1px solid rgba(255,255,255,0.08)">
+          <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:12px;font-family:'DM Sans',sans-serif">✅ <strong style="color:white">Proposal generated</strong> — Northwest Roofing LLC</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+            <div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:10px 12px">
+              <div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px">Project</div>
+              <div style="font-size:13px;color:#7de2b8;font-weight:600">$7,500</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:10px 12px">
+              <div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px">RGS/mo</div>
+              <div style="font-size:13px;color:#60a5fa;font-weight:600">$2,500</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:10px 12px">
+              <div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px">Hosting</div>
+              <div style="font-size:13px;color:#e879f9;font-weight:600">$125/mo</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="#" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:8px 14px;border-radius:6px;text-decoration:none">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download PDF
+            </a>
+            <a href="#" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:8px 14px;border-radius:6px;text-decoration:none">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit & Regenerate
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>The command format is <code>/proposal [clienturl] @ [project price] / [RGS price] / [hosting price]</code>. Prospector handles everything else automatically: scrapes the client site, detects the industry vertical, applies the right copy, calculates the payment schedule, and returns a download link to the finalized PDF — all within the Slack thread, without leaving the app.</p>
+
+    <p>The same command will optionally trigger HubSpot deal creation and attach the proposal to the correct contact record, so the entire sales motion from "I want to send a proposal" to "deal logged in CRM" happens in one command.</p>
+
+    <h3>Other items on the roadmap</h3>
+  </div>
+
+  <div class="tips">
+    <div class="tips-label">Prospector roadmap</div>
+    <ul>
+      <li><strong>RGS Only proposal type (coming next)</strong> — a third proposal type for prospects who already have a solid website and aren't looking for a redesign, but are ready to invest in growth. The RGS Only proposal leads with the Revenue Growth Service — SEO, content, paid media, and performance management — with its own positioning, SOW, and monthly-only pricing structure. This opens up a meaningful segment of warm prospects who've been lost because the current proposals lead with a website build they don't need. If a prospect says "our site is fine, we just need more leads" — this is their proposal.</li>
+      <li><strong>Multi-location proposals</strong> — for franchise or multi-site clients, generate a single proposal covering multiple locations with consolidated pricing</li>
+      <li><strong>Competitor audit section</strong> — pull live competitor data (rankings, site speed, reviews) and include a brief competitive context section in the proposal to strengthen the "why now" argument</li>
+      <li><strong>Proposal versioning</strong> — track which version a prospect has seen and generate a "revised" proposal with a visible change summary when pricing or scope changes</li>
+      <li><strong>Additional verticals</strong> — Electrical, Moving, Pest Control, Painting — each with custom copy matching that industry's buyer psychology</li>
+      <li><strong>Analytics on sent proposals</strong> — know when a prospect opens the PDF, how long they spend on it, and which sections they revisit — fed back into HubSpot for smarter follow-up timing</li>
+    </ul>
+  </div>
+
+  <div class="sep-label">end of guide</div>
+
+</div>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="guide-footer">
+  <img src="https://www.seattlewebdesign.com/uploads/_proposal/portfolio/e-logo-white.png" alt="efelle creative" style="height:40px;width:auto;opacity:0.7;margin-bottom:20px;display:block;margin-left:auto;margin-right:auto;" />
+  <div class="guide-footer-title">Prosp<span style="color:var(--accent)">e</span>ctor</div>
+  <div class="guide-footer-sub">AI-Powered Sales Proposal Generator · Internal Use</div>
+  <a href="https://Prospector.efelle.com" style="display:inline-block;font-family:'DM Mono',monospace;font-size:11px;color:rgba(245,99,0,0.7);letter-spacing:0.1em;text-decoration:none;margin-bottom:20px;">Prospector.efelle.com ↗</a>
+  <div class="guide-footer-line">Version 2.1 · March 2026 · For questions, contact the Prospector project team</div>
+</div>
+
+</body>
+</html>

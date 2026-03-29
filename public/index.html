@@ -118,6 +118,8 @@
     <div class="header-btns">
       <button class="header-btn" id="back-btn" style="display:none">← Home</button>
       <button class="header-btn" onclick="showLibrary()">📁 Library</button>
+      <button class="header-btn" onclick="window.open('/user-guide.html','_blank')" title="User Guide">📖 Guide</button>
+      <button class="header-btn" onclick="showChangelog()" title="Update Log">📋 Updates</button>
       <button class="header-btn" id="artifact-key-btn" style="display:none" title="Set API key">⚙ Key</button>
       <button class="header-btn" id="debug-toggle-btn" onclick="toggleDebug()" title="Toggle debug panel">⬡ Debug</button>
       <button class="header-btn" onclick="doLogout()" title="Log out">↪ Logout</button>
@@ -894,6 +896,16 @@
   <span id="api-key-status" style="font-size:12px;color:#6b7280;white-space:nowrap"></span>
 </div>
 
+
+<!-- CHANGELOG MODAL -->
+<div id="changelog-overlay" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;">
+  <div style="background:#0c0f16;border:1px solid #252d3d;border-radius:14px;max-width:640px;width:90%;max-height:80vh;overflow-y:auto;padding:32px;position:relative;">
+    <button onclick="document.getElementById('changelog-overlay').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#666;font-size:20px;cursor:pointer;">&times;</button>
+    <h2 style="color:#e2ddd4;font-size:22px;font-weight:800;margin:0 0 6px;">Update Log</h2>
+    <p style="color:#4b5563;font-size:12px;font-family:monospace;margin:0 0 24px;">Prospector platform changelog</p>
+    <div id="changelog-entries"></div>
+  </div>
+</div>
 
 <!-- DEBUG PANEL -->
 <div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#0a0d13;border-top:1px solid #f56300;font-family:monospace;font-size:11px;">

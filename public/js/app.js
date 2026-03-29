@@ -16,6 +16,7 @@ import './engines/cap.js';
 import './engines/prop.js';
 
 import './core/reports.js';
+import './core/changelog.js';
 import './library.js';
 
-console.log('efelle Prospector v4.0 loaded');
+console.log('efelle Prospector v4.2 loaded');
