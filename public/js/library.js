@@ -10,7 +10,7 @@ const TYPE_LABELS = {
   cca:  { label: 'Strategy Plan',  color: '#a78bfa' },
   cap:  { label: 'Action Plan',    color: '#2dd4bf' },
   prop: { label: 'Proposal',       color: '#F56300' },
-  wsr:  { label: 'Website Audit', color: '#34d399' },
+  wsr:  { label: 'W.A.R. Report', color: '#34d399' },
 };
 
 const PROP_TYPE_LABELS = {
