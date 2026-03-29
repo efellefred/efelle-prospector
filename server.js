@@ -676,6 +676,21 @@ try {
     fs.mkdirSync(REPORTS_DIR, { recursive: true });
   }
   console.log('  Reports dir:', REPORTS_DIR, '(exists:', fs.existsSync(REPORTS_DIR), ')');
+
+  // Auto-cleanup screenshots older than 90 days
+  const SCREENSHOTS_DIR = path.join(__dirname, 'data', 'screenshots');
+  if (fs.existsSync(SCREENSHOTS_DIR)) {
+    const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
+    let cleaned = 0;
+    fs.readdirSync(SCREENSHOTS_DIR).forEach(f => {
+      const fp = path.join(SCREENSHOTS_DIR, f);
+      try {
+        const stat = fs.statSync(fp);
+        if (stat.mtimeMs < cutoff) { fs.unlinkSync(fp); cleaned++; }
+      } catch (e) {}
+    });
+    if (cleaned) console.log('  Cleaned ' + cleaned + ' screenshots older than 90 days');
+  }
 } catch (e) {
   console.error('  Failed to create reports directory:', e.message);
 }

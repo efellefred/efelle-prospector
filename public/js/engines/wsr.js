@@ -458,11 +458,23 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
     setStep(2, 'active', 'Sending to Gemini API & capturing screenshots… (60-90 seconds)');
     progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // Launch both in parallel — screenshots don't block the audit
+    // Launch screenshots + page scraping in parallel with Gemini
     const screenshotPromise = fetch('/api/screenshot', {
       method: 'POST', headers: getApiHeaders(),
       body: JSON.stringify({ url }),
     }).then(r => r.ok ? r.json() : null).catch(() => null);
+
+    // Scrape actual page content for ground-truth verification
+    const baseUrl = url.replace(/\/$/, '');
+    const pagesToScrape = [url, baseUrl + '/contact', baseUrl + '/contact-us', baseUrl + '/about'];
+    const scrapePromise = Promise.all(
+      pagesToScrape.map(pageUrl =>
+        fetch('/api/fetch-url', {
+          method: 'POST', headers: getApiHeaders(),
+          body: JSON.stringify({ url: pageUrl }),
+        }).then(r => r.ok ? r.json() : null).catch(() => null)
+      )
+    );
 
     // Try Gemini with retry + fallback to Flash Lite
     let geminiResult = '';
@@ -486,12 +498,29 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
     }
     if (!geminiResult) throw new Error('Gemini returned empty after 3 attempts — please try again');
 
-    // Collect screenshots (may still be loading)
-    const screenshots = await screenshotPromise;
+    // Collect screenshots and scraped pages
+    const [screenshots, scrapedPages] = await Promise.all([screenshotPromise, scrapePromise]);
     setStep(2, 'done', 'Gemini audit complete' + (screenshots ? ' + screenshots captured' : ''));
 
-    // Step 3: Claude validate & structure
-    setStep(3, 'active', 'Claude validating & structuring findings…');
+    // Build ground-truth content from scraped pages
+    let groundTruth = '';
+    const pageLabels = ['Homepage', 'Contact Page', 'Contact Us Page', 'About Page'];
+    if (scrapedPages) {
+      const truthParts = [];
+      scrapedPages.forEach((page, i) => {
+        if (page && page.text && page.text.length > 50) {
+          truthParts.push('--- ' + pageLabels[i] + ' (ACTUAL CONTENT) ---\n' + page.text.slice(0, 4000));
+        }
+      });
+      if (truthParts.length > 0) {
+        groundTruth = '\n\n=== ACTUAL PAGE CONTENT (scraped directly from the website) ===\n' +
+          'Use this to VERIFY Gemini\'s claims. If Gemini says something is on a page but it is NOT in the actual content below, remove that finding.\n\n' +
+          truthParts.join('\n\n');
+      }
+    }
+
+    // Step 3: Claude validate & structure with ground-truth cross-check
+    setStep(3, 'active', 'Claude cross-checking & structuring findings…');
     progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     const validatePrompt = 'Extract and structure this website audit response into the JSON schema.\n\n' +
@@ -500,7 +529,14 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
       (industry ? 'INDUSTRY: ' + industry + '\n' : '') +
       (contact  ? 'PREPARED FOR: ' + contact + '\n' : '') +
       '\nGEMINI AUDIT RESPONSE:\n' + geminiResult +
-      '\n\nExtract all findings into the JSON schema. Score each category based on the severity of issues found. Rank the top 5 priority actions by business impact. Return ONLY the JSON.';
+      groundTruth +
+      '\n\nCRITICAL ANTI-HALLUCINATION RULES:\n' +
+      '- Cross-check EVERY claim Gemini makes about page content against the ACTUAL PAGE CONTENT above.\n' +
+      '- If Gemini mentions an address, phone number, or specific text that does NOT appear in the actual page content, that claim is FABRICATED. Remove it and note what is actually there (or missing).\n' +
+      '- If the actual contact page has NO address, report that as a critical issue: "No physical address displayed anywhere on the website."\n' +
+      '- If Gemini says content exists on a page but the actual content shows otherwise, trust the ACTUAL CONTENT, not Gemini.\n' +
+      '- Never include findings based on information that cannot be verified in the actual page content.\n\n' +
+      'Extract all verified findings into the JSON schema. Score each category based on the severity of issues found. Rank the top 5 priority actions by business impact. Return ONLY the JSON.';
 
     const claudeRes = await fetch('/api/messages', {
       method: 'POST', headers: getApiHeaders(),
