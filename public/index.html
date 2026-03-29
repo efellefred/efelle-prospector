@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <div id="login-overlay" style="position:fixed;inset:0;z-index:9999;">
   <style>
     .login-bg-wrap{position:fixed;inset:0;z-index:0}
@@ -26,54 +26,76 @@
     .login-bg-slide.active{opacity:1}
     .login-bg1{background-image:url('/assets/img/login-bg1.jpg')}
     .login-bg2{background-image:url('/assets/img/login-bg2.jpg')}
-    .login-layout{position:relative;z-index:10;display:flex;height:100vh;align-items:stretch}
-    .login-spacer{flex:1}
-    .login-panel{width:380px;flex-shrink:0;background:rgba(10,8,4,0.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-left:1px solid rgba(255,255,255,0.12);display:flex;flex-direction:column;justify-content:center;padding:52px 44px;position:relative}
-    .login-eyebrow{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#F56300;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif}
-    .login-eyebrow::after{content:'';display:block;width:22px;height:1px;background:rgba(245,99,0,0.5)}
-    .login-wordmark{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:#fff;letter-spacing:0.05em;line-height:1;margin:0 0 6px}
-    .login-wordmark .e{color:#F56300}
-    .login-tagline{font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:0.05em;margin-bottom:36px;font-family:'DM Sans',sans-serif}
-    .login-divider{border:none;border-top:1px solid rgba(255,255,255,0.1);margin-bottom:28px}
-    .login-field-group{margin-bottom:16px}
-    .login-field-label{display:block;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:7px;font-family:'DM Sans',sans-serif}
-    .login-field-input{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:7px;padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.85);outline:none;transition:border-color 0.2s;box-sizing:border-box}
-    .login-field-input:focus{border-color:rgba(245,99,0,0.6);background:rgba(255,255,255,0.09)}
-    .login-field-input::placeholder{color:rgba(255,255,255,0.2)}
-    .login-sign-in-btn{width:100%;background:#F56300;border:none;border-radius:7px;padding:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#fff;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:background 0.2s,transform 0.1s}
-    .login-sign-in-btn:hover{background:#d95800}
-    .login-sign-in-btn:active{transform:scale(0.98)}
-    .login-panel-footer{position:absolute;bottom:28px;left:44px;right:44px;display:flex;justify-content:space-between;align-items:center}
-    .login-footer-brand{font-size:10px;color:rgba(255,255,255,0.18);letter-spacing:0.1em;text-transform:uppercase;font-family:'DM Sans',sans-serif}
-    .login-footer-ver{font-size:10px;color:rgba(255,255,255,0.18);letter-spacing:0.05em;font-family:'DM Sans',sans-serif}
+    .login-layout{position:fixed;top:0;right:0;bottom:0;z-index:10;display:flex;align-items:stretch}
+    .login-panel{width:420px;flex-shrink:0;background:rgba(235,237,240,0.42);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);border-left:1px solid rgba(255,255,255,0.35);box-shadow:-20px 0 60px rgba(0,0,0,0.25);display:flex;flex-direction:column;justify-content:center;padding:48px 44px;position:relative;min-height:100vh;animation:loginSlideIn 0.5s cubic-bezier(0.22,1,0.36,1) both}
+    @keyframes loginSlideIn{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
+    .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:44px}
+    .login-logo-mark{width:38px;height:38px;background:#F56300;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(245,99,0,0.35)}
+    .login-logo-name{font-size:15px;font-weight:700;color:#111;letter-spacing:-0.3px;line-height:1}
+    .login-logo-sub{font-size:9px;font-weight:600;color:#6b7280;letter-spacing:0.18em;text-transform:uppercase;line-height:1;margin-top:2px}
+    .login-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#F56300;margin-bottom:10px;font-family:'DM Sans',sans-serif}
+    .login-title{font-size:28px;font-weight:800;color:#111;letter-spacing:-0.6px;line-height:1.15;margin-bottom:8px}
+    .login-title em{font-style:normal;color:#F56300}
+    .login-subtitle{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.65;margin-bottom:32px;font-family:'DM Sans',sans-serif}
+    .login-field-group{margin-bottom:18px}
+    .login-field-label{display:block;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.9);margin-bottom:7px;font-family:'DM Sans',sans-serif}
+    .login-field-input{width:100%;background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.45);border-radius:8px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:#111;outline:none;transition:border-color 0.15s,background 0.15s;box-sizing:border-box;box-shadow:inset 0 1px 3px rgba(0,0,0,0.06)}
+    .login-field-input:focus{border-color:rgba(245,99,0,0.55);background:rgba(255,255,255,0.4)}
+    .login-field-input::placeholder{color:#b0b8c8}
+    .login-sign-in-btn{width:100%;background:#F56300;border:none;border-radius:8px;padding:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;letter-spacing:0.02em;cursor:pointer;margin-top:6px;transition:opacity 0.15s,transform 0.1s;box-shadow:0 4px 20px rgba(245,99,0,0.3)}
+    .login-sign-in-btn:hover{opacity:0.9}
+    .login-sign-in-btn:active{transform:scale(0.99)}
+    .login-divider{border:none;border-top:1px solid rgba(0,0,0,0.1);margin:28px 0 20px}
+    .login-panel-footer{display:flex;justify-content:space-between;align-items:center}
+    .login-footer-brand{font-size:11px;color:#9ca3af;letter-spacing:0.04em;font-family:monospace}
+    .login-footer-ver{font-size:10px;color:#c0c8d8;letter-spacing:0.08em;font-family:monospace;padding:3px 8px;border:1px solid rgba(0,0,0,0.12);border-radius:4px;background:rgba(255,255,255,0.3)}
     .login-dots{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20}
     .login-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.25);transition:background 0.3s;cursor:pointer}
     .login-dot.active{background:#F56300}
+    @media(max-width:768px){
+      .login-bg-wrap{position:relative;height:45vh;min-height:260px}
+      .login-bg-slide{position:absolute;inset:0}
+      .login-layout{position:relative;top:auto;right:auto;bottom:auto}
+      .login-panel{width:100%;min-height:auto;border-left:none;border-top:1px solid rgba(255,255,255,0.35);box-shadow:0 -10px 40px rgba(0,0,0,0.25);padding:36px 28px;animation:loginSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) both}
+      @keyframes loginSlideUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+      .login-logo{margin-bottom:28px}
+      .login-title{font-size:24px}
+      .login-subtitle{margin-bottom:24px}
+      .login-dots{bottom:auto;top:calc(45vh - 36px)}
+      #login-overlay{position:relative;overflow-y:auto;min-height:100vh;display:flex;flex-direction:column}
+    }
   </style>
   <div class="login-bg-wrap">
     <div class="login-bg-slide login-bg1 active" id="login-slide0"></div>
     <div class="login-bg-slide login-bg2" id="login-slide1"></div>
   </div>
+  <div style="position:fixed;inset:0;z-index:1;background:linear-gradient(to right,rgba(10,12,16,0.15) 0%,rgba(10,12,16,0.05) 45%,rgba(10,12,16,0.45) 70%,rgba(10,12,16,0.55) 100%);pointer-events:none"></div>
   <div class="login-layout">
-    <div class="login-spacer"></div>
     <div class="login-panel">
-      <div class="login-eyebrow">efelle creative</div>
-      <h1 class="login-wordmark">prosp<span class="e">e</span>ctor</h1>
-      <p class="login-tagline">sales intelligence platform</p>
-      <hr class="login-divider">
+      <div class="login-logo">
+        <div class="login-logo-mark">e</div>
+        <div>
+          <div class="login-logo-name">efelle creative</div>
+          <div class="login-logo-sub">Sales Studio</div>
+        </div>
+      </div>
+      <div class="login-eyebrow">Internal Tool · Sales Team</div>
+      <div class="login-title">Welcome back.<br><em>Let's sell something.</em></div>
+      <div class="login-subtitle">Sign in to access the Sales Studio; client site audit &amp; recommendation reports, full strategy builds, action plans and proposals.</div>
       <div class="login-field-group">
         <label class="login-field-label">Email</label>
-        <input class="login-field-input" type="text" id="login-email" placeholder="your@efelle.com">
+        <input class="login-field-input" type="text" id="login-email" placeholder="you@efelle.com">
       </div>
       <div class="login-field-group">
         <label class="login-field-label">Password</label>
-        <input class="login-field-input" type="password" id="login-password" placeholder="Password" onkeydown="if(event.key==='Enter')document.getElementById('login-btn').click()">
+        <input class="login-field-input" type="password" id="login-password" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')document.getElementById('login-btn').click()">
       </div>
-      <button class="login-sign-in-btn" id="login-btn">Sign In</button>
-      <p id="login-error" style="color:#ef4444;font-size:13px;margin:8px 0 0;display:none;font-family:'DM Sans',sans-serif">Invalid credentials</p>
+      <button class="login-sign-in-btn" id="login-btn">Sign In →</button>
+      <p id="login-error" style="color:#dc2626;font-size:12px;margin:10px 0 0;display:none;font-family:monospace;padding:8px 12px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.2);border-radius:6px">Invalid credentials. Please try again.</p>
+      <hr class="login-divider">
       <div class="login-panel-footer">
         <span class="login-footer-brand">efelle.com</span>
-        <span class="login-footer-ver">v4.0 · internal use only</span>
+        <span class="login-footer-ver">v4.0 · 2026</span>
       </div>
     </div>
   </div>
@@ -809,10 +831,10 @@
       <h1 style="font-size:28px;font-weight:800;color:#e2ddd4;margin:0;">Report Library</h1>
       <div style="display:flex;gap:6px;">
         <button class="library-filter-btn active" data-type="" onclick="filterLibrary('')" style="background:#252d3d;border:1px solid #333;color:#e2ddd4;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">All</button>
+        <button class="library-filter-btn" data-type="wsr" onclick="filterLibrary('wsr')" style="background:none;border:1px solid #333;color:#34d399;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">W.A.R.</button>
         <button class="library-filter-btn" data-type="cca" onclick="filterLibrary('cca')" style="background:none;border:1px solid #333;color:#a78bfa;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Strategy</button>
         <button class="library-filter-btn" data-type="cap" onclick="filterLibrary('cap')" style="background:none;border:1px solid #333;color:#2dd4bf;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Action Plan</button>
         <button class="library-filter-btn" data-type="prop" onclick="filterLibrary('prop')" style="background:none;border:1px solid #333;color:#F56300;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Proposal</button>
-        <button class="library-filter-btn" data-type="wsr" onclick="filterLibrary('wsr')" style="background:none;border:1px solid #333;color:#34d399;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">W.A.R.</button>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
@@ -822,6 +844,15 @@
         <button class="library-user-btn" data-user="fred@efelle.com" onclick="filterLibraryUser('fred@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Fred</button>
         <button class="library-user-btn" data-user="doug@efelle.com" onclick="filterLibraryUser('doug@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Doug</button>
         <button class="library-user-btn" data-user="christian@efelle.com" onclick="filterLibraryUser('christian@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Christian</button>
+        <button onclick="openLibrarySearch()" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;transition:all 0.15s;" title="Search by client name" onmouseover="this.style.borderColor='#F56300';this.style.color='#F56300'" onmouseout="this.style.borderColor='#333';this.style.color='#9ca3af'">⌕ Search</button>
+      </div>
+    </div>
+    <!-- Search Modal -->
+    <div id="library-search-modal" style="display:none;margin-bottom:16px;background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:10px;font-family:monospace;color:#F56300;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;">Search Client</span>
+        <input type="text" id="library-search-input" placeholder="Type a client name…" style="flex:1;background:#0c0f16;border:1px solid #252d3d;border-radius:6px;padding:8px 14px;color:#e2ddd4;font-size:13px;font-family:inherit;" oninput="searchLibrary(this.value)">
+        <button onclick="closeLibrarySearch()" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:16px;padding:4px;">✕</button>
       </div>
     </div>
     <div id="library-list">

@@ -57,6 +57,11 @@ async function renderLibrary(filterType) {
       reports = reports.filter(r => r.createdBy === currentUserFilter);
     }
 
+    // Apply search filter
+    if (currentSearchQuery) {
+      reports = reports.filter(r => (r.clientName || '').toLowerCase().includes(currentSearchQuery));
+    }
+
     if (!reports.length) {
       container.innerHTML =
         '<p style="color:#666;text-align:center;padding:40px;">No reports yet. Generate one from any engine to see it here.</p>';
@@ -189,3 +194,28 @@ export function filterLibraryUser(user) {
   });
 }
 window.filterLibraryUser = filterLibraryUser;
+
+// Search by client name
+let currentSearchQuery = '';
+
+export function openLibrarySearch() {
+  const modal = document.getElementById('library-search-modal');
+  modal.style.display = 'block';
+  const input = document.getElementById('library-search-input');
+  input.value = '';
+  input.focus();
+}
+window.openLibrarySearch = openLibrarySearch;
+
+export function closeLibrarySearch() {
+  document.getElementById('library-search-modal').style.display = 'none';
+  currentSearchQuery = '';
+  renderLibrary(currentTypeFilter || undefined);
+}
+window.closeLibrarySearch = closeLibrarySearch;
+
+export function searchLibrary(query) {
+  currentSearchQuery = (query || '').toLowerCase().trim();
+  renderLibrary(currentTypeFilter || undefined);
+}
+window.searchLibrary = searchLibrary;
