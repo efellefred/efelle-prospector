@@ -315,7 +315,7 @@ document.getElementById('wsr-lookup-btn').addEventListener('click', async () => 
   }
 });
 
-// ── WSR Run Full Audit (automated Claude→Gemini→Claude→Report) ──
+// ── WSR Run Full Audit (automated: Lookup→Prompt→Gemini→Claude→Report) ──
 document.getElementById('wsr-run-full-audit-btn').addEventListener('click', async () => {
   const url = document.getElementById('wsr-url').value.trim();
   const errEl = document.getElementById('wsr-build-error');
@@ -327,70 +327,155 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
   btn.disabled = true;
   btn.textContent = 'Running audit…';
   progress.style.display = 'block';
+  // Hide the manual prompt area if visible
+  const promptArea = document.getElementById('wsr-prompt-area');
+  if (promptArea) promptArea.style.display = 'none';
+  // Scroll to keep progress in view
+  progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-  function setStep(n, status) {
+  function setStep(n, status, detail) {
     const el = document.getElementById('wsr-step-' + n);
     const icon = el.querySelector('.wsr-step-icon');
     if (status === 'active') { icon.textContent = '◉'; el.style.color = '#34d399'; }
     else if (status === 'done') { icon.textContent = '✓'; el.style.color = '#6b7a94'; }
     else if (status === 'error') { icon.textContent = '✗'; el.style.color = '#f87171'; }
+    if (detail) el.childNodes[1].textContent = ' ' + detail;
   }
 
   try {
-    // Step 0: Auto-lookup if company name empty
-    const client = document.getElementById('wsr-client-name').value.trim();
+    // Step 1: Auto-lookup + build prompt
+    setStep(1, 'active', 'Looking up site & building audit prompt…');
+
+    // Auto-lookup if company name empty
+    let client = document.getElementById('wsr-client-name').value.trim();
     if (!client) {
-      const lookupBtn = document.getElementById('wsr-lookup-btn');
-      lookupBtn.click();
-      await new Promise(r => setTimeout(r, 3000)); // wait for lookup
+      try {
+        const [companyRes, sitemapRes] = await Promise.all([
+          fetch('/api/extract-company', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url }) }),
+          fetch('/api/discover-sitemaps', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url }) }),
+        ]);
+        const companyData = await companyRes.json();
+        const sitemapData = await sitemapRes.json();
+        if (companyData.name) document.getElementById('wsr-client-name').value = companyData.name;
+        if (companyData.industry) document.getElementById('wsr-industry').value = companyData.industry;
+        const sitemaps = sitemapData.sitemaps || [];
+        if (sitemaps.length) document.getElementById('wsr-sitemaps').value = sitemaps.join('\n');
+        client = companyData.name || '';
+      } catch (e) { /* continue without lookup */ }
     }
 
-    // Step 1: Build prompt
-    setStep(1, 'active');
-    document.getElementById('wsr-gen-prompt-btn').click();
-    await new Promise(r => setTimeout(r, 200)); // let prompt build
-    const promptText = document.getElementById('wsr-prompt-output').value.trim();
-    if (!promptText) throw new Error('Failed to build prompt');
-    setStep(1, 'done');
+    // Build prompt inline (same logic as the manual button)
+    const sitemaps = document.getElementById('wsr-sitemaps').value.trim();
+    const industry = document.getElementById('wsr-industry').value.trim();
+    const contact = document.getElementById('wsr-contact').value.trim();
+    const context = document.getElementById('wsr-context').value.trim();
+    const sitemapLines = sitemaps ? sitemaps.split('\n').map(s => s.trim()).filter(Boolean) : [];
 
-    // Step 2: Send to Gemini
-    setStep(2, 'active');
+    const promptText =
+      'You are a senior SEO and website audit specialist. Perform a comprehensive website audit ' +
+      'for the following site using Google Search grounding to access and read the live pages.\n\n' +
+      'WEBSITE TO AUDIT: ' + url + '\n' +
+      (client   ? 'CLIENT NAME: ' + client + '\n' : '') +
+      (industry ? 'INDUSTRY: ' + industry + '\n' : '') +
+      (contact  ? 'CONTACT: ' + contact + '\n' : '') +
+      (sitemapLines.length ? '\nSITEMAPS TO CHECK (visit each URL listed):\n' + sitemapLines.join('\n') + '\n' : '') +
+      (context  ? '\nKNOWN CONTEXT:\n' + context + '\n' : '') +
+      '\nAUDIT INSTRUCTIONS:\n' +
+      '1. Visit the homepage and at least 5 key pages (services, location pages, about, contact)\n' +
+      '2. If sitemaps are provided, review URL patterns and note any issues\n' +
+      '3. Check presence or absence of these schema types: LocalBusiness (or industry-specific subtype like RoofingContractor), Service, FAQPage, AggregateRating, BreadcrumbList, ImageObject, Organization\n' +
+      '4. For each schema type: state whether it IS present or IS NOT present — do not guess\n' +
+      '5. Evaluate: title tags, meta descriptions, H1/H2 structure, keyword usage, NAP consistency\n' +
+      '6. Assess mobile-friendliness, page load signals, image optimization\n' +
+      '7. Review content quality: is it specific to this business and location, or templated/generic?\n' +
+      '8. Check CTAs, contact forms, click-to-call, trust signals, review displays\n' +
+      '9. Assess AI/GEO readiness: answer-optimized headers, entity linking via sameAs, E-E-A-T signals, structured data for AI citation\n' +
+      '10. Score each of the 6 categories 0-100 based on CURRENT state — not aspirational\n\n' +
+      'CATEGORIES TO SCORE:\n' +
+      '  - SEO & Local Search\n' +
+      '  - User Experience & Design\n' +
+      '  - Performance & Technical\n' +
+      '  - Content & Messaging\n' +
+      '  - Conversion & Lead Generation\n' +
+      '  - AI & GEO Readiness\n\n' +
+      'SCORING RULES:\n' +
+      '  - Missing schema entirely = max 35 in AI & GEO Readiness\n' +
+      '  - Templated/generic location pages = max 45 in SEO & Local Search\n' +
+      '  - Be honest — do not inflate scores\n\n' +
+      'Report findings in detail. Reference actual page content, exact URLs, and specific schema issues found. ' +
+      'Identify the top 5 priority actions ranked by business impact. Do not invent findings.';
+
+    if (!promptText) throw new Error('Failed to build prompt');
+    // Also save it for manual mode reference
+    document.getElementById('wsr-prompt-output').value = promptText;
+    setStep(1, 'done', 'Prompt built' + (client ? ' for ' + client : ''));
+
+    // Step 2: Send to Gemini API automatically
+    setStep(2, 'active', 'Sending to Gemini API… (60-90 seconds)');
+    progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
     const geminiRes = await fetch('/api/gemini', {
       method: 'POST', headers: getApiHeaders(),
       body: JSON.stringify({ prompt: promptText }),
     });
     if (!geminiRes.ok) {
       const err = await geminiRes.json();
-      throw new Error('Gemini error: ' + (err.error || geminiRes.status));
+      throw new Error('Gemini error: ' + (typeof err.error === 'string' ? err.error : JSON.stringify(err.error) || geminiRes.status));
     }
     const geminiData = await geminiRes.json();
     const geminiResult = (geminiData.candidates || [{}])[0]?.content?.parts
       ?.map(p => p.text).join('').trim() || '';
-    if (!geminiResult) throw new Error('Gemini returned empty result');
-    setStep(2, 'done');
+    if (!geminiResult) throw new Error('Gemini returned empty result — try again');
+    setStep(2, 'done', 'Gemini audit complete');
 
     // Step 3: Claude validate & structure
-    setStep(3, 'active');
-    wsrShowStage('1b');
-    document.getElementById('wsr-gemini-paste').value = geminiResult;
-    // Trigger import programmatically
-    const importBtn = document.getElementById('wsr-import-btn');
-    if (importBtn) {
-      importBtn.click();
-      // Wait for import to complete (poll for stage 2 visibility)
-      for (let i = 0; i < 120; i++) {
-        await new Promise(r => setTimeout(r, 2000));
-        const stage2 = document.getElementById('wsr-stage-2');
-        if (stage2 && stage2.style.display !== 'none') break;
-      }
-    }
-    setStep(3, 'done');
-    setStep(4, 'done');
+    setStep(3, 'active', 'Claude validating & structuring findings…');
+    progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const validatePrompt = 'Extract and structure this website audit response into the JSON schema.\n\n' +
+      (client   ? 'CLIENT NAME: ' + client + '\n' : '') +
+      (url      ? 'WEBSITE: ' + url + '\n' : '') +
+      (industry ? 'INDUSTRY: ' + industry + '\n' : '') +
+      (contact  ? 'PREPARED FOR: ' + contact + '\n' : '') +
+      '\nGEMINI AUDIT RESPONSE:\n' + geminiResult +
+      '\n\nExtract all findings into the JSON schema. Score each category based on the severity of issues found. Rank the top 5 priority actions by business impact. Return ONLY the JSON.';
+
+    const claudeRes = await fetch('/api/messages', {
+      method: 'POST', headers: getApiHeaders(),
+      body: JSON.stringify({ model: API_MODEL, max_tokens: 8192, system: WSR_VALIDATE_SYSTEM, messages: [{ role: 'user', content: validatePrompt }] })
+    });
+    if (!claudeRes.ok) throw new Error('Claude validation failed: API ' + claudeRes.status);
+    const claudeData = await claudeRes.json();
+    let raw = (claudeData.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    raw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/,'').trim();
+    const jStart = raw.indexOf('{'), jEnd = raw.lastIndexOf('}');
+    if (jStart === -1) throw new Error('No JSON found in Claude response — try again');
+    const parsed = JSON.parse(raw.slice(jStart, jEnd + 1));
+
+    if (!parsed.client_name && client) parsed.client_name = client;
+    if (!parsed.website && url) parsed.website = url;
+    if (!parsed.industry && industry) parsed.industry = industry;
+    if (!parsed.prepared_for && contact) parsed.prepared_for = contact;
+    setStep(3, 'done', 'Findings validated');
+
+    // Step 4: Build report
+    setStep(4, 'active', 'Generating report…');
+    wsrReportHtml = buildWSRReportHTML(parsed);
+    document.getElementById('wsr-report-frame').srcdoc = wsrReportHtml;
+
+    // Auto-save to library
+    try {
+      const clientName = parsed.client_name || client || 'Unknown';
+      await saveReport('wsr', clientName, { url, industry, contact }, parsed, wsrReportHtml);
+    } catch (e) { console.warn('WSR auto-save failed:', e.message); }
+
+    setStep(4, 'done', 'Report ready!');
+    await new Promise(r => setTimeout(r, 800));
+    wsrShowStage('2');
 
   } catch (err) {
     errEl.textContent = '⚠ ' + err.message;
     errEl.style.display = 'block';
-    // Mark current step as error
     for (let i = 1; i <= 4; i++) {
       const el = document.getElementById('wsr-step-' + i);
       if (el.querySelector('.wsr-step-icon').textContent === '◉') setStep(i, 'error');
@@ -605,7 +690,7 @@ document.getElementById('wsr-import-btn').addEventListener('click', async () => 
       if (retry > 0) await new Promise(r => setTimeout(r, retry * 5000));
       res = await fetch('/api/messages', {
         method: 'POST', headers: getApiHeaders(),
-        body: JSON.stringify({ model: API_MODEL, max_tokens: 4000, system: WSR_VALIDATE_SYSTEM, tools: [{ type: "web_search_20250305", name: "web_search" }], messages: [{ role: 'user', content: validatePrompt }] })
+        body: JSON.stringify({ model: API_MODEL, max_tokens: 8192, system: WSR_VALIDATE_SYSTEM, messages: [{ role: 'user', content: validatePrompt }] })
       });
       if (res.ok) break;
       if (res.status === 429 || res.status === 529) continue;
