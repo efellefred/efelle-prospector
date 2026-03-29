@@ -946,12 +946,43 @@ document.getElementById('cca-import-btn').addEventListener('click', async () => 
   importStatusMsg.textContent = 'Parsing and validating research\u2026';
 
   const clientNameVal = document.getElementById('cca-client-name').value.trim();
+  const clientUrl = document.getElementById('cca-url').value.trim();
   const known = document.getElementById('cca-known-context').value.trim();
+
+  // Scrape actual website content for ground-truth verification
+  let groundTruth = '';
+  if (clientUrl) {
+    importStatusMsg.textContent = 'Scraping website for verification…';
+    try {
+      const baseUrl = clientUrl.replace(/\/$/, '');
+      const scrapeResults = await Promise.all(
+        [clientUrl, baseUrl + '/contact', baseUrl + '/about'].map(pageUrl =>
+          fetch('/api/fetch-url', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url: pageUrl }) })
+            .then(r => r.ok ? r.json() : null).catch(() => null)
+        )
+      );
+      const pageLabels = ['Homepage', 'Contact Page', 'About Page'];
+      const truthParts = [];
+      scrapeResults.forEach((page, i) => {
+        if (page && page.text && page.text.length > 50) {
+          truthParts.push('--- ' + pageLabels[i] + ' (ACTUAL CONTENT) ---\n' + page.text.slice(0, 3000));
+        }
+      });
+      if (truthParts.length > 0) {
+        groundTruth = '\n\n=== ACTUAL WEBSITE CONTENT (scraped directly) ===\n' +
+          'Cross-check Gemini\'s claims against this real content. If Gemini states addresses, phone numbers, locations, or facts not found here, flag them as unverified.\n\n' +
+          truthParts.join('\n\n');
+      }
+    } catch (e) { /* continue without ground truth */ }
+    importStatusMsg.textContent = 'Validating research data…';
+  }
+
   const validatePrompt = 'Validate and extract this Gemini research response into structured JSON.\n'
     + (clientNameVal ? 'CLIENT NAME PROVIDED: ' + clientNameVal + '\n' : '')
     + (known ? '\nWHAT WE ALREADY KNOW (use to cross-check):\n' + known + '\n' : '')
     + '\nGEMINI RESPONSE:\n' + paste
-    + '\n\nExtract all data into the JSON schema. Flag any field that looks estimated without a source, or inconsistent with what we already know.';
+    + groundTruth
+    + '\n\nExtract all data into the JSON schema. Flag any field that looks estimated without a source, or inconsistent with what we already know. If Gemini claims facts about the website that contradict the ACTUAL WEBSITE CONTENT above, trust the actual content and correct the data.';
 
   try {
     let d;
