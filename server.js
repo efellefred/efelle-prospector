@@ -32,6 +32,7 @@ const sessions = new Map();
 app.use(helmet({ contentSecurityPolicy: false })); // Security headers (CSP off for iframe srcdoc)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/screenshots', express.static(path.join(__dirname, 'data', 'screenshots')));
 
 // Rate limit on login — 5 attempts per minute per IP
 const loginLimiter = rateLimit({
@@ -242,10 +243,22 @@ app.post('/api/screenshot', requireAuth, async (req, res) => {
     const mobileBuffer = await mobilePage.screenshot({ type: 'jpeg', quality: 75 });
     await mobilePage.close();
 
-    const desktopBase64 = 'data:image/jpeg;base64,' + desktopBuffer.toString('base64');
-    const mobileBase64 = 'data:image/jpeg;base64,' + mobileBuffer.toString('base64');
+    // Save to disk instead of returning base64
+    const SCREENSHOTS_DIR = path.join(__dirname, 'data', 'screenshots');
+    if (!fs.existsSync(SCREENSHOTS_DIR)) fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
 
-    res.json({ desktop: desktopBase64, mobile: mobileBase64 });
+    const slug = url.replace(/https?:\/\//, '').replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').slice(0, 60);
+    const ts = Date.now();
+    const desktopFile = `${slug}-desktop-${ts}.jpg`;
+    const mobileFile = `${slug}-mobile-${ts}.jpg`;
+
+    fs.writeFileSync(path.join(SCREENSHOTS_DIR, desktopFile), desktopBuffer);
+    fs.writeFileSync(path.join(SCREENSHOTS_DIR, mobileFile), mobileBuffer);
+
+    res.json({
+      desktop: `/screenshots/${desktopFile}`,
+      mobile: `/screenshots/${mobileFile}`,
+    });
   } catch (err) {
     console.error('Screenshot error:', err.message);
     res.status(500).json({ error: 'Screenshot failed: ' + err.message });

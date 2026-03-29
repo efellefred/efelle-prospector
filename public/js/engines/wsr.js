@@ -60,7 +60,18 @@ function buildWSRReportHTML(d) {
   const summary = '<div style="padding:24px 48px 28px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
     '<div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:6px;">Executive Summary</div>' +
     '<h2 style="font-size:22px;font-weight:800;color:#1D1D1F;margin:0 0 16px;">How ' + esc(d.client_name||'This Website') + ' Performs Today</h2>' +
-    '<p style="font-size:13px;color:#6E6E73;line-height:1.7;margin-bottom:20px;">' + esc(d.executive_summary||'') + '</p>' +
+    (function() {
+      const full = esc(d.executive_summary||'');
+      // Split after first sentence (look for ". " after at least 40 chars)
+      const splitIdx = full.indexOf('. ', 40);
+      if (splitIdx > 0 && splitIdx < full.length - 20) {
+        const p1 = full.slice(0, splitIdx + 1);
+        const p2 = full.slice(splitIdx + 2);
+        return '<p style="font-size:13px;color:#6E6E73;line-height:1.7;margin-bottom:8px;">' + p1 + '</p>' +
+               '<p style="font-size:11px;color:#6E6E73;line-height:1.7;margin-bottom:20px;">' + p2 + '</p>';
+      }
+      return '<p style="font-size:13px;color:#6E6E73;line-height:1.7;margin-bottom:20px;">' + full + '</p>';
+    })() +
     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">' +
     cats.map(c =>
       '<div style="background:#F5F5F7;border-radius:10px;padding:12px 14px;text-align:center;">' +
