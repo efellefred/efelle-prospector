@@ -98,6 +98,9 @@ function requireAuth(req, res, next) {
   next();
 }
 
+// Health check endpoint for Railway zero-downtime deploys
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
 // ─── Anthropic API Proxy ────────────────────────────────────────────
 
 // Rate limit staggering — minimum gap between API calls
