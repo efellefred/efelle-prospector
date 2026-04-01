@@ -24,15 +24,15 @@
     .login-bg-wrap{position:fixed;inset:0;z-index:0}
     .login-bg-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.4s ease-in-out}
     .login-bg-slide.active{opacity:1}
-    .login-bg1{background-image:url('/assets/img/login-bg1.jpg')}
+    .login-bg1{background-image:url('/assets/img/login-bg1-v2.jpg')}
     .login-bg2{background-image:url('/assets/img/login-bg2.jpg')}
     .login-layout{position:fixed;top:0;right:0;bottom:0;z-index:10;display:flex;align-items:stretch}
     .login-panel{width:420px;flex-shrink:0;background:rgba(235,237,240,0.42);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);border-left:1px solid rgba(255,255,255,0.35);box-shadow:-20px 0 60px rgba(0,0,0,0.25);display:flex;flex-direction:column;justify-content:center;padding:48px 44px;position:relative;min-height:100vh;animation:loginSlideIn 0.5s cubic-bezier(0.22,1,0.36,1) both}
     @keyframes loginSlideIn{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
     .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:44px}
     .login-logo-mark{width:38px;height:38px;background:#F56300;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(245,99,0,0.35)}
-    .login-logo-name{font-size:15px;font-weight:700;color:#111;letter-spacing:-0.3px;line-height:1}
-    .login-logo-sub{font-size:9px;font-weight:600;color:#6b7280;letter-spacing:0.18em;text-transform:uppercase;line-height:1;margin-top:2px}
+    .login-logo-name{font-size:15px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;line-height:1}
+    .login-logo-sub{font-size:9px;font-weight:600;color:#ffffff;letter-spacing:0.18em;text-transform:uppercase;line-height:1;margin-top:2px}
     .login-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#F56300;margin-bottom:10px;font-family:'DM Sans',sans-serif}
     .login-title{font-size:28px;font-weight:800;color:#111;letter-spacing:-0.6px;line-height:1.15;margin-bottom:8px}
     .login-title em{font-style:normal;color:#F56300}
@@ -95,6 +95,7 @@
       <hr class="login-divider">
       <div class="login-panel-footer">
         <span class="login-footer-brand">efelle.com</span>
+        <a href="/user-guide.html" target="_blank" style="font-size:10px;color:#c0c8d8;letter-spacing:0.08em;font-family:monospace;padding:3px 8px;border:1px solid rgba(0,0,0,0.12);border-radius:4px;background:rgba(255,255,255,0.3);text-decoration:none;cursor:pointer">User Guide</a>
         <span class="login-footer-ver">v4.0 · 2026</span>
       </div>
     </div>
