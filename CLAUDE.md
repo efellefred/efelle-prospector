@@ -16,10 +16,11 @@ Internal sales tool for efelle creative. Modular app with website audit, strateg
 - After pushing, Railway rebuilds the Docker image and redeploys. Takes ~1-2 minutes.
 
 ## Workflow for making changes
-1. Edit files locally
-2. Commit changes
-3. Push to `main` (`git push origin main`)
-4. Railway auto-deploys (~1-2 min) — verify on https://prospector.efelle.com/
+1. **ALWAYS `git pull origin main` first** — ensure local matches what's live before any edits
+2. Edit files locally
+3. Commit changes
+4. Push to `main` (`git push origin main`)
+5. Railway auto-deploys (~1-2 min) — verify on https://prospector.efelle.com/
 
 ## Preview
 - Do NOT use local preview — Express caching serves stale files and is unreliable.
