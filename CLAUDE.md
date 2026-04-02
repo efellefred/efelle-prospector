@@ -19,11 +19,11 @@ Internal sales tool for efelle creative. Modular app with website audit, strateg
 1. Edit files locally
 2. Commit changes
 3. Push to `main` (`git push origin main`)
-4. Railway auto-deploys — verify on https://prospector.efelle.com/
+4. Railway auto-deploys (~1-2 min) — verify on https://prospector.efelle.com/
 
-## Local preview
-- Run `node server.js` (port 3000)
-- Note: Express static file caching can cause stale content locally. Restart the server after file changes.
+## Preview
+- Do NOT use local preview — Express caching serves stale files and is unreliable.
+- Always verify changes on the live site after pushing.
 
 ## Key directories
 - `public/` — All frontend files (HTML, CSS, JS, images)
