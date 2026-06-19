@@ -229,6 +229,56 @@ app.post('/api/admin/test-key', requireAdmin, async (req, res) => {
 // Health check endpoint for Railway zero-downtime deploys
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
+// ─── Checklist Audit Engine ─────────────────────────────────────────
+
+const auditEngine = require('./lib/audit/engine');
+const { mapAuditToWSR } = require('./lib/audit/mapper');
+const { generateSummary } = require('./lib/audit/summary');
+
+app.post('/api/audit/start', requireAuth, (req, res) => {
+  const { url, clientName, industry, contact } = req.body;
+  if (!url) return res.status(400).json({ error: 'url is required' });
+  try { new URL(url); } catch { return res.status(400).json({ error: 'Invalid URL' }); }
+
+  const auditId = auditEngine.startAudit(url, { clientName, industry, contact });
+  auditEngine.runAudit(auditId).catch(err => {
+    console.error('[audit] runAudit failed:', err);
+    auditEngine.updateAudit(auditId, { status: 'error', error: err.message, completedAt: Date.now() });
+  });
+  res.json({ auditId, status: 'running' });
+});
+
+app.get('/api/audit/:id/status', requireAuth, (req, res) => {
+  const record = auditEngine.getAudit(req.params.id);
+  if (!record) return res.status(404).json({ error: 'Audit not found' });
+  res.json({ status: record.status, progress: record.progress, error: record.error || null });
+});
+
+app.get('/api/audit/:id', requireAuth, async (req, res) => {
+  const record = auditEngine.getAudit(req.params.id);
+  if (!record) return res.status(404).json({ error: 'Audit not found' });
+  if (record.status !== 'complete') {
+    return res.json({ status: record.status, progress: record.progress, error: record.error || null });
+  }
+
+  // If already mapped, return cached result
+  if (record._wsrJson) return res.json({ status: 'complete', data: record._wsrJson });
+
+  try {
+    const wsrJson = mapAuditToWSR(record, {
+      clientName: record.clientName,
+      industry: record.industry,
+      contact: record.contact,
+    });
+    await generateSummary(wsrJson, ANTHROPIC_KEY);
+    record._wsrJson = wsrJson;
+    res.json({ status: 'complete', data: wsrJson });
+  } catch (err) {
+    console.error('[audit] Mapper/summary error:', err);
+    res.status(500).json({ error: 'Failed to generate report: ' + err.message });
+  }
+});
+
 // ─── Anthropic API Proxy ────────────────────────────────────────────
 
 // Rate limit staggering — minimum gap between API calls

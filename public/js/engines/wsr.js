@@ -387,177 +387,72 @@ document.getElementById('wsr-run-full-audit-btn').addEventListener('click', asyn
   }
 
   try {
-    // Step 1: Build prompt (lookup already done by the lookup button)
-    setStep(1, 'active', 'Building audit prompt…');
+    // Step 1: Start the API-verified audit
+    setStep(1, 'active', 'Starting API-verified audit…');
 
-    let client = document.getElementById('wsr-client-name').value.trim();
-    // Only run lookup if called directly (not from lookup button) and name is empty
-    if (!client && !document.getElementById('wsr-lookup-btn').disabled) {
-      try {
-        const [companyRes, sitemapRes] = await Promise.all([
-          fetch('/api/extract-company', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url }) }),
-          fetch('/api/discover-sitemaps', { method: 'POST', headers: getApiHeaders(), body: JSON.stringify({ url }) }),
-        ]);
-        const companyData = await companyRes.json();
-        const sitemapData = await sitemapRes.json();
-        if (companyData.name) document.getElementById('wsr-client-name').value = companyData.name;
-        if (companyData.industry) document.getElementById('wsr-industry').value = companyData.industry;
-        const sitemaps = sitemapData.sitemaps || [];
-        if (sitemaps.length) document.getElementById('wsr-sitemaps').value = sitemaps.join('\n');
-        client = companyData.name || '';
-      } catch (e) { /* continue without lookup */ }
-    }
-
-    // Build prompt inline (same logic as the manual button)
-    const sitemaps = document.getElementById('wsr-sitemaps').value.trim();
+    const client = document.getElementById('wsr-client-name').value.trim();
     const industry = document.getElementById('wsr-industry').value.trim();
     const contact = document.getElementById('wsr-contact').value.trim();
-    const context = document.getElementById('wsr-context').value.trim();
-    const sitemapLines = sitemaps ? sitemaps.split('\n').map(s => s.trim()).filter(Boolean) : [];
 
-    const promptText =
-      'You are a senior SEO and website audit specialist. Perform a comprehensive website audit ' +
-      'for the following site using Google Search grounding to access and read the live pages.\n\n' +
-      'WEBSITE TO AUDIT: ' + url + '\n' +
-      (client   ? 'CLIENT NAME: ' + client + '\n' : '') +
-      (industry ? 'INDUSTRY: ' + industry + '\n' : '') +
-      (contact  ? 'CONTACT: ' + contact + '\n' : '') +
-      (sitemapLines.length ? '\nSITEMAPS TO CHECK (visit each URL listed):\n' + sitemapLines.join('\n') + '\n' : '') +
-      (context  ? '\nKNOWN CONTEXT:\n' + context + '\n' : '') +
-      '\nAUDIT INSTRUCTIONS:\n' +
-      '1. Visit the homepage and at least 5 key pages (services, location pages, about, contact)\n' +
-      '2. If sitemaps are provided, review URL patterns and note any issues\n' +
-      '3. Check presence or absence of these schema types: LocalBusiness (or industry-specific subtype like RoofingContractor), Service, FAQPage, AggregateRating, BreadcrumbList, ImageObject, Organization\n' +
-      '4. For each schema type: state whether it IS present or IS NOT present — do not guess\n' +
-      '5. Evaluate: title tags, meta descriptions, H1/H2 structure, keyword usage, NAP consistency\n' +
-      '6. Assess mobile-friendliness, page load signals, image optimization\n' +
-      '7. Review content quality: is it specific to this business and location, or templated/generic?\n' +
-      '8. Check CTAs, contact forms, click-to-call, trust signals, review displays\n' +
-      '9. Assess AI/GEO readiness: answer-optimized headers, entity linking via sameAs, E-E-A-T signals, structured data for AI citation\n' +
-      '10. Score each of the 6 categories 0-100 based on CURRENT state — not aspirational\n\n' +
-      'CATEGORIES TO SCORE:\n' +
-      '  - SEO & Local Search\n' +
-      '  - User Experience & Design\n' +
-      '  - Performance & Technical\n' +
-      '  - Content & Messaging\n' +
-      '  - Conversion & Lead Generation\n' +
-      '  - AI & GEO Readiness\n\n' +
-      'SCORING RULES:\n' +
-      '  - Missing schema entirely = max 35 in AI & GEO Readiness\n' +
-      '  - Templated/generic location pages = max 45 in SEO & Local Search\n' +
-      '  - Be honest — do not inflate scores\n\n' +
-      'Report findings in detail. Reference actual page content, exact URLs, and specific schema issues found. ' +
-      'Identify the top 5 priority actions ranked by business impact. Do not invent findings.';
+    // Start the audit + screenshots in parallel
+    const [auditRes, screenshotPromise] = await Promise.all([
+      fetch('/api/audit/start', {
+        method: 'POST', headers: getApiHeaders(),
+        body: JSON.stringify({ url, clientName: client, industry, contact }),
+      }),
+      fetch('/api/screenshot', {
+        method: 'POST', headers: getApiHeaders(),
+        body: JSON.stringify({ url }),
+      }).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
 
-    if (!promptText) throw new Error('Failed to build prompt');
-    // Also save it for manual mode reference
-    document.getElementById('wsr-prompt-output').value = promptText;
-    setStep(1, 'done', 'Prompt built' + (client ? ' for ' + client : ''));
+    if (!auditRes.ok) {
+      const errData = await auditRes.json().catch(() => ({}));
+      throw new Error(errData.error || 'Failed to start audit');
+    }
+    const { auditId } = await auditRes.json();
+    setStep(1, 'done', 'Audit started' + (client ? ' for ' + client : ''));
 
-    // Step 2: Send to Gemini API + capture screenshots in parallel
-    setStep(2, 'active', 'Sending to Gemini API & capturing screenshots… (60-90 seconds)');
+    // Step 2: Poll for completion
+    setStep(2, 'active', 'Scanning website with Firecrawl…');
     progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // Launch screenshots + page scraping in parallel with Gemini
-    const screenshotPromise = fetch('/api/screenshot', {
-      method: 'POST', headers: getApiHeaders(),
-      body: JSON.stringify({ url }),
-    }).then(r => r.ok ? r.json() : null).catch(() => null);
+    let auditComplete = false;
+    let lastProgress = '';
+    while (!auditComplete) {
+      await new Promise(r => setTimeout(r, 3000));
+      const statusRes = await fetch('/api/audit/' + auditId + '/status', { headers: getApiHeaders() });
+      const statusData = await statusRes.json();
 
-    // Scrape actual page content for ground-truth verification
-    const baseUrl = url.replace(/\/$/, '');
-    const pagesToScrape = [url, baseUrl + '/contact', baseUrl + '/contact-us', baseUrl + '/about'];
-    const scrapePromise = Promise.all(
-      pagesToScrape.map(pageUrl =>
-        fetch('/api/fetch-url', {
-          method: 'POST', headers: getApiHeaders(),
-          body: JSON.stringify({ url: pageUrl }),
-        }).then(r => r.ok ? r.json() : null).catch(() => null)
-      )
-    );
-
-    // Try Gemini with retry + fallback to Flash Lite
-    let geminiResult = '';
-    const geminiModels = ['gemini-2.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
-    for (let attempt = 0; attempt < geminiModels.length; attempt++) {
-      if (attempt > 0) {
-        setStep(2, 'active', attempt === 2 ? 'Retrying with Gemini 2.0 Flash…' : 'Retrying Gemini… (attempt ' + (attempt + 1) + ')');
-        await new Promise(r => setTimeout(r, 3000));
+      if (statusData.progress && statusData.progress !== lastProgress) {
+        lastProgress = statusData.progress;
+        setStep(2, 'active', statusData.progress);
       }
-      try {
-        const geminiRes = await fetch('/api/gemini', {
-          method: 'POST', headers: getApiHeaders(),
-          body: JSON.stringify({ prompt: promptText, model: geminiModels[attempt] }),
-        });
-        if (!geminiRes.ok) continue;
-        const geminiData = await geminiRes.json();
-        geminiResult = (geminiData.candidates || [{}])[0]?.content?.parts
-          ?.map(p => p.text).join('').trim() || '';
-        if (geminiResult) break;
-      } catch (e) { continue; }
-    }
-    if (!geminiResult) throw new Error('Gemini returned empty after 3 attempts — please try again');
 
-    // Collect screenshots and scraped pages
-    const [screenshots, scrapedPages] = await Promise.all([screenshotPromise, scrapePromise]);
-    setStep(2, 'done', 'Gemini audit complete' + (screenshots ? ' + screenshots captured' : ''));
-
-    // Build ground-truth content from scraped pages
-    let groundTruth = '';
-    const pageLabels = ['Homepage', 'Contact Page', 'Contact Us Page', 'About Page'];
-    if (scrapedPages) {
-      const truthParts = [];
-      scrapedPages.forEach((page, i) => {
-        if (page && page.text && page.text.length > 50) {
-          truthParts.push('--- ' + pageLabels[i] + ' (ACTUAL CONTENT) ---\n' + page.text.slice(0, 4000));
-        }
-      });
-      if (truthParts.length > 0) {
-        groundTruth = '\n\n=== ACTUAL PAGE CONTENT (scraped directly from the website) ===\n' +
-          'Use this to VERIFY Gemini\'s claims. If Gemini says something is on a page but it is NOT in the actual content below, remove that finding.\n\n' +
-          truthParts.join('\n\n');
+      if (statusData.status === 'complete') {
+        auditComplete = true;
+      } else if (statusData.status === 'error') {
+        throw new Error(statusData.error || 'Audit failed');
       }
     }
+    setStep(2, 'done', 'All API checks complete');
 
-    // Step 3: Claude validate & structure with ground-truth cross-check
-    setStep(3, 'active', 'Claude cross-checking & structuring findings…');
+    // Step 3: Fetch the mapped + summarized results
+    setStep(3, 'active', 'Building report from verified data…');
     progress.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    const validatePrompt = 'Extract and structure this website audit response into the JSON schema.\n\n' +
-      (client   ? 'CLIENT NAME: ' + client + '\n' : '') +
-      (url      ? 'WEBSITE: ' + url + '\n' : '') +
-      (industry ? 'INDUSTRY: ' + industry + '\n' : '') +
-      (contact  ? 'PREPARED FOR: ' + contact + '\n' : '') +
-      '\nGEMINI AUDIT RESPONSE:\n' + geminiResult +
-      groundTruth +
-      '\n\nCRITICAL ANTI-HALLUCINATION RULES:\n' +
-      '- Cross-check EVERY claim Gemini makes about page content against the ACTUAL PAGE CONTENT above.\n' +
-      '- If Gemini mentions an address, phone number, or specific text that does NOT appear in the actual page content, that claim is FABRICATED. Remove it and note what is actually there (or missing).\n' +
-      '- If the actual contact page has NO address, report that as a critical issue: "No physical address displayed anywhere on the website."\n' +
-      '- If Gemini says content exists on a page but the actual content shows otherwise, trust the ACTUAL CONTENT, not Gemini.\n' +
-      '- Never include findings based on information that cannot be verified in the actual page content.\n\n' +
-      'Extract all verified findings into the JSON schema. Score each category based on the severity of issues found. Rank the top 5 priority actions by business impact. Return ONLY the JSON.';
+    const resultRes = await fetch('/api/audit/' + auditId, { headers: getApiHeaders() });
+    const resultData = await resultRes.json();
+    if (resultData.status !== 'complete' || !resultData.data) {
+      throw new Error('Failed to get audit results');
+    }
 
-    const claudeRes = await fetch('/api/messages', {
-      method: 'POST', headers: getApiHeaders(),
-      body: JSON.stringify({ model: API_MODEL, max_tokens: 8192, system: WSR_VALIDATE_SYSTEM, messages: [{ role: 'user', content: validatePrompt }] })
-    });
-    if (!claudeRes.ok) throw new Error('Claude validation failed: API ' + claudeRes.status);
-    const claudeData = await claudeRes.json();
-    let raw = (claudeData.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
-    raw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/,'').trim();
-    const jStart = raw.indexOf('{'), jEnd = raw.lastIndexOf('}');
-    if (jStart === -1) throw new Error('No JSON found in Claude response — try again');
-    const parsed = JSON.parse(raw.slice(jStart, jEnd + 1));
-
-    if (!parsed.client_name && client) parsed.client_name = client;
-    if (!parsed.website && url) parsed.website = url;
-    if (!parsed.industry && industry) parsed.industry = industry;
-    if (!parsed.prepared_for && contact) parsed.prepared_for = contact;
-    setStep(3, 'done', 'Findings validated');
+    const parsed = resultData.data;
+    setStep(3, 'done', 'Findings verified & structured');
 
     // Step 4: Build report
     setStep(4, 'active', 'Generating report…');
+    const screenshots = await screenshotPromise;
     if (screenshots) parsed._screenshots = screenshots;
     wsrReportHtml = buildWSRReportHTML(parsed);
     document.getElementById('wsr-report-frame').srcdoc = wsrReportHtml;
