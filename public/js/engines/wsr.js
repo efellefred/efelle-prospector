@@ -315,6 +315,7 @@ function buildMetricsSections(d, esc, scoreColor) {
   var BORDER = '#D2D2D7';
 
   var sectionStyle = 'padding:24px 48px;border-bottom:1px solid ' + BORDER + ';';
+  var pageBreakStyle = 'break-after:page;page-break-after:always;';
   var eyebrowStyle = 'font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:6px;';
   var titleStyle = 'font-size:22px;font-weight:800;color:#1D1D1F;margin:0 0 20px;';
 
@@ -392,7 +393,7 @@ function buildMetricsSections(d, esc, scoreColor) {
     var payDisplay = (t.paymentProcessors && t.paymentProcessors.length) ? t.paymentProcessors.map(function(pp) { return pill(pp); }).join('') : '<span style="color:' + GRAY + ';font-size:13px;">Not detected</span>';
     var retargetDisplay = (t.retargetingDetected && t.retargetingDetected.length) ? t.retargetingDetected.map(function(r) { return pill(r); }).join('') : '<span style="color:' + GRAY + ';font-size:13px;">Not detected</span>';
 
-    html += '<div style="' + sectionStyle + '">' +
+    html += '<div style="' + sectionStyle + pageBreakStyle + '">' +
       '<div style="' + eyebrowStyle + '">// Technology</div>' +
       '<h2 style="' + titleStyle + '">Tech Stack Summary</h2>' +
       '<div style="max-width:600px;">' +
@@ -447,7 +448,7 @@ function buildMetricsSections(d, esc, scoreColor) {
       return s;
     }
 
-    html += '<div style="' + sectionStyle + '">' +
+    html += '<div style="' + sectionStyle + pageBreakStyle + '">' +
       '<div style="' + eyebrowStyle + '">// Local Presence</div>' +
       '<h2 style="' + titleStyle + '">Local Presence</h2>' +
       '<div style="display:flex;gap:24px;flex-wrap:wrap;">' +
@@ -483,7 +484,7 @@ function buildMetricsSections(d, esc, scoreColor) {
     var easeLabel = na(r.easeScore) ? 'N/A' : r.easeScore >= 80 ? 'Very Easy' : r.easeScore >= 60 ? 'Standard' : r.easeScore >= 30 ? 'Difficult' : 'Very Difficult';
     var easePercent = na(r.easeScore) ? 0 : Math.min(100, Math.max(0, r.easeScore));
 
-    html += '<div style="' + sectionStyle + '">' +
+    html += '<div style="' + sectionStyle + pageBreakStyle + '">' +
       '<div style="' + eyebrowStyle + '">// Content Analysis</div>' +
       '<h2 style="' + titleStyle + '">Content &amp; Readability</h2>' +
       '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">' +
@@ -677,7 +678,7 @@ function buildMetricsSections(d, esc, scoreColor) {
       '</tr>';
     });
 
-    html += '<div style="' + sectionStyle + '">' +
+    html += '<div style="' + sectionStyle + pageBreakStyle + '">' +
       '<div style="' + eyebrowStyle + '">// Keyword Rankings</div>' +
       '<h2 style="' + titleStyle + '">Top Keywords</h2>' +
       '<div style="overflow-x:auto;">' +
