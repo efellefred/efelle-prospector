@@ -991,7 +991,7 @@ Rules:
 - Keep all styling intact unless the user specifically asks to change it`,
         messages: [{
           role: 'user',
-          content: `Here is the current proposal HTML:\n\n${propReportHtml}\n\nEdit instruction: ${instruction}`
+          content: `Here is the current proposal HTML (truncated to key content sections):\n\n${propReportHtml.slice(0, 60000)}\n\nEdit instruction: ${instruction}`
         }]
       })
     });
@@ -1000,11 +1000,25 @@ Rules:
     const d = await res.json();
     let responseText = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
 
-    // Clean up markdown fences
+    // Clean up markdown fences and any preamble/postamble
     responseText = responseText.replace(/^```json?\n?/i, '').replace(/\n?```$/i, '').trim();
+    // Extract JSON array if wrapped in extra text
+    const arrStart = responseText.indexOf('[');
+    const arrEnd = responseText.lastIndexOf(']');
+    if (arrStart !== -1 && arrEnd > arrStart) {
+      responseText = responseText.slice(arrStart, arrEnd + 1);
+    }
 
-    // Parse the replacements
-    const replacements = JSON.parse(responseText);
+    let replacements;
+    try {
+      replacements = JSON.parse(responseText);
+    } catch (parseErr) {
+      // Try repairing common issues: trailing commas, single quotes
+      let fixed = responseText.replace(/,\s*]/g, ']').replace(/,\s*}/g, '}');
+      try { replacements = JSON.parse(fixed); }
+      catch { throw new Error('Could not parse AI response — try a simpler edit instruction'); }
+    }
+    if (!Array.isArray(replacements)) throw new Error('AI returned unexpected format — try again');
     let updatedHtml = propReportHtml;
     let changeCount = 0;
 
