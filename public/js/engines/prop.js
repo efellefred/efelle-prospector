@@ -162,12 +162,33 @@ let propClientData = {};
 let propReportHtml = '';
 
 function adjustForMarketType(text) {
-  if (propMarketType === 'residential') return text;
+  if (propMarketType === 'residential' || !text) return text;
+  const c = propMarketType === 'commercial';
   const replacements = [
-    [/Homeowners are searching/gi, propMarketType === 'commercial' ? 'Businesses are searching' : 'Property owners are searching'],
-    [/homeowners/gi, propMarketType === 'commercial' ? 'businesses' : 'property owners'],
-    [/Homeowner/gi, propMarketType === 'commercial' ? 'Business' : 'Property owner'],
-    [/home services companies/gi, propMarketType === 'commercial' ? 'commercial service contractors' : 'residential and commercial service contractors'],
+    [/Homeowners are searching/g, c ? 'Businesses are searching' : 'Property owners are searching'],
+    [/homeowners are searching/g, c ? 'businesses are searching' : 'property owners are searching'],
+    [/homeowners/g, c ? 'business decision-makers' : 'property owners'],
+    [/Homeowners/g, c ? 'Business decision-makers' : 'Property owners'],
+    [/homeowner/g, c ? 'business owner' : 'property owner'],
+    [/Homeowner/g, c ? 'Business owner' : 'Property owner'],
+    [/a homeowner/g, c ? 'a business owner' : 'a property owner'],
+    [/the home/g, c ? 'the property' : 'the property'],
+    [/their home/g, c ? 'their facility' : 'their property'],
+    [/your home/g, c ? 'your facility' : 'your property'],
+    [/into their home/g, c ? 'into their facility' : 'into their property'],
+    [/home value/g, c ? 'property value' : 'property value'],
+    [/home age/g, c ? 'building age' : 'property age'],
+    [/booked appointments/g, c ? 'qualified project inquiries' : 'booked appointments'],
+    [/booked service calls/g, c ? 'qualified project inquiries' : 'booked service calls'],
+    [/booked call/g, c ? 'project inquiry' : 'booked call'],
+    [/booked estimate/g, c ? 'project inquiry' : 'booked estimate'],
+    [/service calls/g, c ? 'project inquiries' : 'service calls'],
+    [/estimate requests/g, c ? 'bid requests' : 'estimate requests'],
+    [/quote requests/g, c ? 'RFQ submissions' : 'quote requests'],
+    [/quote request/g, c ? 'RFQ submission' : 'quote request'],
+    [/Quote request/g, c ? 'RFQ submission' : 'Quote request'],
+    [/home services companies/g, c ? 'commercial service contractors' : 'residential and commercial service contractors'],
+    [/home services/g, c ? 'commercial services' : 'residential and commercial services'],
   ];
   for (const [pattern, replacement] of replacements) {
     text = text.replace(pattern, replacement);
@@ -637,7 +658,7 @@ function propBuildHTML(clientName) {
 
   // WO built_lead override
   const builtLead = isWO
-    ? 'Your website content should evolve with your long term digital marketing program. We offer content enhancements to grow with the specific buyer journey of a homeowner evaluating contractors — and every element is built to convert that search into a booked estimate:'
+    ? adjustForMarketType('Your website content should evolve with your long term digital marketing program. We offer content enhancements to grow with the specific buyer journey of a homeowner evaluating contractors — and every element is built to convert that search into a booked estimate:')
     : v.built_lead;
 
   const summary = isWO
@@ -648,11 +669,11 @@ function propBuildHTML(clientName) {
 
 
   const DOT = '<div class="include-dot"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
-  const includesHtml = '<div class="include-grid">' + v.includes.map(item => '<div class="include-item">' + DOT + '<div>' + item + '</div>' + '</div>').join('') + '</div>';
+  const includesHtml = '<div class="include-grid">' + v.includes.map(item => '<div class="include-item">' + DOT + '<div>' + adjustForMarketType(item) + '</div>' + '</div>').join('') + '</div>';
 
   const featureCardsHtml = '<div class="three-up">' + v.feature_cards.map(([icon, title, body]) => {
     var iconPaths = FEATURE_ICONS[icon] || '';
-    return '<div class="feature-card"><div style="width:36px;height:36px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' + iconPaths + '</svg></div><h3 style="margin:0 0 8px;font-size:13px;">' + title + '</h3><p>' + body + '</p></div>';
+    return '<div class="feature-card"><div style="width:36px;height:36px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' + iconPaths + '</svg></div><h3 style="margin:0 0 8px;font-size:13px;">' + adjustForMarketType(title) + '</h3><p>' + adjustForMarketType(body) + '</p></div>';
   }).join('') + '</div>';
 
 
@@ -679,16 +700,16 @@ function propBuildHTML(clientName) {
     '[[SOW_P5]]':               sow5,
     '[[OFFER_H2]]':             offerH2,
     '[[OFFER_LEAD]]':           offerLead,
-    '[[OFFER_TEXT]]':           offerFull,
+    '[[OFFER_TEXT]]':           adjustForMarketType(offerFull),
     '[[OFFER_PRICE_LABEL]]':    offerPriceLabel,
     '[[OFFER_SECONDARY_BLOCK]]':offerSecondaryBlock,
     '[[PAYMENT_ROWS]]':         paymentRows,
     '[[INCLUDES_GRID]]':        isWO ? '' : includesHtml,
     '[[RGS_BADGE]]':            rgsBadge,
     '[[RGS_H2]]':               rgsH2,
-    '[[RGS_LEAD]]':             rgsLead,
-    '[[RGS_MAIN_CARDS]]':       rgsMainCards,
-    '[[RGS_ADDON_CARDS]]':      rgsAddonCards,
+    '[[RGS_LEAD]]':             adjustForMarketType(rgsLead),
+    '[[RGS_MAIN_CARDS]]':       adjustForMarketType(rgsMainCards),
+    '[[RGS_ADDON_CARDS]]':      adjustForMarketType(rgsAddonCards),
     '[[RGS_PRICE]]':            fmt(rp),
     '[[RGS_AGREEMENT_PARA]]':   optional
       ? 'As an optional service, this proposal includes our <strong>Revenue Growth Service (RGS)</strong>, a managed digital marketing program at <strong>' + fmt(rp) + '/month</strong> focused on increasing visibility, driving qualified traffic, and improving lead generation. RGS runs month-to-month with a three-month minimum term and 30 days\' notice to cancel.'
@@ -703,23 +724,23 @@ function propBuildHTML(clientName) {
     '[[DEP2]]':                 fmt(d2),
     '[[MONTHLY40]]':            '$' + Math.round(m50).toLocaleString() + '/mo',
     '[[PROGRAM_SUMMARY]]':      summary,
-    '[[WHY_LEAD]]':             v.why_lead,
-    '[[WHY_INTRO]]':            v.why_intro,
-    '[[STATS_LABEL]]':          v.stats_label,
-    '[[STATS_INDUSTRY]]':       v.stats_industry,
-    '[[WHY_CLOSING]]':          v.why_closing,
-    '[[PORTFOLIO_H2]]':         v.portfolio_h2,
-    '[[PORTFOLIO_LEAD]]':       v.portfolio_lead,
+    '[[WHY_LEAD]]':             adjustForMarketType(v.why_lead),
+    '[[WHY_INTRO]]':            adjustForMarketType(v.why_intro),
+    '[[STATS_LABEL]]':          adjustForMarketType(v.stats_label),
+    '[[STATS_INDUSTRY]]':       adjustForMarketType(v.stats_industry),
+    '[[WHY_CLOSING]]':          adjustForMarketType(v.why_closing),
+    '[[PORTFOLIO_H2]]':         adjustForMarketType(v.portfolio_h2),
+    '[[PORTFOLIO_LEAD]]':       adjustForMarketType(v.portfolio_lead),
     '[[PORTFOLIO_IMG1]]':       p1,
     '[[PORTFOLIO_IMG2]]':       p2,
     '[[PORTFOLIO_IMG3_BLOCK]]': p3 ? '<div style="border:1px solid var(--gray-4);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);"><img src="' + p3 + '" alt="' + clientName + ' portfolio" style="width:100%;height:auto;display:block;"></div>' : '',
     '[[PORTFOLIO_IMG4_BLOCK]]': p4 ? '<div style="border:1px solid var(--gray-4);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);"><img src="' + p4 + '" alt="' + clientName + ' portfolio" style="width:100%;height:auto;display:block;"></div>' : '',
-    '[[PROCESS_LEAD]]':         v.process_lead,
+    '[[PROCESS_LEAD]]':         adjustForMarketType(v.process_lead),
     '[[PROCESS_STEPS_HTML]]':   processStepsHtml,
     '[[PROCESS_TIMELINE]]':     processTimeline,
-    '[[BUILT_BADGE]]':          v.built_badge,
-    '[[BUILT_H2]]':             v.built_h2,
-    '[[BUILT_LEAD]]':           builtLead,
+    '[[BUILT_BADGE]]':          adjustForMarketType(v.built_badge),
+    '[[BUILT_H2]]':             adjustForMarketType(v.built_h2),
+    '[[BUILT_LEAD]]':           adjustForMarketType(builtLead),
     '[[FEATURE_CARDS]]':        featureCardsHtml,
     '[[SITEMAP_HTML]]':         sitemapHtml,
     '[[EXPIRY]]':               expiry,
