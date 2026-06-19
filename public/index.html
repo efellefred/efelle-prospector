@@ -687,11 +687,28 @@
           <div class="vertical-name">Landscaping</div>
           <div class="vertical-sub">Landscaping, lawn care, outdoor</div>
         </button>
+        <button class="vertical-card" data-v="electrical" onclick="selectVertical(this)">
+          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div class="vertical-name">Electrical</div>
+          <div class="vertical-sub">Electrician, wiring, panels</div>
+        </button>
+        <button class="vertical-card" data-v="construction" onclick="selectVertical(this)">
+          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 6V2"/><path d="M6 6V4"/><path d="M18 6V4"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
+          <div class="vertical-name">Construction</div>
+          <div class="vertical-sub">General contractor, builds, remodels</div>
+        </button>
         <button class="vertical-card" data-v="ecommerce" onclick="selectVertical(this)">
           <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
           <div class="vertical-name">eCommerce</div>
           <div class="vertical-sub">Online retail, DTC, product brands</div>
         </button>
+      </div>
+
+      <div class="section-divider">Market Type</div>
+      <div class="rgs-toggle" id="market-type-toggle">
+        <button class="rgs-opt selected" id="market-residential" onclick="selectMarketType('residential')">Residential</button>
+        <button class="rgs-opt" id="market-commercial" onclick="selectMarketType('commercial')">Commercial</button>
+        <button class="rgs-opt" id="market-both" onclick="selectMarketType('both')">Both</button>
       </div>
 
       <div class="section-divider" id="rgs-mode-divider">RGS Mode</div>

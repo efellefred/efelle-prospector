@@ -157,8 +157,23 @@ async function lookupAddressViaGemini(companyName, url) {
 let propVertical = null;
 let propRGS = 'included';
 let propType = 'new_website';
+let propMarketType = 'residential';
 let propClientData = {};
 let propReportHtml = '';
+
+function adjustForMarketType(text) {
+  if (propMarketType === 'residential') return text;
+  const replacements = [
+    [/Homeowners are searching/gi, propMarketType === 'commercial' ? 'Businesses are searching' : 'Property owners are searching'],
+    [/homeowners/gi, propMarketType === 'commercial' ? 'businesses' : 'property owners'],
+    [/Homeowner/gi, propMarketType === 'commercial' ? 'Business' : 'Property owner'],
+    [/home services companies/gi, propMarketType === 'commercial' ? 'commercial service contractors' : 'residential and commercial service contractors'],
+  ];
+  for (const [pattern, replacement] of replacements) {
+    text = text.replace(pattern, replacement);
+  }
+  return text;
+}
 
 function selectVertical(el) {
   document.querySelectorAll('.vertical-card').forEach(c => c.classList.remove('selected'));
@@ -193,6 +208,13 @@ function selectPropType(type) {
   // RGS Mode stays visible for both proposal types
 }
 
+function selectMarketType(type) {
+  propMarketType = type;
+  document.getElementById('market-residential').classList.toggle('selected', type === 'residential');
+  document.getElementById('market-commercial').classList.toggle('selected', type === 'commercial');
+  document.getElementById('market-both').classList.toggle('selected', type === 'both');
+}
+
 function propGoStage1() {
   document.querySelectorAll('.prop-stage').forEach(s => s.classList.remove('active'));
   document.getElementById('prop-stage-1').classList.add('active');
@@ -205,6 +227,7 @@ function propReset() {
   propReportHtml = '';
   propClientData = {};
   propVertical = '';
+  propMarketType = 'residential';
   // Clear form fields
   ['prop-client-url','prop-name','prop-contact','prop-address','prop-phone',
    'prop-location','prop-services','prop-area','prop-differentiators',
@@ -367,6 +390,8 @@ function propBuildHTML(clientName) {
     plumbers:      ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-3.jpg', null],
     roofers:       ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-roofing-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-roofing-2.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-roofing-3.jpg', null],
     hvac:          ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-3.jpg', null],
+    electrical:    ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-3.jpg', null],
+    construction:  ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-3.jpg', null],
   };
   const vpd = VPD[propVertical] || [];
   const p1 = vpd[0] || GENERIC_P1;
@@ -416,7 +441,7 @@ function propBuildHTML(clientName) {
 
   const offerLead = isWO
     ? (clientName + ' has a solid foundation — this engagement is about making it perform. We\'ll make high-impact updates that improve local search rankings, AI visibility, and lead conversion without the cost or timeline of a full rebuild.')
-    : v.offer_lead.replace('__CLIENT_NAME__', clientName);
+    : adjustForMarketType(v.offer_lead.replace('__CLIENT_NAME__', clientName));
 
   const offerFull = isWO
     ? ('<strong>A focused, ' + hours + '-hour website update engagement</strong> targeting the highest-impact improvements identified in the recent audit — schema markup, location and service page content, metadata, and on-page SEO fixes. Not a full rebuild. Targeted work that moves the needle.<br><br>This proposal also includes our <strong>Revenue Growth Service (RGS)</strong>, a monthly lead generation program that drives traffic, generates leads, and grows your online presence — starting month one.')
@@ -637,9 +662,9 @@ function propBuildHTML(clientName) {
     '[[CONTACT_NAME]]':         contact,
     '[[HERO_BADGE_TEXT]]':      clientName && contact ? clientName + ' // ' + contact : (clientName || contact || ''),
     '[[DATE]]':                 dateStr,
-    '[[HERO_H1]]':              v.hero_h1,
+    '[[HERO_H1]]':              adjustForMarketType(v.hero_h1),
     '[[HERO_ICON]]':            v.hero_icon || '',
-    '[[HERO_SUB]]':             v.hero_sub,
+    '[[HERO_SUB]]':             adjustForMarketType(v.hero_sub),
     '[[ABOUT_P1]]':             about1,
     '[[ABOUT_P2]]':             about2,
     '[[CLIENT_LOGO]]':          logoHtml,
@@ -771,6 +796,7 @@ async function propGenerate() {
         await saveReport('prop', clientName, {
           vertical: propVertical,
           type: propType,
+          marketType: propMarketType,
         }, propClientData, propReportHtml);
       } catch (e) { console.warn('Auto-save failed:', e.message); }
 
@@ -947,6 +973,7 @@ window.setPropReportHtml = function(html) { propReportHtml = html; };
 window.selectVertical = selectVertical;
 window.selectRGS = selectRGS;
 window.selectPropType = selectPropType;
+window.selectMarketType = selectMarketType;
 window.propGoStage1 = propGoStage1;
 window.propGoStage2 = propGoStage2;
 window.propFetchClient = propFetchClient;
