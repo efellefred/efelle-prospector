@@ -822,6 +822,34 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="header-btn" onclick="propGoStage2()">← Edit Details</button>
           <button class="dl-btn" id="prop-logo-btn">+ Add Logo</button>
+        </div>
+        <!-- Logo Panel (inline, no rebuild) -->
+        <div id="prop-logo-panel" style="display:none;background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;margin-top:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="font-size:10px;font-family:monospace;color:#fb923c;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;">Add Logo to Proposal</div>
+            <button onclick="document.getElementById('prop-logo-panel').style.display='none'" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:16px;">✕</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button class="rgs-opt selected" id="logo-mode-url" onclick="toggleLogoMode('url')" style="flex:1;padding:8px;font-size:11px;">Paste URL</button>
+            <button class="rgs-opt" id="logo-mode-upload" onclick="toggleLogoMode('upload')" style="flex:1;padding:8px;font-size:11px;">Upload File</button>
+          </div>
+          <div id="logo-url-input-wrap">
+            <input type="url" id="prop-logo-url-input" placeholder="https://example.com/logo.png" style="width:100%;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:10px 14px;color:#e2ddd4;font-family:monospace;font-size:13px;box-sizing:border-box;" />
+          </div>
+          <div id="logo-upload-input-wrap" style="display:none;">
+            <label style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;border:2px dashed #252d3d;border-radius:8px;cursor:pointer;color:#6b7a94;font-size:12px;font-family:monospace;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#fb923c'" onmouseout="this.style.borderColor='#252d3d'">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Choose image file…
+              <input type="file" id="prop-logo-file-input" accept="image/*" style="display:none;" />
+            </label>
+            <div id="prop-logo-file-name" style="font-size:11px;font-family:monospace;color:#6b7a94;margin-top:6px;min-height:16px;"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px;">
+            <button onclick="applyLogoToProposal()" style="flex:1;padding:10px;background:linear-gradient(135deg,#7a4a10,#fb923c);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Apply Logo</button>
+          </div>
+          <div id="prop-logo-status" style="font-size:11px;font-family:monospace;margin-top:8px;min-height:16px;text-align:center;"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="dl-btn" id="prop-chat-toggle-btn" title="Edit proposal with AI chat">💬 Edit with AI</button>
           <button class="dl-btn primary" id="prop-save-pdf-btn">📄 Save as PDF</button>
           <button class="dl-btn primary" id="prop-download-btn">↓ Download HTML</button>

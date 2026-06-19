@@ -852,15 +852,78 @@ document.getElementById('prop-download-btn').addEventListener('click', () => {
 
 
 document.getElementById('prop-logo-btn').addEventListener('click', () => {
-
-  document.querySelectorAll('.prop-stage').forEach(s => s.classList.remove('active'));
-  document.getElementById('prop-stage-2').classList.add('active');
-  setTimeout(async () => {
-    const logoField = document.getElementById('prop-logo');
-    logoField.focus();
-    logoField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
+  const panel = document.getElementById('prop-logo-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') {
+    document.getElementById('prop-logo-url-input').value = '';
+    document.getElementById('prop-logo-file-input').value = '';
+    document.getElementById('prop-logo-file-name').textContent = '';
+    document.getElementById('prop-logo-status').innerHTML = '';
+  }
 });
+
+let logoFileDataUrl = null;
+
+window.toggleLogoMode = function(mode) {
+  document.getElementById('logo-mode-url').classList.toggle('selected', mode === 'url');
+  document.getElementById('logo-mode-upload').classList.toggle('selected', mode === 'upload');
+  document.getElementById('logo-url-input-wrap').style.display = mode === 'url' ? '' : 'none';
+  document.getElementById('logo-upload-input-wrap').style.display = mode === 'upload' ? '' : 'none';
+};
+
+document.getElementById('prop-logo-file-input').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('prop-logo-file-name').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = () => { logoFileDataUrl = reader.result; };
+  reader.readAsDataURL(file);
+});
+
+window.applyLogoToProposal = function() {
+  const statusEl = document.getElementById('prop-logo-status');
+  const urlMode = document.getElementById('logo-url-input-wrap').style.display !== 'none';
+  let logoSrc = '';
+
+  if (urlMode) {
+    logoSrc = document.getElementById('prop-logo-url-input').value.trim();
+    if (!logoSrc) {
+      statusEl.innerHTML = '<span style="color:#fb923c;">Paste a logo URL first.</span>';
+      return;
+    }
+  } else {
+    if (!logoFileDataUrl) {
+      statusEl.innerHTML = '<span style="color:#fb923c;">Choose an image file first.</span>';
+      return;
+    }
+    logoSrc = logoFileDataUrl;
+  }
+
+  const frame = document.getElementById('prop-report-frame');
+  const doc = frame.contentDocument || frame.contentWindow.document;
+
+  const placeholder = doc.querySelector('[style*="dashed"]');
+  const existingLogo = doc.querySelector('img[alt][style*="max-width"]');
+  const target = placeholder || existingLogo;
+
+  if (target) {
+    const img = doc.createElement('img');
+    img.src = logoSrc;
+    img.alt = 'Client Logo';
+    img.style.cssText = 'max-width:67%;height:auto;display:block;';
+    target.parentNode.replaceChild(img, target);
+  } else {
+    statusEl.innerHTML = '<span style="color:#fb923c;">Could not find logo placeholder in the proposal.</span>';
+    return;
+  }
+
+  propReportHtml = doc.documentElement.outerHTML;
+
+  statusEl.innerHTML = '<span style="color:#34d399;">✓ Logo applied.</span>';
+  setTimeout(() => {
+    document.getElementById('prop-logo-panel').style.display = 'none';
+  }, 1000);
+};
 
 document.getElementById('prop-logo').addEventListener('change', async () => {
   if (propReportHtml) {
