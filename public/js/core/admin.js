@@ -85,9 +85,16 @@ window.adminSaveKeys = async function() {
     });
     const data = await res.json();
 
+    if (!res.ok) {
+      statusEl.innerHTML = `<span style="color:#f87171;">✗ Server error: ${data.error || res.status}</span>`;
+      btn.disabled = false;
+      btn.textContent = 'Save Keys';
+      return;
+    }
+
     const parts = [];
-    if (data.updated.anthropic) parts.push('Anthropic');
-    if (data.updated.gemini) parts.push('Gemini');
+    if (data.updated && data.updated.anthropic) parts.push('Anthropic');
+    if (data.updated && data.updated.gemini) parts.push('Gemini');
 
     let msg = `<span style="color:#34d399;">✓ ${parts.join(' + ')} key${parts.length > 1 ? 's' : ''} updated in-memory.</span>`;
     if (data.railway) {
