@@ -766,6 +766,10 @@ function propBuildHTML(clientName) {
 }
 
 async function propGenerate() {
+  if (!propVertical || !VERTICALS[propVertical]) {
+    const errEl = document.getElementById('error-msg-prop');
+    errEl.textContent = '⚠ Please go back and select an industry vertical first.'; errEl.style.display = 'block'; return;
+  }
   const clientName = document.getElementById('prop-name').value.trim();
   if (!clientName) {
     const errEl = document.getElementById('error-msg-prop');
