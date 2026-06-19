@@ -288,6 +288,9 @@ function buildWSRReportHTML(d) {
     '</div>' +
   '</div>';
 
+  // ─── Metrics Dashboard Sections ─────────────────────────────────────
+  const metricsSection = buildMetricsSections(d, esc, scoreColor);
+
   const CSS = '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#fff;color:#1D1D1F;max-width:780px;margin:0 auto;}' +
     '@media print{div[style*="break-after:page"]{break-after:page;page-break-after:always;}div[style*="border:1px solid #D2D2D7;border-radius:10px"]{break-inside:avoid;page-break-inside:avoid;}div[style*="display:flex;gap:20px;align-items:flex-start;padding:20px 0"]{break-inside:avoid;page-break-inside:avoid;}div[style*="display:flex;gap:12px;padding:14px 0"]{break-inside:avoid;page-break-inside:avoid;}@page{size:letter;margin:0.5in}}';
@@ -296,7 +299,403 @@ function buildWSRReportHTML(d) {
     '<title>' + esc(d.client_name||'') + ' — Website Audit & Recommendations — efelle creative</title>' +
     '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">' +
     '<style>' + CSS + '</style></head>' +
-    '<body>' + cover + summary + prioritySection + aiSection + otherCatSections + screenshotSection + closing + '</body></html>';
+    '<body>' + cover + screenshotSection + summary + prioritySection + metricsSection + aiSection + otherCatSections + closing + '</body></html>';
+}
+
+function buildMetricsSections(d, esc, scoreColor) {
+  var m = d._metrics;
+  if (!m) return '';
+
+  var OG = '#F56300';
+  var GOOD = '#22c55e';
+  var WARN = '#f59e0b';
+  var BAD = '#ef4444';
+  var GRAY = '#6E6E73';
+  var LIGHT_BG = '#F5F5F7';
+  var BORDER = '#D2D2D7';
+
+  var sectionStyle = 'padding:24px 48px;border-bottom:1px solid ' + BORDER + ';';
+  var eyebrowStyle = 'font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + OG + ';margin-bottom:6px;';
+  var titleStyle = 'font-size:22px;font-weight:800;color:#1D1D1F;margin:0 0 20px;';
+
+  function na(v) { return v === undefined || v === null || v === ''; }
+  function fmt(v, fb) { return na(v) ? (fb || 'N/A') : v; }
+  function fmtNum(v) { return na(v) ? 'N/A' : Number(v).toLocaleString(); }
+  function fmtDec(v, dec) { return na(v) ? 'N/A' : Number(v).toFixed(dec); }
+  function perfColor(val, goodMax, warnMax) {
+    if (na(val)) return GRAY;
+    return val <= goodMax ? GOOD : val <= warnMax ? WARN : BAD;
+  }
+
+  function metricCard(label, value, sub, color) {
+    return '<div style="flex:1;min-width:140px;background:' + LIGHT_BG + ';border-radius:12px;padding:18px 16px;text-align:center;">' +
+      '<div style="font-size:12px;color:' + GRAY + ';margin-bottom:6px;font-weight:600;">' + esc(label) + '</div>' +
+      '<div style="font-size:32px;font-weight:800;color:' + (color || '#1D1D1F') + ';line-height:1.1;">' + value + '</div>' +
+      (sub ? '<div style="font-size:11px;color:' + GRAY + ';margin-top:4px;">' + sub + '</div>' : '') +
+    '</div>';
+  }
+
+  function pill(text) {
+    return '<span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:' + LIGHT_BG + ';color:#1D1D1F;margin:3px 4px 3px 0;">' + esc(text) + '</span>';
+  }
+
+  function checkItem(label, ok) {
+    var icon = ok ? '✓' : '✗';
+    var color = ok ? GOOD : BAD;
+    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;">' +
+      '<span style="color:' + color + ';font-weight:700;font-size:16px;width:20px;text-align:center;">' + icon + '</span>' +
+      '<span style="font-size:14px;color:#1D1D1F;">' + esc(label) + '</span>' +
+    '</div>';
+  }
+
+  function techRow(label, icon, content) {
+    return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid ' + LIGHT_BG + ';">' +
+      '<div style="width:32px;height:32px;border-radius:8px;background:' + LIGHT_BG + ';display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">' + icon + '</div>' +
+      '<div style="flex:1;">' +
+        '<div style="font-size:11px;color:' + GRAY + ';font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">' + esc(label) + '</div>' +
+        '<div>' + content + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var html = '';
+
+  // ─── 1. Performance Dashboard ───
+  if (m.performance) {
+    var p = m.performance;
+    var sc = na(p.score) ? GRAY : p.score >= 90 ? GOOD : p.score >= 50 ? WARN : BAD;
+    var lcpC = perfColor(p.lcp, 2.5, 4);
+    var clsC = perfColor(p.cls, 0.1, 0.25);
+    var fcpC = na(p.fcp) ? GRAY : p.fcp <= 1.8 ? GOOD : p.fcp <= 3 ? WARN : BAD;
+
+    html += '<div style="' + sectionStyle + '">' +
+      '<div style="' + eyebrowStyle + '">// Performance Metrics</div>' +
+      '<h2 style="' + titleStyle + '">Performance Dashboard</h2>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">' +
+        metricCard('PageSpeed Score', na(p.score) ? 'N/A' : Math.round(p.score), na(p.score) ? '' : '/ 100', sc) +
+        metricCard('LCP', na(p.lcp) ? 'N/A' : fmtDec(p.lcp, 1) + 's', 'Largest Contentful Paint', lcpC) +
+        metricCard('CLS', na(p.cls) ? 'N/A' : fmtDec(p.cls, 3), 'Cumulative Layout Shift', clsC) +
+        metricCard('FCP', na(p.fcp) ? 'N/A' : fmtDec(p.fcp, 1) + 's', 'First Contentful Paint', fcpC) +
+      '</div>' +
+      '<div style="text-align:center;">' +
+        (!na(p.webVitalsPass) ? '<span style="display:inline-block;padding:8px 24px;border-radius:24px;font-size:13px;font-weight:700;background:' + (p.webVitalsPass ? GOOD : BAD) + ';color:#fff;">Core Web Vitals: ' + (p.webVitalsPass ? 'PASSED' : 'FAILED') + '</span>' : '') +
+      '</div>' +
+    '</div>';
+  }
+
+  // ─── 2. Tech Stack Summary ───
+  if (m.technical) {
+    var t = m.technical;
+    var cmsDisplay = t.cms ? pill(t.cms) : '<span style="color:' + GRAY + ';font-size:13px;">Not detected</span>';
+    var analyticsDisplay = (t.analyticsDetected && t.analyticsDetected.length) ? t.analyticsDetected.map(function(a) { return pill(a); }).join('') : '<span style="color:' + GRAY + ';font-size:13px;">Not detected</span>';
+    var ecomDisplay = t.ecommerce ? pill(t.ecommerce) : '<span style="color:' + GRAY + ';font-size:13px;">Not detected</span>';
+    var payDisplay = (t.paymentProcessors && t.paymentProcessors.length) ? t.paymentProcessors.map(function(pp) { return pill(pp); }).join('') : '<span style="color:' + GRAY + ';font-size:13px;">Not detected</span>';
+    var retargetDisplay = (t.retargetingDetected && t.retargetingDetected.length) ? t.retargetingDetected.map(function(r) { return pill(r); }).join('') : '<span style="color:' + GRAY + ';font-size:13px;">Not detected</span>';
+
+    html += '<div style="' + sectionStyle + '">' +
+      '<div style="' + eyebrowStyle + '">// Technology</div>' +
+      '<h2 style="' + titleStyle + '">Tech Stack Summary</h2>' +
+      '<div style="max-width:600px;">' +
+        techRow('CMS / Platform', '⚙', cmsDisplay) +
+        techRow('Analytics', '📊', analyticsDisplay) +
+        techRow('Ecommerce', '🛒', ecomDisplay) +
+        techRow('Payment Processors', '💳', payDisplay) +
+        techRow('Retargeting / Tracking', '🎯', retargetDisplay) +
+      '</div>' +
+    '</div>';
+  }
+
+  // ─── 3. SEO Authority & Backlinks ───
+  if (m.seo && (m.seo.domainAuthority || m.seo.backlinks || m.seo.referringDomains)) {
+    var s = m.seo;
+    var daColor = na(s.domainAuthority) ? GRAY : s.domainAuthority >= 40 ? GOOD : s.domainAuthority >= 20 ? WARN : BAD;
+
+    var domainAgeStr = '';
+    if (s.domainAge) {
+      var years = Math.floor((Date.now() - new Date(s.domainAge).getTime()) / (365.25 * 86400000));
+      domainAgeStr = 'Registered: ' + esc(s.domainAge) + ' (' + years + ' year' + (years !== 1 ? 's' : '') + ')';
+    }
+
+    html += '<div style="' + sectionStyle + '">' +
+      '<div style="' + eyebrowStyle + '">// SEO Authority</div>' +
+      '<h2 style="' + titleStyle + '">SEO Authority &amp; Backlinks</h2>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' +
+        metricCard('Domain Authority', fmt(s.domainAuthority), '/ 100', daColor) +
+        metricCard('Backlinks', fmtNum(s.backlinks), '', '#1D1D1F') +
+        metricCard('Referring Domains', fmtNum(s.referringDomains), '', '#1D1D1F') +
+      '</div>' +
+      (domainAgeStr ? '<div style="text-align:center;font-size:13px;color:' + GRAY + ';padding:8px 0;">🗓 ' + domainAgeStr + '</div>' : '') +
+    '</div>';
+  }
+
+  // ─── 4. Local Presence Card ───
+  if (m.local) {
+    var l = m.local;
+    var gbp = l.google_business_profile || {};
+    var dir = l.directory_consistency || {};
+    var contact = l.contact_details || {};
+
+    function stars(rating) {
+      if (na(rating)) return 'N/A';
+      var full = Math.floor(rating);
+      var half = rating - full >= 0.25 && rating - full < 0.75 ? 1 : 0;
+      var empty = 5 - full - half;
+      var s = '';
+      for (var i = 0; i < full; i++) s += '<span style="color:' + WARN + ';">★</span>';
+      if (half) s += '<span style="color:' + WARN + ';">★</span>';
+      for (var i = 0; i < empty; i++) s += '<span style="color:' + BORDER + ';">★</span>';
+      return s;
+    }
+
+    html += '<div style="' + sectionStyle + '">' +
+      '<div style="' + eyebrowStyle + '">// Local Presence</div>' +
+      '<h2 style="' + titleStyle + '">Local Presence</h2>' +
+      '<div style="display:flex;gap:24px;flex-wrap:wrap;">' +
+        '<div style="flex:1;min-width:220px;">' +
+          '<div style="font-size:13px;font-weight:700;color:#1D1D1F;margin-bottom:12px;">Google Business Profile</div>' +
+          '<div style="padding:8px 0;font-size:26px;line-height:1;">' + stars(gbp.rating) + ' <span style="font-size:14px;color:' + GRAY + ';vertical-align:middle;">' + (na(gbp.rating) ? '' : gbp.rating.toFixed(1)) + '</span></div>' +
+          '<div style="font-size:13px;color:' + GRAY + ';margin-bottom:12px;">' + (na(gbp.review_count) ? '' : fmtNum(gbp.review_count) + ' reviews') + '</div>' +
+          checkItem('Opening Hours Listed', gbp.has_opening_hours) +
+          checkItem('Profile Claimed', gbp.is_claimed) +
+          checkItem('Profile Complete', gbp.is_complete) +
+        '</div>' +
+        '<div style="flex:1;min-width:180px;">' +
+          '<div style="font-size:13px;font-weight:700;color:#1D1D1F;margin-bottom:12px;">Directory Listings</div>' +
+          checkItem('Google Maps', dir.google_maps_found) +
+          checkItem('Facebook', dir.facebook_found) +
+          checkItem('Bing Maps', dir.bing_maps_found) +
+        '</div>' +
+        '<div style="flex:1;min-width:180px;">' +
+          '<div style="font-size:13px;font-weight:700;color:#1D1D1F;margin-bottom:12px;">Contact Details</div>' +
+          checkItem('Phone Discovered', contact.phone_discovered) +
+          checkItem('Email Discovered', contact.email_discovered) +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // ─── 5. Content & Readability Metrics ───
+  if (m.content || m.reading) {
+    var c = m.content || {};
+    var r = m.reading || {};
+    var h = c.headings || {};
+    var easeColor = na(r.easeScore) ? GRAY : r.easeScore >= 60 ? GOOD : r.easeScore >= 30 ? WARN : BAD;
+    var easeLabel = na(r.easeScore) ? 'N/A' : r.easeScore >= 80 ? 'Very Easy' : r.easeScore >= 60 ? 'Standard' : r.easeScore >= 30 ? 'Difficult' : 'Very Difficult';
+    var easePercent = na(r.easeScore) ? 0 : Math.min(100, Math.max(0, r.easeScore));
+
+    html += '<div style="' + sectionStyle + '">' +
+      '<div style="' + eyebrowStyle + '">// Content Analysis</div>' +
+      '<h2 style="' + titleStyle + '">Content &amp; Readability</h2>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">' +
+        metricCard('Word Count', fmtNum(c.wordCount), fmtNum(c.pageCount) + ' page' + (c.pageCount !== 1 ? 's' : '') + ' scanned', '#1D1D1F') +
+        metricCard('Heading Structure', '<span style="font-size:14px;">H1:' + fmt(h.h1, 0) + ' H2:' + fmt(h.h2, 0) + ' H3:' + fmt(h.h3, 0) + '</span>', c.headingsWellDefined ? 'Well structured' : 'Needs improvement', c.headingsWellDefined ? GOOD : WARN) +
+        metricCard('Alt Text Issues', fmt(c.altTextIssues, '0'), c.altTextIssues > 0 ? 'Images missing alt text' : 'All images have alt text', na(c.altTextIssues) ? GRAY : c.altTextIssues === 0 ? GOOD : BAD) +
+      '</div>' +
+      '<div style="background:' + LIGHT_BG + ';border-radius:12px;padding:20px;max-width:400px;margin:0 auto;">' +
+        '<div style="text-align:center;font-size:12px;color:' + GRAY + ';font-weight:600;margin-bottom:8px;">FLESCH READING EASE</div>' +
+        '<div style="text-align:center;font-size:36px;font-weight:800;color:' + easeColor + ';">' + (na(r.easeScore) ? 'N/A' : Math.round(r.easeScore)) + '</div>' +
+        '<div style="background:' + BORDER + ';border-radius:6px;height:8px;margin:10px 0;overflow:hidden;">' +
+          '<div style="background:' + easeColor + ';height:100%;width:' + easePercent + '%;border-radius:6px;"></div>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:11px;color:' + GRAY + ';">' +
+          '<span>Difficult</span><span>' + easeLabel + '</span><span>Very Easy</span>' +
+        '</div>' +
+        (!na(r.age) ? '<div style="text-align:center;font-size:13px;color:' + GRAY + ';margin-top:12px;">Reading Age: <strong style="color:#1D1D1F;">' + esc(String(r.age)) + '</strong></div>' : '') +
+      '</div>' +
+    '</div>';
+  }
+
+  // ─── 6. GEO / AI Spider Chart ───
+  if (m.geo) {
+    var g = m.geo;
+    var crawlerVal = g.aiCrawlerAccess ? 100 : 0;
+    var si = g.schemaIntegrity || {};
+    var schemaFields = [si.hasFaqPage, si.hasPerson, si.hasLocalBusiness, si.hasOrganization, si.hasArticle];
+    var schemaVal = Math.round((schemaFields.filter(Boolean).length / schemaFields.length) * 100);
+    var contentFormatVal = Math.round(
+      (g.answerFirstFormatting ? 50 : 0) +
+      (g.conversationalReadiness ? (g.conversationalReadiness.naturalLanguageScore || 0) * 0.5 : 0)
+    );
+    var fd = g.factDensity || {};
+    var trustVal = Math.round(
+      (fd.hasStatistics ? 33 : 0) + (fd.hasExpertQuotes ? 33 : 0) + Math.min(34, (fd.factCount || 0) * 5)
+    );
+    var overallVal = na(g.recommendationScore) ? 50 : Math.round(g.recommendationScore);
+
+    var axes = [
+      { label: 'Crawler Access', value: crawlerVal },
+      { label: 'Schema', value: schemaVal },
+      { label: 'Content Format', value: contentFormatVal },
+      { label: 'Trust Signals', value: trustVal },
+      { label: 'Overall Score', value: overallVal }
+    ];
+
+    var cx = 150, cy = 150, maxR = 110, n = 5;
+    var angleOffset = -Math.PI / 2;
+
+    function polarToXY(angle, radius) {
+      return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+    }
+
+    var gridSvg = '';
+    [0.25, 0.5, 0.75, 1.0].forEach(function(pct) {
+      var rr = maxR * pct;
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var angle = angleOffset + (2 * Math.PI * i) / n;
+        var pp = polarToXY(angle, rr);
+        pts.push(pp.x.toFixed(1) + ',' + pp.y.toFixed(1));
+      }
+      gridSvg += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="' + BORDER + '" stroke-width="1" />';
+    });
+
+    var axisSvg = '';
+    for (var i = 0; i < n; i++) {
+      var angle = angleOffset + (2 * Math.PI * i) / n;
+      var pp = polarToXY(angle, maxR);
+      axisSvg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + pp.x.toFixed(1) + '" y2="' + pp.y.toFixed(1) + '" stroke="' + BORDER + '" stroke-width="1" />';
+    }
+
+    var dataPts = [];
+    for (var i = 0; i < n; i++) {
+      var angle = angleOffset + (2 * Math.PI * i) / n;
+      var rr = maxR * (axes[i].value / 100);
+      var pp = polarToXY(angle, rr);
+      dataPts.push(pp.x.toFixed(1) + ',' + pp.y.toFixed(1));
+    }
+
+    var labelsSvg = '';
+    for (var i = 0; i < n; i++) {
+      var angle = angleOffset + (2 * Math.PI * i) / n;
+      var pp = polarToXY(angle, maxR + 22);
+      var anchor = Math.abs(pp.x - cx) < 5 ? 'middle' : pp.x > cx ? 'start' : 'end';
+      var dy = pp.y < cy ? -2 : pp.y > cy + 5 ? 12 : 4;
+      labelsSvg += '<text x="' + pp.x.toFixed(1) + '" y="' + (pp.y + dy).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11" fill="' + GRAY + '" font-family="Plus Jakarta Sans,sans-serif" font-weight="600">' + axes[i].label + '</text>';
+      labelsSvg += '<text x="' + pp.x.toFixed(1) + '" y="' + (pp.y + dy + 13).toFixed(1) + '" text-anchor="' + anchor + '" font-size="10" fill="#1D1D1F" font-family="Plus Jakarta Sans,sans-serif" font-weight="700">' + axes[i].value + '</text>';
+    }
+
+    var dotsSvg = dataPts.map(function(pt) {
+      var parts = pt.split(',');
+      return '<circle cx="' + parts[0] + '" cy="' + parts[1] + '" r="4" fill="' + OG + '" />';
+    }).join('');
+
+    html += '<div style="' + sectionStyle + 'break-after:page;page-break-after:always;">' +
+      '<div style="' + eyebrowStyle + '">// GEO Readiness</div>' +
+      '<h2 style="' + titleStyle + '">AI &amp; Generative Engine Optimization</h2>' +
+      '<div style="text-align:center;">' +
+        '<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;">' +
+          gridSvg + axisSvg +
+          '<polygon points="' + dataPts.join(' ') + '" fill="' + OG + '" fill-opacity="0.2" stroke="' + OG + '" stroke-width="2" />' +
+          dotsSvg + labelsSvg +
+        '</svg>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // ─── 7. Traffic Trend Chart ───
+  if (m.seo && m.seo.trafficTrend && m.seo.trafficTrend.length > 1) {
+    var trend = m.seo.trafficTrend;
+    var chartW = 680, chartH = 160;
+    var padL = 60, padR = 20, padT = 20, padB = 40;
+    var innerW = chartW - padL - padR;
+    var innerH = chartH - padT - padB;
+    var maxTraffic = Math.max.apply(null, trend.map(function(t) { return t.organicTraffic || 0; }).concat([1]));
+    var stepX = innerW / Math.max(trend.length - 1, 1);
+
+    function dataPoint(i) {
+      var x = padL + stepX * i;
+      var y = padT + innerH - ((trend[i].organicTraffic || 0) / maxTraffic) * innerH;
+      return { x: x.toFixed(1), y: y.toFixed(1) };
+    }
+
+    var linePts = [], areaPts = [];
+    for (var i = 0; i < trend.length; i++) {
+      var dp = dataPoint(i);
+      linePts.push(dp.x + ',' + dp.y);
+      areaPts.push(dp.x + ',' + dp.y);
+    }
+    var lastX = dataPoint(trend.length - 1).x;
+    var firstX = dataPoint(0).x;
+    var baseY = (padT + innerH).toFixed(1);
+    areaPts.push(lastX + ',' + baseY);
+    areaPts.push(firstX + ',' + baseY);
+
+    var yTicksSvg = '';
+    var ySteps = 4;
+    for (var i = 0; i <= ySteps; i++) {
+      var val = Math.round((maxTraffic / ySteps) * i);
+      var y = padT + innerH - (innerH / ySteps) * i;
+      yTicksSvg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (padL + innerW) + '" y2="' + y.toFixed(1) + '" stroke="' + LIGHT_BG + '" stroke-width="1" />';
+      yTicksSvg += '<text x="' + (padL - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="' + GRAY + '" font-family="Plus Jakarta Sans,sans-serif">' + (val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val) + '</text>';
+    }
+
+    var xLabelsSvg = '';
+    var labelInterval = Math.max(1, Math.floor(trend.length / 6));
+    for (var i = 0; i < trend.length; i++) {
+      if (i % labelInterval === 0 || i === trend.length - 1) {
+        var dp = dataPoint(i);
+        xLabelsSvg += '<text x="' + dp.x + '" y="' + (padT + innerH + 20).toFixed(1) + '" text-anchor="middle" font-size="10" fill="' + GRAY + '" font-family="Plus Jakarta Sans,sans-serif">' + esc(trend[i].month || '') + '</text>';
+      }
+    }
+
+    var trendDotsSvg = linePts.map(function(pt) {
+      var parts = pt.split(',');
+      return '<circle cx="' + parts[0] + '" cy="' + parts[1] + '" r="3" fill="' + OG + '" />';
+    }).join('');
+
+    html += '<div style="' + sectionStyle + '">' +
+      '<div style="' + eyebrowStyle + '">// Traffic Trend</div>' +
+      '<h2 style="' + titleStyle + '">Organic Traffic (12-Month Trend)</h2>' +
+      '<div style="overflow-x:auto;">' +
+        '<svg width="100%" height="200" viewBox="0 0 ' + chartW + ' ' + chartH + '" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">' +
+          yTicksSvg +
+          '<polygon points="' + areaPts.join(' ') + '" fill="' + OG + '" fill-opacity="0.1" />' +
+          '<polyline points="' + linePts.join(' ') + '" fill="none" stroke="' + OG + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />' +
+          trendDotsSvg + xLabelsSvg +
+        '</svg>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // ─── 8. Top Keywords Table ───
+  if (m.seo && m.seo.topKeywords && m.seo.topKeywords.length) {
+    var kws = m.seo.topKeywords.slice(0, 10);
+    var thStyle = 'padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:' + GRAY + ';text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid ' + BORDER + ';';
+    var tdStyle = 'padding:10px 12px;font-size:13px;border-bottom:1px solid ' + LIGHT_BG + ';';
+    var monoStyle = 'font-family:monospace;font-weight:600;';
+
+    var rows = '';
+    kws.forEach(function(kw, i) {
+      var bg = i % 2 === 0 ? '#fff' : LIGHT_BG;
+      var posColor = na(kw.position) ? GRAY : kw.position <= 3 ? GOOD : kw.position <= 10 ? WARN : '#1D1D1F';
+      rows += '<tr style="background:' + bg + ';">' +
+        '<td style="' + tdStyle + monoStyle + 'color:' + GRAY + ';">' + (i + 1) + '</td>' +
+        '<td style="' + tdStyle + 'font-weight:600;color:#1D1D1F;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(kw.keyword || '') + '</td>' +
+        '<td style="' + tdStyle + monoStyle + 'color:' + posColor + ';text-align:center;">' + fmt(kw.position) + '</td>' +
+        '<td style="' + tdStyle + monoStyle + 'text-align:right;">' + fmtNum(kw.searchVolume) + '</td>' +
+        '<td style="' + tdStyle + monoStyle + 'text-align:right;">' + fmtNum(kw.trafficEstimate) + '</td>' +
+      '</tr>';
+    });
+
+    html += '<div style="' + sectionStyle + '">' +
+      '<div style="' + eyebrowStyle + '">// Keyword Rankings</div>' +
+      '<h2 style="' + titleStyle + '">Top Keywords</h2>' +
+      '<div style="overflow-x:auto;">' +
+        '<table style="width:100%;border-collapse:collapse;font-family:Plus Jakarta Sans,sans-serif;">' +
+          '<thead><tr>' +
+            '<th style="' + thStyle + 'width:40px;">#</th>' +
+            '<th style="' + thStyle + '">Keyword</th>' +
+            '<th style="' + thStyle + 'text-align:center;width:80px;">Position</th>' +
+            '<th style="' + thStyle + 'text-align:right;width:110px;">Search Vol.</th>' +
+            '<th style="' + thStyle + 'text-align:right;width:100px;">Est. Traffic</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>' +
+      '</div>' +
+    '</div>';
+  }
+
+  return html;
 }
 
 function wsrShowStage(stage) {
