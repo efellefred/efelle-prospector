@@ -29,7 +29,12 @@ export async function checkAuth() {
     const res = await fetch('/auth/check', {
       headers: { 'x-session-token': token }
     });
-    return res.ok;
+    if (res.ok) {
+      const data = await res.json();
+      if (data.email) sessionStorage.setItem('prospector_user', data.email);
+      return true;
+    }
+    return false;
   } catch (e) {
     return false;
   }

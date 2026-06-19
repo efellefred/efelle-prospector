@@ -22,8 +22,12 @@ try {
 const app = express();
 const PORT = process.env.PORT || 3000;
 const TEAM_PASSWORD = process.env.TEAM_PASSWORD || 'prospector2026';
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
-const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
+let ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
+let GEMINI_KEY = process.env.GEMINI_API_KEY || '';
+const RAILWAY_API_TOKEN = process.env.RAILWAY_API_TOKEN || '';
+const RAILWAY_SERVICE_ID = process.env.RAILWAY_SERVICE_ID || '';
+const RAILWAY_ENVIRONMENT_ID = process.env.RAILWAY_ENVIRONMENT_ID || '';
+const ADMIN_EMAILS = ['fred@efelle.com'];
 
 // Session store (in-memory, resets on restart)
 const sessions = new Map();
@@ -100,6 +104,127 @@ function requireAuth(req, res, next) {
   req.userName = session.name;
   next();
 }
+
+function requireAdmin(req, res, next) {
+  const token = req.headers['x-session-token'];
+  const session = sessions.get(token);
+  if (!session || Date.now() > session.expiry) {
+    return res.status(401).json({ error: 'Session expired' });
+  }
+  if (!ADMIN_EMAILS.includes(session.email)) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  req.userEmail = session.email;
+  next();
+}
+
+// ─── Admin: API Key Management ─────────────────────────────────────
+
+app.get('/api/admin/keys', requireAdmin, (req, res) => {
+  res.json({
+    anthropic: ANTHROPIC_KEY ? `sk-ant-...${ANTHROPIC_KEY.slice(-6)}` : '',
+    gemini: GEMINI_KEY ? `...${GEMINI_KEY.slice(-6)}` : '',
+    railwayConfigured: !!(RAILWAY_API_TOKEN && RAILWAY_SERVICE_ID && RAILWAY_ENVIRONMENT_ID),
+  });
+});
+
+app.post('/api/admin/keys', requireAdmin, async (req, res) => {
+  const { anthropic, gemini } = req.body;
+  const updated = {};
+
+  if (anthropic) { ANTHROPIC_KEY = anthropic; updated.anthropic = true; }
+  if (gemini) { GEMINI_KEY = gemini; updated.gemini = true; }
+
+  // Persist to Railway if configured
+  let railwayResult = null;
+  if (RAILWAY_API_TOKEN && RAILWAY_SERVICE_ID && RAILWAY_ENVIRONMENT_ID) {
+    const vars = {};
+    if (anthropic) vars.ANTHROPIC_API_KEY = anthropic;
+    if (gemini) vars.GEMINI_API_KEY = gemini;
+
+    try {
+      const query = `mutation($input: VariableCollectionUpsertInput!) {
+        variableCollectionUpsert(input: $input)
+      }`;
+      const railwayRes = await fetch('https://backboard.railway.com/graphql/v2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${RAILWAY_API_TOKEN}`,
+        },
+        body: JSON.stringify({
+          query,
+          variables: {
+            input: {
+              serviceId: RAILWAY_SERVICE_ID,
+              environmentId: RAILWAY_ENVIRONMENT_ID,
+              variables: vars,
+            },
+          },
+        }),
+        signal: AbortSignal.timeout(15000),
+      });
+      const railwayData = await railwayRes.json();
+      if (railwayData.errors) {
+        railwayResult = { success: false, error: railwayData.errors[0].message };
+      } else {
+        railwayResult = { success: true };
+      }
+    } catch (err) {
+      railwayResult = { success: false, error: err.message };
+    }
+  }
+
+  console.log(`  [ADMIN] ${req.userEmail} updated keys:`, Object.keys(updated).join(', '));
+  res.json({ updated, railway: railwayResult });
+});
+
+app.post('/api/admin/test-key', requireAdmin, async (req, res) => {
+  const { type } = req.body;
+  if (type === 'anthropic') {
+    if (!ANTHROPIC_KEY) return res.json({ ok: false, error: 'No key configured' });
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'x-api-key': ANTHROPIC_KEY,
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 5,
+          messages: [{ role: 'user', content: 'Say OK' }],
+        }),
+        signal: AbortSignal.timeout(10000),
+      });
+      res.json({ ok: r.status === 200, status: r.status });
+    } catch (err) {
+      res.json({ ok: false, error: err.message });
+    }
+  } else if (type === 'gemini') {
+    if (!GEMINI_KEY) return res.json({ ok: false, error: 'No key configured' });
+    try {
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: 'Say OK' }] }],
+            generationConfig: { maxOutputTokens: 5 },
+          }),
+          signal: AbortSignal.timeout(10000),
+        }
+      );
+      res.json({ ok: r.status === 200, status: r.status });
+    } catch (err) {
+      res.json({ ok: false, error: err.message });
+    }
+  } else {
+    res.status(400).json({ error: 'type must be "anthropic" or "gemini"' });
+  }
+});
 
 // Health check endpoint for Railway zero-downtime deploys
 app.get('/health', (req, res) => res.json({ status: 'ok' }));

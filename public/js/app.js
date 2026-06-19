@@ -8,6 +8,7 @@ import './core/nav.js';
 import './core/storage.js';
 import './core/utils.js';
 import './core/debug.js';
+import './core/admin.js';
 
 // Engine modules
 import './engines/wsr.js';

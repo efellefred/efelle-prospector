@@ -121,6 +121,7 @@
       <button class="header-btn" onclick="showLibrary()">📁 Library</button>
       <button class="header-btn" onclick="window.open('/user-guide.html','_blank')" title="User Guide">📖 Guide</button>
       <button class="header-btn" onclick="showChangelog()" title="Update Log">📋 Updates</button>
+      <button class="header-btn" id="admin-settings-btn" style="display:none" onclick="showScreen('settings')" title="Admin Settings">⚙ Settings</button>
       <button class="header-btn" id="artifact-key-btn" style="display:none" title="Set API key">⚙ Key</button>
       <button class="header-btn" id="debug-toggle-btn" onclick="toggleDebug()" title="Toggle debug panel">⬡ Debug</button>
       <button class="header-btn" onclick="doLogout()" title="Log out">↪ Logout</button>
@@ -870,6 +871,52 @@
     </div>
     <div id="library-list">
       <p style="color:#666;text-align:center;padding:40px;">Click a filter or navigate here to see your saved reports.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN SETTINGS -->
+<div class="screen" id="screen-settings">
+  <div style="max-width:640px;margin:0 auto;padding:40px 20px 80px;">
+    <div style="margin-bottom:28px;">
+      <div style="font-size:10px;font-family:monospace;color:#f56300;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">Admin</div>
+      <h1 style="font-size:28px;font-weight:800;color:#e2ddd4;margin:0 0 6px;">API Key Settings</h1>
+      <p style="color:#4b5563;font-size:13px;line-height:1.6;">Update API keys here. Changes take effect immediately and persist to Railway if configured.</p>
+    </div>
+
+    <div style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:24px 26px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;"></div>
+        <div style="font-size:10px;font-family:monospace;color:#a78bfa;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;">Anthropic (Claude)</div>
+      </div>
+      <div style="font-size:11px;font-family:monospace;color:#4b5563;margin-bottom:10px;">Current: <span id="admin-anthropic-current" style="color:#6b7a94;">loading…</span></div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="password" id="admin-anthropic-input" placeholder="sk-ant-api03-..." style="flex:1;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:10px 14px;color:#e2ddd4;font-family:monospace;font-size:13px;" />
+        <button onclick="adminTestKey('anthropic')" id="admin-test-anthropic" style="padding:8px 14px;border-radius:7px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;font-family:monospace;cursor:pointer;white-space:nowrap;">Test</button>
+      </div>
+      <div id="admin-anthropic-status" style="font-size:11px;font-family:monospace;margin-top:8px;min-height:16px;"></div>
+    </div>
+
+    <div style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:24px 26px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#34d399;"></div>
+        <div style="font-size:10px;font-family:monospace;color:#34d399;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;">Google Gemini</div>
+      </div>
+      <div style="font-size:11px;font-family:monospace;color:#4b5563;margin-bottom:10px;">Current: <span id="admin-gemini-current" style="color:#6b7a94;">loading…</span></div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="password" id="admin-gemini-input" placeholder="AIza..." style="flex:1;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:10px 14px;color:#e2ddd4;font-family:monospace;font-size:13px;" />
+        <button onclick="adminTestKey('gemini')" id="admin-test-gemini" style="padding:8px 14px;border-radius:7px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;font-family:monospace;cursor:pointer;white-space:nowrap;">Test</button>
+      </div>
+      <div id="admin-gemini-status" style="font-size:11px;font-family:monospace;margin-top:8px;min-height:16px;"></div>
+    </div>
+
+    <button onclick="adminSaveKeys()" id="admin-save-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#7a4a10,#fb923c);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px;box-shadow:0 4px 20px rgba(251,146,60,0.25);">Save Keys</button>
+    <div id="admin-save-status" style="font-size:12px;font-family:monospace;text-align:center;min-height:20px;"></div>
+
+    <div style="background:#0c0f16;border:1px solid #1a1f2e;border-radius:10px;padding:18px 22px;margin-top:24px;">
+      <div style="font-size:10px;font-family:monospace;color:#4b5563;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">Railway Persistence</div>
+      <div id="admin-railway-status" style="font-size:12px;font-family:monospace;color:#6b7a94;line-height:1.7;">Checking…</div>
+      <p style="font-size:11px;font-family:monospace;color:#374151;margin-top:10px;line-height:1.6;">When Railway is configured, key updates persist across deploys. Without it, keys reset on the next deploy and must be updated in the Railway dashboard.</p>
     </div>
   </div>
 </div>
