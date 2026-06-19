@@ -31,7 +31,7 @@ function buildWSRReportHTML(d) {
     const col = scoreColor(score);
     return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">' +
       '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#F5F5F7" stroke-width="' + (size * 0.08) + '"/>' +
-      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="' + (size * 0.08) + '" stroke-dasharray="' + dash + ' ' + circ + '" stroke-dashoffset="' + (circ / 4) + '" stroke-linecap="round"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="' + (size * 0.08) + '" stroke-dasharray="' + dash + ' ' + circ + '" transform="rotate(-90 ' + cx + ' ' + cy + ')" stroke-linecap="round"/>' +
       '<text x="' + cx + '" y="' + (cy + size * 0.065) + '" text-anchor="middle" font-size="' + (size * 0.22) + '" font-weight="700" fill="' + col + '" font-family="Plus Jakarta Sans,sans-serif">' + score + '</text>' +
       '</svg>';
   }
