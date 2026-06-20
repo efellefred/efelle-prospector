@@ -268,7 +268,84 @@ function buildComparisonReportHTML(client, competitors) {
     '</div>' +
   '</div>';
 
-  // ─── 4. Closing Page ─────────────────────────────────────────────────
+  // ─── 4. Keyword Gap Analysis ──────────────────────────────────────────
+  var keywordGapHtml = '';
+  var clientKws = (client._metrics && client._metrics.seo && client._metrics.seo.topKeywords) || [];
+  var clientKwSet = new Set(clientKws.map(function(k) { return k.keyword.toLowerCase().trim(); }));
+
+  // Build branded terms to filter out (competitor names, domains, project names)
+  var brandedTerms = [];
+  for (var bi = 0; bi < competitors.length; bi++) {
+    var cn = (competitors[bi].name || '').toLowerCase();
+    var cd = ((competitors[bi].wsrJson && competitors[bi].wsrJson.website) || '').replace(/https?:\/\/(www\.)?/, '').replace(/\/.*/, '').toLowerCase();
+    if (cn) brandedTerms.push(cn);
+    if (cd) brandedTerms.push(cd.replace(/\.\w+$/, ''));
+    // Also add individual words from company name (>3 chars, not generic)
+    var genericWords = new Set(['construction','company','inc','llc','corp','group','services','contractors','general']);
+    cn.split(/\s+/).forEach(function(w) { if (w.length > 3 && !genericWords.has(w)) brandedTerms.push(w); });
+  }
+  // Also add client branded terms
+  var clientName = (client.client_name || '').toLowerCase();
+  var clientDomain = ((client._metrics && client._metrics.domain) || '').toLowerCase();
+  if (clientName) brandedTerms.push(clientName);
+  if (clientDomain) brandedTerms.push(clientDomain.replace(/\.\w+$/, ''));
+  clientName.split(/\s+/).forEach(function(w) {
+    var genericWords = new Set(['construction','company','inc','llc','corp','group','services','contractors','general']);
+    if (w.length > 3 && !genericWords.has(w)) brandedTerms.push(w);
+  });
+
+  function isBrandedKeyword(kw) {
+    var lower = kw.toLowerCase();
+    return brandedTerms.some(function(bt) { return bt.length > 2 && lower.includes(bt); });
+  }
+
+  // Collect gap keywords from competitors
+  var gapMap = {};
+  for (var gi = 0; gi < competitors.length; gi++) {
+    var compKws = (competitors[gi].wsrJson && competitors[gi].wsrJson._metrics && competitors[gi].wsrJson._metrics.seo && competitors[gi].wsrJson._metrics.seo.topKeywords) || [];
+    var compDomain = (competitors[gi].wsrJson && competitors[gi].wsrJson._metrics && competitors[gi].wsrJson._metrics.domain) || competitors[gi].name || '';
+    compKws.forEach(function(k) {
+      var norm = k.keyword.toLowerCase().trim();
+      if (clientKwSet.has(norm)) return;
+      if (k.position > 20) return;
+      if (isBrandedKeyword(k.keyword)) return;
+      if (!gapMap[norm] || k.searchVolume > gapMap[norm].searchVolume) {
+        gapMap[norm] = { keyword: k.keyword, searchVolume: k.searchVolume, rankingCompetitor: compDomain, position: k.position };
+      }
+    });
+  }
+
+  var gapList = Object.values(gapMap).sort(function(a, b) { return b.searchVolume - a.searchVolume; }).slice(0, 10);
+
+  if (gapList.length > 0) {
+    var gapRows = gapList.map(function(g, i) {
+      var bg = i % 2 === 0 ? '#fff' : '#F5F5F7';
+      return '<tr style="background:' + bg + ';">' +
+        '<td style="padding:10px 12px;font-size:13px;font-weight:600;border-bottom:1px solid #F5F5F7;">' + esc(g.keyword) + '</td>' +
+        '<td style="padding:10px 12px;font-size:13px;font-family:monospace;font-weight:600;text-align:right;border-bottom:1px solid #F5F5F7;">' + (g.searchVolume || 0).toLocaleString() + '</td>' +
+        '<td style="padding:10px 12px;font-size:13px;color:#6E6E73;border-bottom:1px solid #F5F5F7;">' + esc(g.rankingCompetitor) + '</td>' +
+        '<td style="padding:10px 12px;font-size:13px;font-family:monospace;font-weight:600;text-align:right;border-bottom:1px solid #F5F5F7;">#' + g.position + '</td>' +
+      '</tr>';
+    }).join('');
+
+    keywordGapHtml = '<div style="padding:40px 48px;border-bottom:1px solid #D2D2D7;break-after:page;page-break-after:always;">' +
+      '<h2 style="font-size:22px;font-weight:800;color:#1D1D1F;margin:0 0 8px;">Keyword Gap</h2>' +
+      '<p style="font-size:13px;color:#6E6E73;line-height:1.6;margin-bottom:20px;">The top 10 industry keywords — topically related to your business — that a competitor ranks in the top 20 for but <strong>' + esc(client.client_name || '') + '</strong> doesn\'t. Branded competitor terms are excluded. Each is a validated content opportunity.</p>' +
+      '<div style="border-top:2px solid #1D1D1F;"></div>' +
+      '<table style="width:100%;border-collapse:collapse;">' +
+        '<thead><tr>' +
+          '<th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#6E6E73;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #D2D2D7;">Keyword</th>' +
+          '<th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:700;color:#6E6E73;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #D2D2D7;">Search Volume</th>' +
+          '<th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#6E6E73;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #D2D2D7;">Ranking Competitor</th>' +
+          '<th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:700;color:#6E6E73;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #D2D2D7;">Position</th>' +
+        '</tr></thead>' +
+        '<tbody>' + gapRows + '</tbody>' +
+      '</table>' +
+      '<p style="font-size:11px;color:#AEAEB2;margin-top:12px;line-height:1.5;">Listed competitor is whichever ranks <em>highest</em> on each keyword. Branded competitor names and project-specific terms are filtered out. Keywords filtered for topical relevance and competitor positions of 20 or better.</p>' +
+    '</div>';
+  }
+
+  // ─── 5. Closing Page ─────────────────────────────────────────────────
 
   var closing = '<div style="background:#000;padding:64px;text-align:center;">' +
     '<div style="font-size:28px;font-weight:800;color:#fff;margin-bottom:12px;line-height:1.2;">Ready to outperform the competition?</div>' +
@@ -301,7 +378,7 @@ function buildComparisonReportHTML(client, competitors) {
     '<title>' + esc(client.client_name || '') + ' — Competitor Analysis — efelle creative</title>' +
     '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">' +
     '<style>' + CSS + '</style></head>' +
-    '<body>' + cover + whySection + matrixSection + closing + '</body></html>';
+    '<body>' + cover + whySection + matrixSection + keywordGapHtml + closing + '</body></html>';
 }
 
 
