@@ -1132,6 +1132,12 @@ app.get('/api/status', (req, res) => {
   res.json({
     anthropic: !!ANTHROPIC_KEY,
     gemini: !!GEMINI_KEY,
+    firecrawl: !!process.env.FIRECRAWL_API_KEY,
+    pagespeed: !!process.env.GOOGLE_PAGESPEED_KEY,
+    places: !!process.env.GOOGLE_PLACES_API_KEY,
+    tavily: !!process.env.TAVILY_API_KEY,
+    dataforseo: !!(process.env.ENABLE_DATAFORSEO === '1' || process.env.ENABLE_DATAFORSEO === 'true') && !!process.env.DATAFORSEO_LOGIN,
+    railway: !!(RAILWAY_API_TOKEN && RAILWAY_SERVICE_ID && RAILWAY_ENVIRONMENT_ID),
     version: '4.0.0',
   });
 });
