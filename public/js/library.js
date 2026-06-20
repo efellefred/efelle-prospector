@@ -11,6 +11,7 @@ const TYPE_LABELS = {
   cap:  { label: 'Action Plan',    color: '#2dd4bf' },
   prop: { label: 'Proposal',       color: '#F56300' },
   wsr:  { label: 'W.A.R. Report', color: '#34d399' },
+  competitor: { label: 'Competitor Report', color: '#ec4899' },
 };
 
 const PROP_TYPE_LABELS = {

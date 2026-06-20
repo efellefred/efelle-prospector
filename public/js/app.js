@@ -15,6 +15,7 @@ import './engines/wsr.js';
 import './engines/cca.js';
 import './engines/cap.js';
 import './engines/prop.js';
+import './engines/competitor.js';
 
 import './core/reports.js';
 import './core/changelog.js';

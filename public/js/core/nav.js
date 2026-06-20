@@ -29,6 +29,13 @@ export const ENGINES = {
     eyebrowColor: '#F56300',
     accent: '#F56300'
   },
+  competitor: {
+    iconSvg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
+    iconBg: '#ec4899',
+    eyebrow: 'Sales Tool &middot; Competitive Analysis',
+    eyebrowColor: '#ec4899',
+    accent: '#ec4899'
+  },
 };
 
 export function showScreen(id) {

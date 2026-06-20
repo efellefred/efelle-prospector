@@ -254,6 +254,135 @@ app.get('/api/audit/:id/status', requireAuth, (req, res) => {
   res.json({ status: record.status, progress: record.progress, error: record.error || null });
 });
 
+// ─── Competitor Analysis Endpoints ──────────────────────────────────
+
+const { suggestCompetitors, rationalizeCompetitors } = require('./lib/audit/competitors');
+
+function encodeJobId(job) { return Buffer.from(JSON.stringify(job)).toString('base64url'); }
+function decodeJobId(jobId) { return JSON.parse(Buffer.from(jobId, 'base64url').toString()); }
+
+app.post('/api/audit/suggest-competitors', requireAuth, async (req, res) => {
+  const { clientUrl, excludeUrls } = req.body;
+  if (!clientUrl) return res.status(400).json({ error: 'clientUrl is required' });
+  try {
+    const competitors = await suggestCompetitors(clientUrl, { excludeUrls: excludeUrls || [] });
+    res.json({ competitors });
+  } catch (err) {
+    console.error('[competitors] Suggestion failed:', err.message);
+    res.status(502).json({ error: 'Competitor suggestion failed: ' + err.message });
+  }
+});
+
+app.post('/api/audit/replace-competitor', requireAuth, async (req, res) => {
+  const { clientUrl, excludeUrls } = req.body;
+  if (!clientUrl) return res.status(400).json({ error: 'clientUrl is required' });
+  try {
+    const competitors = await suggestCompetitors(clientUrl, { excludeUrls: excludeUrls || [], count: 1 });
+    res.json({ competitor: competitors[0] || null });
+  } catch (err) {
+    console.error('[competitors] Replacement failed:', err.message);
+    res.status(502).json({ error: 'Competitor replacement failed: ' + err.message });
+  }
+});
+
+app.post('/api/audit/run-batch', requireAuth, (req, res) => {
+  const { clientUrl, clientName, industry, contact, competitors } = req.body;
+  if (!clientUrl) return res.status(400).json({ error: 'clientUrl is required' });
+  if (!competitors || !competitors.length) return res.status(400).json({ error: 'competitors array is required' });
+
+  const clientAuditId = auditEngine.startAudit(clientUrl, { clientName, industry, contact });
+  auditEngine.runAudit(clientAuditId).catch(err => {
+    console.error('[batch] Client audit failed:', err);
+    auditEngine.updateAudit(clientAuditId, { status: 'error', error: err.message, completedAt: Date.now() });
+  });
+
+  const compAudits = competitors.map(function(comp) {
+    const auditId = auditEngine.startAudit(comp.url, { clientName: comp.name || comp.url });
+    auditEngine.runAudit(auditId).catch(err => {
+      console.error('[batch] Competitor audit failed:', err);
+      auditEngine.updateAudit(auditId, { status: 'error', error: err.message, completedAt: Date.now() });
+    });
+    return { auditId, url: comp.url, name: comp.name || '', rationale: comp.rationale || '' };
+  });
+
+  const job = {
+    client: { auditId: clientAuditId, url: clientUrl },
+    competitors: compAudits,
+  };
+  const jobId = encodeJobId(job);
+
+  res.json({ jobId, client: { auditId: clientAuditId }, competitors: compAudits });
+});
+
+app.get('/api/audit/batch-status/:jobId', requireAuth, (req, res) => {
+  try {
+    const job = decodeJobId(req.params.jobId);
+    const clientRecord = auditEngine.getAudit(job.client.auditId);
+    const compStatuses = job.competitors.map(function(c) {
+      const r = auditEngine.getAudit(c.auditId);
+      return {
+        auditId: c.auditId,
+        url: c.url,
+        name: c.name,
+        status: r ? r.status : 'unknown',
+        progress: r ? r.progress : '',
+        error: r ? r.error : null,
+      };
+    });
+    const allComplete = (clientRecord && clientRecord.status === 'complete') &&
+      compStatuses.every(function(c) { return c.status === 'complete'; });
+    const anyError = (clientRecord && clientRecord.status === 'error') ||
+      compStatuses.some(function(c) { return c.status === 'error'; });
+
+    res.json({
+      allComplete,
+      anyError,
+      client: {
+        auditId: job.client.auditId,
+        status: clientRecord ? clientRecord.status : 'unknown',
+        progress: clientRecord ? clientRecord.progress : '',
+        error: clientRecord ? clientRecord.error : null,
+      },
+      competitors: compStatuses,
+    });
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid jobId' });
+  }
+});
+
+app.get('/api/audit/comparison/:jobId', requireAuth, async (req, res) => {
+  try {
+    const job = decodeJobId(req.params.jobId);
+    const clientRecord = auditEngine.getAudit(job.client.auditId);
+    if (!clientRecord || clientRecord.status !== 'complete') {
+      return res.status(400).json({ error: 'Client audit not complete' });
+    }
+
+    const clientWsr = mapAuditToWSR(clientRecord, {
+      clientName: clientRecord.clientName || clientRecord.businessName,
+      industry: clientRecord.industry,
+      contact: clientRecord.contact,
+    });
+    await generateSummary(clientWsr, ANTHROPIC_KEY);
+
+    const compResults = [];
+    for (const comp of job.competitors) {
+      const record = auditEngine.getAudit(comp.auditId);
+      if (!record || record.status !== 'complete') {
+        compResults.push({ wsrJson: null, name: comp.name, rationale: comp.rationale, url: comp.url, error: 'Audit not complete' });
+        continue;
+      }
+      const wsrJson = mapAuditToWSR(record, { clientName: record.businessName || comp.name || record.domain });
+      compResults.push({ wsrJson, name: comp.name || record.businessName || record.domain, rationale: comp.rationale, url: comp.url });
+    }
+
+    res.json({ client: clientWsr, competitors: compResults });
+  } catch (err) {
+    console.error('[comparison] Error:', err);
+    res.status(500).json({ error: 'Comparison failed: ' + err.message });
+  }
+});
+
 app.get('/api/audit/:id', requireAuth, async (req, res) => {
   const record = auditEngine.getAudit(req.params.id);
   if (!record) return res.status(404).json({ error: 'Audit not found' });

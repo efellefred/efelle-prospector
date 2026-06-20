@@ -189,6 +189,19 @@
         <div class="engine-arrow">Build →</div>
       </button>
 
+      <button class="engine-card" id="card-competitor" style="--eng-accent:#ec4899" onclick="showEngine('competitor')">
+        <div class="engine-card-left">
+          <div class="engine-icon-wrap" style="background:#ec4899">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          </div>
+          <div>
+            <div class="engine-label">Competitive Analysis</div>
+            <div class="engine-desc">Auto-suggest 3 local competitors, run parallel audits, and generate a branded side-by-side comparison report with keyword gap analysis.</div>
+          </div>
+        </div>
+        <div class="engine-arrow">Analyze →</div>
+      </button>
+
     </div>
   </div>
 </div>
@@ -884,6 +897,114 @@
   </div>
 </div>
 
+<!-- COMPETITIVE ANALYSIS -->
+<div class="screen" id="screen-competitor">
+  <div id="competitor-inner" style="max-width:680px;margin:0 auto;padding:40px 28px 80px;">
+
+    <!-- Stage 1: URL Input + Competitor Suggestions -->
+    <div id="competitor-stage-1">
+      <div style="font-size:10px;font-family:monospace;color:#ec4899;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">Competitive Analysis</div>
+      <h2 style="font-size:24px;font-weight:700;color:#e2ddd4;margin-bottom:6px;">Competitor Audit</h2>
+      <p style="color:#374151;font-size:13px;margin-bottom:24px;line-height:1.6;max-width:540px;">Enter the client website URL. We'll auto-suggest 3 local competitors, run parallel audits on all 4 sites, and generate a side-by-side comparison report.</p>
+
+      <div style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:24px 26px;margin-bottom:14px;">
+        <div class="field" style="margin-bottom:14px;">
+          <label class="field-label">Client Website URL</label>
+          <input type="url" id="comp-client-url" placeholder="https://www.clientsite.com" />
+        </div>
+        <div class="form-grid-2" style="margin-bottom:14px;">
+          <div class="field">
+            <label class="field-label">Client / Company Name</label>
+            <input type="text" id="comp-client-name" placeholder="Auto-detected" />
+          </div>
+          <div class="field">
+            <label class="field-label">Industry</label>
+            <input type="text" id="comp-industry" placeholder="e.g. Construction" />
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-size:10px;font-family:monospace;color:#ec4899;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;">Competitors (up to 3)</div>
+          <button id="comp-suggest-btn" onclick="startCompetitorSuggestion(document.getElementById('comp-client-url').value.trim())" style="padding:5px 14px;border-radius:6px;border:1px solid rgba(236,72,153,0.4);background:rgba(236,72,153,0.08);color:#ec4899;font-size:10px;font-family:monospace;font-weight:700;cursor:pointer;">⟳ Auto-Suggest</button>
+        </div>
+
+        <div id="comp-status" style="font-size:11px;font-family:monospace;color:#ec4899;margin-bottom:12px;padding:10px 14px;background:rgba(236,72,153,0.06);border-radius:6px;border:1px solid rgba(236,72,153,0.15);display:none;"></div>
+
+        <div id="comp-suggest-panel">
+          <div class="field" style="margin-bottom:8px;">
+            <label class="field-label">Competitor 1</label>
+            <input type="url" id="comp-url-0" placeholder="https://competitor-one.com" />
+            <div id="comp-rationale-0" style="font-size:11px;font-family:monospace;color:#6b7a94;margin-top:4px;font-style:italic;min-height:16px;"></div>
+          </div>
+          <div class="field" style="margin-bottom:8px;">
+            <label class="field-label">Competitor 2</label>
+            <input type="url" id="comp-url-1" placeholder="https://competitor-two.com" />
+            <div id="comp-rationale-1" style="font-size:11px;font-family:monospace;color:#6b7a94;margin-top:4px;font-style:italic;min-height:16px;"></div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label class="field-label">Competitor 3</label>
+            <input type="url" id="comp-url-2" placeholder="https://competitor-three.com" />
+            <div id="comp-rationale-2" style="font-size:11px;font-family:monospace;color:#6b7a94;margin-top:4px;font-style:italic;min-height:16px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="error-msg" id="comp-error" style="display:none;margin-bottom:10px;"></p>
+      <button class="generate-btn" id="comp-run-btn" onclick="(function(){var u=document.getElementById('comp-client-url').value.trim();var n=document.getElementById('comp-client-name').value.trim();var ind=document.getElementById('comp-industry').value.trim();var comps=[];for(var i=0;i<3;i++){var cu=document.getElementById('comp-url-'+i);if(cu&&cu.value.trim()){var cn=document.getElementById('comp-name-'+i);var cr=document.getElementById('comp-rationale-'+i);comps.push({url:cu.value.trim(),name:cn?cn.value.trim():'',rationale:cr?cr.textContent.trim()||cr.value||'':''})}}runCompetitorBatch(u,n,ind,'',comps)})()" style="width:100%;background:linear-gradient(135deg,#831843,#ec4899);box-shadow:0 4px 16px rgba(236,72,153,0.3);">Run All Audits →</button>
+    </div>
+
+    <!-- Stage 2: Audit Progress -->
+    <div id="competitor-stage-2" style="display:none;">
+      <div style="font-size:10px;font-family:monospace;color:#ec4899;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">Competitive Analysis</div>
+      <h2 style="font-size:24px;font-weight:700;color:#e2ddd4;margin-bottom:6px;">Audit Progress</h2>
+      <p style="color:#374151;font-size:13px;margin-bottom:24px;">Running 4 parallel audits — this takes 30-60 seconds per site.</p>
+
+      <div id="comp-progress-client" style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><span style="font-size:10px;font-family:monospace;color:#ec4899;letter-spacing:0.1em;text-transform:uppercase;">Client</span>
+          <div id="comp-progress-client-url" style="font-size:13px;color:#e2ddd4;font-weight:600;margin-top:2px;"></div></div>
+          <span id="comp-progress-client-badge" style="font-size:11px;font-family:monospace;padding:4px 12px;border-radius:20px;background:rgba(236,72,153,0.15);color:#ec4899;">Running...</span>
+        </div>
+      </div>
+      <div id="comp-progress-1" style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><span style="font-size:10px;font-family:monospace;color:#6b7a94;letter-spacing:0.1em;text-transform:uppercase;">Competitor 1</span>
+          <div id="comp-progress-1-url" style="font-size:13px;color:#e2ddd4;font-weight:600;margin-top:2px;"></div></div>
+          <span id="comp-progress-1-badge" style="font-size:11px;font-family:monospace;padding:4px 12px;border-radius:20px;background:rgba(107,122,148,0.15);color:#6b7a94;">Running...</span>
+        </div>
+      </div>
+      <div id="comp-progress-2" style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><span style="font-size:10px;font-family:monospace;color:#6b7a94;letter-spacing:0.1em;text-transform:uppercase;">Competitor 2</span>
+          <div id="comp-progress-2-url" style="font-size:13px;color:#e2ddd4;font-weight:600;margin-top:2px;"></div></div>
+          <span id="comp-progress-2-badge" style="font-size:11px;font-family:monospace;padding:4px 12px;border-radius:20px;background:rgba(107,122,148,0.15);color:#6b7a94;">Running...</span>
+        </div>
+      </div>
+      <div id="comp-progress-3" style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><span style="font-size:10px;font-family:monospace;color:#6b7a94;letter-spacing:0.1em;text-transform:uppercase;">Competitor 3</span>
+          <div id="comp-progress-3-url" style="font-size:13px;color:#e2ddd4;font-weight:600;margin-top:2px;"></div></div>
+          <span id="comp-progress-3-badge" style="font-size:11px;font-family:monospace;padding:4px 12px;border-radius:20px;background:rgba(107,122,148,0.15);color:#6b7a94;">Running...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 3: Reports Ready -->
+    <div id="competitor-stage-3" style="display:none;">
+      <div style="font-size:10px;font-family:monospace;color:#ec4899;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">// Reports Ready</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="header-btn" onclick="competitorGoStage1()">← New Analysis</button>
+        <button class="dl-btn primary" id="comp-save-pdf-btn" style="background:linear-gradient(135deg,#831843,#ec4899);border-color:#ec4899;">📄 Save as PDF</button>
+        <button class="dl-btn primary" id="comp-download-btn">↓ Download HTML</button>
+      </div>
+      <div style="display:flex;flex-direction:column;height:calc(100vh - 200px);">
+        <iframe id="comp-report-frame" style="flex:1;border:none;border-radius:10px;background:#fff;width:100%;" title="Competitor Report"></iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div class="screen" id="screen-library">
   <div style="max-width:900px;margin:0 auto;padding:40px 20px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
@@ -894,6 +1015,7 @@
         <button class="library-filter-btn" data-type="cca" onclick="filterLibrary('cca')" style="background:none;border:1px solid #333;color:#a78bfa;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Strategy</button>
         <button class="library-filter-btn" data-type="cap" onclick="filterLibrary('cap')" style="background:none;border:1px solid #333;color:#2dd4bf;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Action Plan</button>
         <button class="library-filter-btn" data-type="prop" onclick="filterLibrary('prop')" style="background:none;border:1px solid #333;color:#F56300;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Proposal</button>
+        <button class="library-filter-btn" data-type="competitor" onclick="filterLibrary('competitor')" style="background:none;border:1px solid #333;color:#ec4899;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Competitor</button>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
