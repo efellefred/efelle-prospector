@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.4.0',
+    date: '2026-07-28',
+    title: 'Other Vertical & RGS Content Updates',
+    changes: [
+      'New "Other" industry vertical for companies outside home services — fully neutral proposal copy with no home-services verbiage anywhere',
+      'With Other selected, shared copy (RGS cards, add-ons, buyer-journey language) is automatically neutralized too',
+      'RGS Only proposals now highlight ongoing website content updates as part of the program (scope of work, offer, RGS card, process steps, agreement)',
+      'RGS case-study section scaffolded for RGS Only proposals — will replace the website portfolio once client case-study graphics are added',
+    ]
+  },
+  {
     version: '4.3.0',
     date: '2026-07-28',
     title: 'RGS Only Proposals',
