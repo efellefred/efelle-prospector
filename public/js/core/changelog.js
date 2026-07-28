@@ -4,6 +4,19 @@
 
 const CHANGELOG = [
   {
+    version: '4.3.0',
+    date: '2026-07-28',
+    title: 'RGS Only Proposals',
+    changes: [
+      'New "RGS Only" proposal type is now live — for prospects who already have a solid website and just want leads',
+      'Proposal leads with the monthly Revenue Growth Service: marketing-focused scope of work, monthly-price offer, and RGS onboarding process (campaigns live in 2–3 weeks)',
+      'Payment breakdown shows the monthly program fee, three-month minimum term, and ad-spend note — no website pricing',
+      'Website-build sections (portfolio, feature cards, site architecture, build calendar) are automatically left out',
+      'Agreement & signature page copy rewritten for marketing-only engagements',
+      'Fixed: proposals using "Optional" RGS mode were dropping the RGS section entirely instead of moving it before the signature page',
+    ]
+  },
+  {
     version: '4.2.0',
     date: '2026-03-29',
     title: 'Searchable Client Dropdowns & User Guide',

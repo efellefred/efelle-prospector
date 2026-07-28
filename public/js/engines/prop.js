@@ -212,21 +212,20 @@ function selectPropType(type) {
   propType = type;
   document.getElementById('prop-type-new').classList.toggle('selected', type === 'new_website');
   document.getElementById('prop-type-wo').classList.toggle('selected', type === 'wo_rgs');
+  document.getElementById('prop-type-rgs').classList.toggle('selected', type === 'rgs_only');
   const isWO = type === 'wo_rgs';
+  const isRGS = type === 'rgs_only';
   document.getElementById('price-website-label').textContent = isWO ? 'WO Price ($)' : 'Website Price ($)';
   document.getElementById('price-website').value = isWO ? 6600 : 7500;
-  document.getElementById('price-rgs').value = isWO ? 2800 : 2500;
-  // Swap Monthly Hosting ↔ Hours for WO
-  const hostingField = document.getElementById('price-hosting-field');
-  const hoursField = document.getElementById('price-hours-field');
-  if (isWO) {
-    hostingField.style.display = 'none';
-    hoursField.style.display = '';
-  } else {
-    hostingField.style.display = '';
-    hoursField.style.display = 'none';
-  }
-  // RGS Mode stays visible for both proposal types
+  document.getElementById('price-rgs').value = (isWO || isRGS) ? 2800 : 2500;
+  // Field visibility: new site = website + hosting; WO = WO price + hours; RGS only = RGS monthly only
+  document.getElementById('price-website-field').style.display = isRGS ? 'none' : '';
+  document.getElementById('price-hosting-field').style.display = (isWO || isRGS) ? 'none' : '';
+  document.getElementById('price-hours-field').style.display = isWO ? '' : 'none';
+  // RGS Mode (included vs optional) only applies when there's a website project to attach it to
+  document.getElementById('rgs-mode-divider').style.display = isRGS ? 'none' : '';
+  document.getElementById('rgs-mode-toggle').style.display = isRGS ? 'none' : '';
+  if (isRGS) selectRGS('included');
 }
 
 function selectMarketType(type) {
@@ -375,10 +374,11 @@ async function propFetchClient() {
 function propBuildHTML(clientName) {
   const v = VERTICALS[propVertical];
   const isWO = propType === 'wo_rgs';
-  const optional = !isWO && propRGS === 'optional';
-  const wp = parseInt(document.getElementById('price-website').value) || (isWO ? 6600 : 7500);
-  const hp = isWO ? 0 : (parseInt(document.getElementById('price-hosting').value) || 85);
-  const rp = parseInt(document.getElementById('price-rgs').value) || (isWO ? 2800 : 2500);
+  const isRGS = propType === 'rgs_only';
+  const optional = propType === 'new_website' && propRGS === 'optional';
+  const wp = isRGS ? 0 : (parseInt(document.getElementById('price-website').value) || (isWO ? 6600 : 7500));
+  const hp = (isWO || isRGS) ? 0 : (parseInt(document.getElementById('price-hosting').value) || 85);
+  const rp = parseInt(document.getElementById('price-rgs').value) || ((isWO || isRGS) ? 2800 : 2500);
   const hours = isWO ? (parseInt(document.getElementById('price-hours').value) || 40) : 0;
   const d1 = Math.round(wp * 0.50);  // 50% deposit (both new site and WO)
   const d2 = isWO ? Math.round(wp * 0.50) : 0;  // WO: 50% milestone; new site: no milestone
@@ -443,7 +443,13 @@ function propBuildHTML(clientName) {
 
 
   let sow1, sow2, sow3, sow4, sow5;
-  if (isWO) {
+  if (isRGS) {
+    sow1 = clientName + ' will engage efelle to run its Revenue Growth Service (RGS), a fully managed digital marketing program built around the company\'s existing website. The program is designed to increase visibility, drive qualified local traffic, and convert that traffic into booked work.';
+    sow2 = 'The engagement begins with a kickoff and strategy session to align on goals, service priorities, and target markets. efelle will then configure the campaign infrastructure — Google Ads and META campaigns, conversion tracking, analytics, and lead attribution — so every lead source is measurable from day one.';
+    sow3 = 'Ongoing work includes Local SEO (service-area targeting, map pack optimization, structured data), AI search visibility (GEO) so the business appears in AI-generated answers, reputation management, and continuous optimization across every channel.';
+    sow4 = 'Each month, ' + clientName + ' receives a clear report covering leads, traffic, ad performance, rankings, and ROI. The program runs with a three-month minimum term, then continues month-to-month with 30 days\' notice to cancel. Ad spend is paid directly to Google and META.';
+    sow5 = '';
+  } else if (isWO) {
     sow1 = 'This engagement focuses on improving the website\'s local search visibility, AI discoverability (GEO), and conversion performance through targeted updates based on the recent audit. Rather than addressing every issue, the work prioritizes high-impact improvements that strengthen how search engines and AI systems understand and rank the site.';
     sow2 = 'We will implement structured data (schema markup) across key pages to improve search visibility and help AI platforms better interpret services, service areas, and business details. This supports stronger local SEO performance and improved presence in AI-driven results.';
     sow3 = 'We will also update approximately 10 priority location and service pages with hyper-specific, locally relevant content. These updates will improve geographic targeting, keyword alignment, and semantic clarity. The audit identified gaps in keyword usage, content depth, and metadata, which will be addressed within this scope.';
@@ -460,11 +466,15 @@ function propBuildHTML(clientName) {
   }
 
 
-  const offerLead = isWO
+  const offerLead = isRGS
+    ? (clientName + ' already has a website — what\'s missing is a consistent, managed program that puts it in front of the right local customers. Our RGS program handles exactly that: traffic, leads, and reporting, all managed by one team.')
+    : isWO
     ? (clientName + ' has a solid foundation — this engagement is about making it perform. We\'ll make high-impact updates that improve local search rankings, AI visibility, and lead conversion without the cost or timeline of a full rebuild.')
     : adjustForMarketType(v.offer_lead.replace('__CLIENT_NAME__', clientName));
 
-  const offerFull = isWO
+  const offerFull = isRGS
+    ? ('<strong>Our Revenue Growth Service (RGS)</strong> is a fully managed monthly lead-generation program — Local SEO, Google Ads, META Ads, reputation management, and AI search visibility (GEO) — run by one team, tracked in one place, and reported to you every month.<br><br>No long-term contract: a three-month minimum term, then month-to-month with 30 days\' notice.')
+    : isWO
     ? ('<strong>A focused, ' + hours + '-hour website update engagement</strong> targeting the highest-impact improvements identified in the recent audit — schema markup, location and service page content, metadata, and on-page SEO fixes. Not a full rebuild. Targeted work that moves the needle.<br><br>This proposal also includes our <strong>Revenue Growth Service (RGS)</strong>, a monthly lead generation program that drives traffic, generates leads, and grows your online presence — starting month one.')
     : (v.offer_text.replace('[[CLIENT_NAME]]', clientName) + '<br><br>' + (
         optional
@@ -474,11 +484,15 @@ function propBuildHTML(clientName) {
 
   const rgsBadge = (!isWO && optional) ? '<div style="display:inline-block;background:rgba(50,215,75,0.15);border:1px solid rgba(50,215,75,0.3);border-radius:20px;padding:4px 12px;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#32D74B;margin-bottom:16px;">Optional — Monthly Marketing Program</div>' : '';
 
-  const rgsH2 = isWO
+  const rgsH2 = isRGS
+    ? 'Your website is the engine.<br><em>We\'ll fuel it with digital marketing.</em>'
+    : isWO
     ? 'We\'ll improve your website.<br><em>And add digital marketing to fuel the engine.</em>'
     : 'We\'ll build your lead-machine,<br><em>And fuel the engine with digital marketing.</em>';
 
-  const rgsLead = isWO
+  const rgsLead = isRGS
+    ? 'Your website already represents your business — our job is to make sure customers actually find it, and that visits turn into booked work. The RGS program drives consistent traffic and converts it into revenue from month one. Every channel is managed, tracked, and reported monthly so you see exactly where your leads are coming from.'
+    : isWO
     ? 'We\'ll make website updates to help it convert — built around trust signals, project proof, and CRO strategies that turn visitors into booked appointments. But conversion only matters if people find you. The RGS program is included in this proposal — driving consistent traffic and converting it into revenue from month one. Every channel is managed, tracked, and reported monthly so you see exactly where your leads are coming from.'
     : (optional
         ? 'Your new efelle website is engineered to convert — built around trust signals, project proof, and CRO strategies that turn visitors into booked appointments. But conversion only matters if people find you. Our RGS program drives consistent traffic and converts it into revenue. Every channel is managed, tracked, and reported monthly so you see exactly where your leads are coming from. This program is optional and can be added at any time, using a combination of the elements of our system below:'
@@ -503,15 +517,24 @@ function propBuildHTML(clientName) {
     : (addonCard('Google Business Profile Mgt', 'Initial optimization of your GBP, including photos, Q&amp;A, service areas, and continuous content publishing, designed to help rank on the local map pack when clients are searching.', '$400<span style="font-size:11px; font-weight:400; color:var(--gray-2);">/month</span>')
       + addonCard('AI Phone &amp; Appointment Automation', 'Missed calls send your leads to your competitor. Our automated system answers 24/7, qualifies leads &amp; books appointments directly onto your calendar, with reminders &amp; follow-ups!', '$550<span style="font-size:11px; font-weight:400; color:var(--gray-2);">/month</span>'));
 
-  // Offer price block
-  const offerPriceLabel = isWO ? (hours + ' hours of<br>website updates') : 'One-time website';
-  const offerSecondaryBlock = isWO
+  // Offer price block — for RGS-only the monthly program IS the headline price
+  const offerHeadlinePrice = isRGS
+    ? fmt(rp) + '<span style="font-size:20px; font-weight:400;">/mo</span>'
+    : fmt(wp);
+  const offerPriceLabel = isRGS ? 'Digital Marketing<br>Program' : isWO ? (hours + ' hours of<br>website updates') : 'One-time website';
+  const offerSecondaryBlock = isRGS
+    ? ''
+    : isWO
     ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(rp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Digital Marketing<br>Program</div></div>'
     : '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(hp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Hosting, Support<br>&amp; CMS Maint</div></div>';
 
   // Payment rows
   const payRow = (label, val, border, orange) => '<div style="display:flex; justify-content:space-between; align-items:center; padding:' + (orange ? '16px' : '10px') + ' 0;' + (border ? ' border-bottom:1px solid rgba(0,0,0,0.06);' : '') + '"><span style="font-size:13px; ' + (orange ? 'font-weight:700; color:var(--orange);' : 'color:var(--gray-1);') + ' display:flex; align-items:center;">' + label + '</span><span style="font-size:13px; font-weight:700; color:' + (orange ? 'var(--orange)' : 'var(--black)') + '; display:flex; align-items:center;">' + val + '</span></div>';
-  const paymentRows = isWO
+  const paymentRows = isRGS
+    ? (payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', true, true)
+      + payRow('Three-month minimum term, then month-to-month', '30 days\' notice to cancel', true, false)
+      + payRow('Ad spend (Google &amp; META)', 'Paid directly to platforms', false, false))
+    : isWO
     ? (payRow('50% Deposit upon project approval', fmt(d1), true, false)
       + payRow('50% Milestone Payment @ 45 days', fmt(d2), true, false)
       + payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', false, true))
@@ -646,22 +669,33 @@ function propBuildHTML(clientName) {
 
 
   // Offer H2
-  const offerH2 = isWO
+  const offerH2 = isRGS
+    ? 'A complete marketing program.<br><em>One monthly price.</em>'
+    : isWO
     ? 'Targeted improvements.<br><em>Real business gains.</em>'
     : 'A complete digital presence.<br><em>One clear price.</em>';
 
   // Process steps + timeline
   const newWebsiteSteps = '<div class="step"><div class="step-num">1</div><div class="step-content"><h3>Discovery Call (30 min)</h3><p>We learn about your business, your service area, your service types, and your goals. No fluff — just the information we need to build something that works for your specific market.</p></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><h3>Strategy &amp; Site Architecture</h3><p>We map out your site structure, service pages, and conversion flows before we touch design. Built around how customers search for and evaluate your services, not how agencies think.</p></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><h3>Design &amp; Development</h3><p>Your site is built on our proven semi-custom framework — which means it moves faster than a fully custom build without sacrificing quality. Award-winning UX, your brand, your market.</p></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><h3>Launch &amp; SEO Foundation</h3><p>We launch with Local SEO, schema markup, Google Business Profile optimization, and tracking in place from day one. You\'re not starting from zero.</p></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><h3>RGS Program Kicks In</h3><p>Month one of your digital marketing program starts. Google Ads, META, SEO optimization, and reputation management — all running, all tracked, all reported monthly. Watch the leads come in.</p></div></div>';
   const woSteps = '<div class="step"><div class="step-num">1</div><div class="step-content"><h3>Kickoff Call (30 min)</h3><p>We review the audit findings together, confirm priorities, and align on the highest-impact improvements for your market and goals. No fluff — just a clear plan.</p></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><h3>Schema &amp; Structured Data</h3><p>We implement schema markup across key pages so search engines and AI platforms accurately understand your services, service areas, and business details.</p></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><h3>Location &amp; Service Page Updates</h3><p>Priority pages get updated with hyper-specific, locally relevant content — improving geographic targeting, keyword alignment, and semantic clarity across your top markets.</p></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><h3>On-Page SEO Fixes</h3><p>Metadata, page titles, low-content pages, readability issues, and crawlability improvements addressed systematically from the audit findings.</p></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><h3>RGS Program Kicks In</h3><p>Month one of your digital marketing program starts. Google Ads, META, AI visibility optimization — all running, all tracked, all reported monthly. Watch the leads come in.</p></div></div>';
-  const processStepsHtml = isWO ? woSteps : newWebsiteSteps;
-  const processTimeline = isWO ? '2–4 Weeks' : '6-10 Weeks';
+  const rgsOnlySteps = '<div class="step"><div class="step-num">1</div><div class="step-content"><h3>Kickoff &amp; Strategy Call (30 min)</h3><p>We learn your business, your service area, your priority services, and your goals — then align on target markets and where your marketing budget works hardest. No fluff, just a clear plan.</p></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><h3>Tracking &amp; Campaign Setup</h3><p>Conversion tracking, analytics, and lead attribution get configured first — so every lead is measurable from day one. Then we build your Google Ads and META campaigns around your services and service area.</p></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><h3>Local SEO &amp; AI Visibility Foundation</h3><p>Google Business Profile optimization, structured data, and service-area targeting — plus GEO optimization so your business shows up in Google AI Overviews and ChatGPT answers.</p></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><h3>Campaigns Go Live</h3><p>Ads start running, reputation management kicks in, and leads begin flowing. We monitor closely in the first weeks and tune targeting, budgets, and messaging based on real performance.</p></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><h3>Monthly Reporting &amp; Optimization</h3><p>Every month you get a clear report — leads, traffic, ad performance, rankings, and ROI. We review what\'s working, adjust what isn\'t, and keep pushing the program forward. No set-it-and-forget-it.</p></div></div>';
+  const processStepsHtml = isRGS ? rgsOnlySteps : isWO ? woSteps : newWebsiteSteps;
+  const processTimeline = isRGS ? '2–3 Weeks to Launch' : isWO ? '2–4 Weeks' : '6-10 Weeks';
+  const processH2 = isRGS
+    ? 'From kickoff call to<br><em>leads — fast.</em>'
+    : 'From discovery call to<br><em>next project — fast.</em>';
+  const processLead = isRGS
+    ? 'No drawn-out onboarding. Your program gets configured, tracked, and live in weeks — and you see exactly what it\'s doing every single month.'
+    : adjustForMarketType(v.process_lead);
 
   // WO built_lead override
   const builtLead = isWO
     ? adjustForMarketType('Your website content should evolve with your long term digital marketing program. We offer content enhancements to grow with the specific buyer journey of a homeowner evaluating contractors — and every element is built to convert that search into a booked estimate:')
     : v.built_lead;
 
-  const summary = isWO
+  const summary = isRGS
+    ? ('RGS program @ ' + fmt(rp) + '/mo &nbsp;·&nbsp; 3-month minimum, then month-to-month')
+    : isWO
     ? (fmt(wp) + ' website updates &nbsp;+&nbsp; RGS program @ ' + fmt(rp) + '/mo')
     : (optional
         ? fmt(wp) + ' website (0% interest plan) &nbsp;+&nbsp; Optional RGS program @ ' + fmt(rp) + '/mo'
@@ -677,15 +711,33 @@ function propBuildHTML(clientName) {
   }).join('') + '</div>';
 
 
+  // Agreement body — website-project copy for site builds; program copy for RGS-only
+  const agreementBody = isRGS
+    ? ('<p style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--black);">We\'re excited to partner with you on your digital marketing program!</p>'
+      + '<p style="margin-bottom:8px;">[[RGS_AGREEMENT_PARA]]</p>'
+      + '<p style="margin-bottom:8px;">We\'ll manage everything outlined in the approved scope — campaign setup, tracking, content, and ongoing optimization — and report results to you every month. You\'re responsible for providing access to your website, Google Business Profile, and ad accounts (or authorizing us to set them up), plus brand assets and key company information as needed.</p>'
+      + '<p style="margin-bottom:8px;">Ad spend for Google and META campaigns is paid directly to those platforms and is separate from the monthly program fee. If you\'d like to change program scope or budget, we\'ll talk it through with you and align on next steps before moving forward.</p>'
+      + '<p>This agreement follows Washington State law and helps set clear expectations so everything stays on track, but you\'ll find us very easy to work with — we share a common goal: getting your digital marketing program running ASAP to help you grow your business!</p>')
+    : ('<p style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--black);">We\'re excited to partner with you on your new website and marketing program!</p>'
+      + '<p style="margin-bottom:8px;"><strong>The Website Project</strong> component includes design, development, CMS setup &amp; integration, copywriting and site launch services + ongoing mgt, hosting &amp; support. The total website project investment is <strong>[[WEBSITE_PRICE]]</strong>, with a <strong>[[DEP1]]</strong> deposit to get started and the remaining balance spread over 24 months at <strong>[[MONTHLY_PAY]]/mo</strong>, interest-free.</p>'
+      + '<p style="margin-bottom:8px;">Ongoing hosting, support &amp; CMS updates + mgt services are <strong>[[HOSTING_PRICE_MO]]</strong>, starting upon site launch.</p>'
+      + '<p style="margin-bottom:8px;">[[RGS_AGREEMENT_PARA]]</p>'
+      + '<p style="margin-bottom:8px;">We\'ll deliver everything outlined in the approved scope and keep the project moving forward with clear milestones and review rounds. We will create most of the website copywriting and imagery, but you\'re responsible for providing info we need to build your site — including your logo, brand assets, photos, and key company information — and for having the rights to use any photos provided.</p>'
+      + '<p style="margin-bottom:8px;">If you change project scope (like adding new features, shifting direction after approvals, reorganizing content, requesting extra revisions, or pausing the project) it will affect the timeline &amp; potentially the cost. It\'s rare, but if that happens, we\'ll talk it through with you and align on next steps before moving forward.</p>'
+      + '<p style="margin-bottom:8px;">Once your project is fully paid you will own the website and content.</p>'
+      + '<p>This agreement follows Washington State law and helps set clear expectations so everything stays on track, but you\'ll find us very easy to work with — we share a common goal, getting your new website built &amp; digital marketing program setup ASAP to help you grow your business!</p>');
+
   const tokens = {
-    '[[PAGE_TITLE]]':           clientName + ' | Website Proposal | efelle creative',
+    '[[PAGE_TITLE]]':           clientName + (isRGS ? ' | Digital Marketing Proposal | ' : ' | Website Proposal | ') + 'efelle creative',
     '[[CLIENT_NAME]]':          clientName,
     '[[CONTACT_NAME]]':         contact,
     '[[HERO_BADGE_TEXT]]':      clientName && contact ? clientName + ' // ' + contact : (clientName || contact || ''),
     '[[DATE]]':                 dateStr,
     '[[HERO_H1]]':              adjustForMarketType(v.hero_h1),
     '[[HERO_ICON]]':            v.hero_icon || '',
-    '[[HERO_SUB]]':             adjustForMarketType(v.hero_sub),
+    '[[HERO_SUB]]':             isRGS
+      ? 'We run fully managed digital marketing programs — Local SEO, Google Ads, META, and AI search visibility — backed by 21 years of effective, award-winning work. We handle the complete program so you can focus on your jobs.'
+      : adjustForMarketType(v.hero_sub),
     '[[ABOUT_P1]]':             about1,
     '[[ABOUT_P2]]':             about2,
     '[[CLIENT_LOGO]]':          logoHtml,
@@ -704,18 +756,21 @@ function propBuildHTML(clientName) {
     '[[OFFER_PRICE_LABEL]]':    offerPriceLabel,
     '[[OFFER_SECONDARY_BLOCK]]':offerSecondaryBlock,
     '[[PAYMENT_ROWS]]':         paymentRows,
-    '[[INCLUDES_GRID]]':        isWO ? '' : includesHtml,
+    '[[AGREEMENT_BODY]]':       agreementBody,
+    '[[INCLUDES_GRID]]':        (isWO || isRGS) ? '' : includesHtml,
     '[[RGS_BADGE]]':            rgsBadge,
     '[[RGS_H2]]':               rgsH2,
     '[[RGS_LEAD]]':             adjustForMarketType(rgsLead),
     '[[RGS_MAIN_CARDS]]':       adjustForMarketType(rgsMainCards),
     '[[RGS_ADDON_CARDS]]':      adjustForMarketType(rgsAddonCards),
     '[[RGS_PRICE]]':            fmt(rp),
-    '[[RGS_AGREEMENT_PARA]]':   optional
+    '[[RGS_AGREEMENT_PARA]]':   isRGS
+      ? 'This proposal covers our <strong>Revenue Growth Service (RGS)</strong>, a fully managed digital marketing program at <strong>' + fmt(rp) + '/month</strong> focused on increasing visibility, driving qualified traffic, and improving lead generation for your existing website. RGS runs with a three-month minimum term, then continues month-to-month with 30 days\' notice to cancel.'
+      : optional
       ? 'As an optional service, this proposal includes our <strong>Revenue Growth Service (RGS)</strong>, a managed digital marketing program at <strong>' + fmt(rp) + '/month</strong> focused on increasing visibility, driving qualified traffic, and improving lead generation. RGS runs month-to-month with a three-month minimum term and 30 days\' notice to cancel.'
       : 'During the project efelle will build out and begin managing its <strong>Revenue Growth Service (RGS)</strong>, a managed digital marketing program at <strong>' + fmt(rp) + '/month</strong> focused on increasing visibility, driving qualified traffic, and improving lead generation. RGS runs as a monthly engagement with a three-month minimum term, then continues month-to-month with 30 days\' notice to cancel.',
     '[[RGS_FROM]]':             (!isWO && optional) ? '<span style="font-size:16px; font-weight:400; color:var(--gray-2);">from </span>' : '',
-    '[[WEBSITE_PRICE]]':        fmt(wp),
+    '[[WEBSITE_PRICE]]':        offerHeadlinePrice,
     '[[HOSTING_PRICE]]':        fmt(hp),
     '[[HOSTING_PRICE_MO]]':     fmt(hp) + '/mo',
     '[[RGS_PAYMENT_ROW]]':      '',
@@ -735,7 +790,8 @@ function propBuildHTML(clientName) {
     '[[PORTFOLIO_IMG2]]':       p2,
     '[[PORTFOLIO_IMG3_BLOCK]]': p3 ? '<div style="border:1px solid var(--gray-4);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);"><img src="' + p3 + '" alt="' + clientName + ' portfolio" style="width:100%;height:auto;display:block;"></div>' : '',
     '[[PORTFOLIO_IMG4_BLOCK]]': p4 ? '<div style="border:1px solid var(--gray-4);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);"><img src="' + p4 + '" alt="' + clientName + ' portfolio" style="width:100%;height:auto;display:block;"></div>' : '',
-    '[[PROCESS_LEAD]]':         adjustForMarketType(v.process_lead),
+    '[[PROCESS_H2]]':           processH2,
+    '[[PROCESS_LEAD]]':         processLead,
     '[[PROCESS_STEPS_HTML]]':   processStepsHtml,
     '[[PROCESS_TIMELINE]]':     processTimeline,
     '[[BUILT_BADGE]]':          adjustForMarketType(v.built_badge),
@@ -758,9 +814,20 @@ function propBuildHTML(clientName) {
     if (rgsStart >= 0 && rgsEnd >= 0) {
       const rgsBlock = html.slice(rgsStart, rgsEnd);
       html = html.slice(0, rgsStart) + html.slice(rgsEnd);
-      const authPos = html.indexOf('\n\n<!-- AUTHORIZATION -->');
-      if (authPos >= 0) html = html.slice(0, authPos) + '\n\n' + rgsBlock + html.slice(authPos);
+      const authPos = html.indexOf('<!-- PROJECT AGREEMENT + AUTHORIZATION');
+      if (authPos >= 0) html = html.slice(0, authPos) + rgsBlock + '\n\n' + html.slice(authPos);
     }
+  }
+
+  if (isRGS) {
+    // No website build in scope: drop the website portfolio + "Built For" (feature cards & site
+    // architecture) sections, and the 3-month build calendar inside the process timeline box.
+    const pStart = html.indexOf('<!-- PORTFOLIO -->');
+    const pEnd   = html.indexOf('<!-- HOW IT WORKS -->');
+    if (pStart >= 0 && pEnd >= 0) html = html.slice(0, pStart) + html.slice(pEnd);
+    const cStart = html.indexOf('<!-- BUILD_CALENDAR_START -->');
+    const cEnd   = html.indexOf('<!-- BUILD_CALENDAR_END -->');
+    if (cStart >= 0 && cEnd >= 0) html = html.slice(0, cStart) + html.slice(cEnd + '<!-- BUILD_CALENDAR_END -->'.length);
   }
   return html;
 }

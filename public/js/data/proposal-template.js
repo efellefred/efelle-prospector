@@ -405,7 +405,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
 <!-- HOW IT WORKS -->
 <div class="section" id="sec-process" style="background:var(--gray-5);">
   <span class="section-badge">The Process</span>
-  <h2>From discovery call to<br><em>next project — fast.</em></h2>
+  <h2>[[PROCESS_H2]]</h2>
   <p class="lead">[[PROCESS_LEAD]]</p>
   <div class="process-steps">
     [[PROCESS_STEPS_HTML]]
@@ -417,6 +417,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
       <div style="font-size:16px; font-weight:800; color:var(--black); letter-spacing:-0.01em;">Estimated Project Timeline: [[PROCESS_TIMELINE]]</div>
       <div style="font-size:12px; color:var(--gray-2); margin-top:4px;">Actual schedule provided during Project Kickoff Meeting</div>
     </div>
+    <!-- BUILD_CALENDAR_START -->
     <div style="border-top:1px solid var(--gray-4); padding-top:20px;">
       <div style="font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange); margin-bottom:16px; text-align:center;">Project &amp; Launch Timeline — At a Glance</div>
       <svg viewBox="-2 0 684 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
@@ -503,6 +504,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
         <text x="340" y="120" text-anchor="middle" class="cal-sub" fill="#9CA3AF">Timeline is estimated. Actual schedule confirmed at kickoff.</text>
       </svg>
     </div>
+    <!-- BUILD_CALENDAR_END -->
   </div>
 </div>
 
@@ -520,14 +522,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     </div>
   </div>
   <div style="font-size:12px; color:var(--gray-1); line-height:1.6; margin-bottom:24px; max-width:620px;">
-    <p style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--black);">We're excited to partner with you on your new website and marketing program!</p>
-    <p style="margin-bottom:8px;"><strong>The Website Project</strong> component includes design, development, CMS setup &amp; integration, copywriting and site launch services + ongoing mgt, hosting &amp; support. The total website project investment is <strong>[[WEBSITE_PRICE]]</strong>, with a <strong>[[DEP1]]</strong> deposit to get started and the remaining balance spread over 24 months at <strong>[[MONTHLY_PAY]]/mo</strong>, interest-free.</p>
-    <p style="margin-bottom:8px;">Ongoing hosting, support &amp; CMS updates + mgt services are <strong>[[HOSTING_PRICE_MO]]</strong>, starting upon site launch.</p>
-    <p style="margin-bottom:8px;">[[RGS_AGREEMENT_PARA]]</p>
-    <p style="margin-bottom:8px;">We'll deliver everything outlined in the approved scope and keep the project moving forward with clear milestones and review rounds. We will create most of the website copywriting and imagery, but you're responsible for providing info we need to build your site — including your logo, brand assets, photos, and key company information — and for having the rights to use any photos provided.</p>
-    <p style="margin-bottom:8px;">If you change project scope (like adding new features, shifting direction after approvals, reorganizing content, requesting extra revisions, or pausing the project) it will affect the timeline &amp; potentially the cost. It's rare, but if that happens, we'll talk it through with you and align on next steps before moving forward.</p>
-    <p style="margin-bottom:8px;">Once your project is fully paid you will own the website and content.</p>
-    <p>This agreement follows Washington State law and helps set clear expectations so everything stays on track, but you'll find us very easy to work with — we share a common goal, getting your new website built &amp; digital marketing program setup ASAP to help you grow your business!</p>
+    [[AGREEMENT_BODY]]
   </div>
 
   <!-- AUTHORIZATION TO PROCEED — gray background, full width, logo inside -->
