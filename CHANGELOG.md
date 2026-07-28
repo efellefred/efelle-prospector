@@ -2,6 +2,16 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.6.0 — 2026-07-28 — Smart Logo Background & PDF Polish
+
+- Client logos with substantial white areas automatically get a dark backdrop so they stay visible on the white page
+- Client logo is now embedded directly into the proposal file (works even when the client's site blocks cross-site image loading)
+- Full-time hire comparison figure updated from $85,000 to $150,000/year
+- META Ads card renamed to "META Ads [Facebook & Instagram]"
+- RGS Only print layout: add-ons + ROI band get their own page (no more stranded ROI bar), and the process timeline box now shows a 5-phase program launch strip
+- Copy fixes: About section handles descriptive service-area text; RGS Only copy drops contractor language ("booked work") when the Other vertical is selected
+- Fixed empty Scope of Work paragraph and the invisible underline in the signature Company block
+
 ## 4.5.1 — 2026-07-28 — Logo URL Hallucination Fix
 
 - Fixed: Research Client could fill in an AI-invented logo URL that doesn't exist (e.g. a fake /wp-content/ path)

@@ -6,7 +6,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
 <title>[[PAGE_TITLE]]</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --black:#1D1D1F; --orange:#F56300; --orange-dim:rgba(245,99,0,0.08); --gray-1:#3A3A3C; --gray-2:#636366; --gray-4:#D2D2D7; --gray-5:#F5F5F7; --white:#FFFFFF; --green:#32D74B; }
+  :root { --black:#1D1D1F; --orange:#F56300; --orange-dim:rgba(245,99,0,0.08); --gray-1:#3A3A3C; --gray-2:#636366; --gray-3:#AEAEB2; --gray-4:#D2D2D7; --gray-5:#F5F5F7; --white:#FFFFFF; --green:#32D74B; }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--white); color:var(--black); max-width:780px; margin:0 auto; }
   .hero { background:#000; padding:64px 52px 52px; position:relative; overflow:hidden; }
@@ -88,16 +88,18 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     body { max-width:100%; }
 
     /*
-       PAGE LAYOUT — 9 pages @ 8.5" × 11" / 0.125" margins
+       PAGE LAYOUT @ 8.5" × 11" / 0.125" margins — varies by proposal type
 
-       P1  Letterhead + Hero + About + Scope of Work
-       P2  The Offer
-       P3  Revenue Growth Service
-       P4  Why efelle
-       P5  Portfolio (Some of Our Work)
-       P6  Process
-       P7  Built For
-       P8  Authorization
+       New Website / WO:            RGS Only:
+       P1  Hero + About + SOW       P1  Hero + About + SOW
+       P2  The Offer                P2  The Offer
+       P3  Revenue Growth Service   P3  RGS program cards
+       P4  Why efelle               P4  RGS add-ons + ROI band
+       P5  Portfolio                P5  Why efelle
+       P6  Built For                P6  Case studies (2 graphics)
+       P7  Process                  P7  Case studies (2 graphics)
+       P8  Authorization            P8  Process
+                                    P9  Authorization
     */
 
     /* ── Forced page breaks before each major section ── */
@@ -259,7 +261,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
       <p style="font-size:12px; color:var(--gray-1); line-height:1.75; margin-top:14px;">[[SOW_P2]]</p>
       <p style="font-size:12px; color:var(--gray-1); line-height:1.75; margin-top:14px;">[[SOW_P3]]</p>
       <p style="font-size:12px; color:var(--gray-1); line-height:1.75; margin-top:14px;">[[SOW_P4]]</p>
-      <p style="font-size:12px; color:var(--gray-1); line-height:1.75; margin-top:14px;">[[SOW_P5]]</p>
+      [[SOW_P5_BLOCK]]
     </div>
   </div>
 </div>
@@ -305,7 +307,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     </div>
     <div style="text-align:right;">
       <div class="rgs-price-label" style="text-align:right;">Compare to a full-time hire:</div>
-      <div class="rgs-price-val"><span style="position:relative; display:inline-block;">$85,000<span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.4em; font-weight:900; color:var(--orange); opacity:0.85; pointer-events:none; line-height:1;">\u2715</span></span><span style="font-size:16px; font-weight:400;">/year</span></div>
+      <div class="rgs-price-val"><span style="position:relative; display:inline-block;">$150,000<span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.4em; font-weight:900; color:var(--orange); opacity:0.85; pointer-events:none; line-height:1;">\u2715</span></span><span style="font-size:16px; font-weight:400;">/year</span></div>
       <div class="rgs-price-note" style="text-align:right; margin-top:6px; font-size:10px; color:rgba(58,58,60,0.7);">+ AdSpend paid to Google &amp; META</div>
       <div class="rgs-price-note" style="text-align:right; margin-top:8px;">...at a fraction of a single marketing hire</div>
     </div>
@@ -315,7 +317,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     [[RGS_MAIN_CARDS]]
   </div>
 
-  <div style="margin-top:24px;">
+  <div id="rgs-addons" style="margin-top:24px;">
     <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gray-2); margin-bottom:12px;">Optional Add-Ons</div>
     <div class="rgs-grid">
       [[RGS_ADDON_CARDS]]

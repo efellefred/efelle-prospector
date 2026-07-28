@@ -27,6 +27,51 @@ function imageExists(url) {
   });
 }
 
+// Fetch an image through the server proxy as a data URI (avoids CORS taint for pixel analysis)
+async function fetchLogoDataUri(url) {
+  try {
+    const res = await fetch('/api/fetch-image', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({ url }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.dataUri || null;
+  } catch (e) { return null; }
+}
+
+// Fraction of the logo's visible (non-transparent) pixels that are near-white.
+// Used to decide whether the logo needs a dark backdrop on the white proposal page.
+function analyzeLogoWhiteness(dataUri) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const w = Math.min(img.naturalWidth || 300, 300);
+        const h = Math.max(1, Math.round((img.naturalHeight || 1) * (w / Math.max(1, img.naturalWidth || 1))));
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const px = ctx.getImageData(0, 0, w, h).data;
+        let opaque = 0, white = 0;
+        for (let i = 0; i < px.length; i += 4) {
+          if (px[i + 3] < 32) continue; // skip transparent pixels
+          opaque++;
+          if (px[i] > 235 && px[i + 1] > 235 && px[i + 2] > 235) white++;
+        }
+        resolve(opaque ? white / opaque : 0);
+      } catch (e) { resolve(0); }
+    };
+    img.onerror = () => resolve(0);
+    img.src = dataUri;
+  });
+}
+
+// Set by propGenerate before each build: { dataUri, dark } for the client logo
+let propLogoInfo = null;
+
 // Scrape the actual homepage HTML to find the real logo URL
 async function scrapeLogoFromHomepage(url) {
   try {
@@ -281,6 +326,7 @@ function propReset() {
   propGoStage1();
   propReportHtml = '';
   propClientData = {};
+  propLogoInfo = null;
   propVertical = '';
   propMarketType = 'residential';
   // Clear form fields
@@ -469,9 +515,15 @@ function propBuildHTML(clientName) {
   const p4 = vpd[3] || null;
 
 
+  // Use the proxied data URI when available (always embeds; client sites rarely allow CORS),
+  // and add a dark backdrop when the logo has substantial white areas that would vanish on white.
+  const logoSrc = (propLogoInfo && propLogoInfo.dataUri) || logo;
+  const logoImgTag = '<img src="' + logoSrc + '" alt="' + clientName + '" style="width:100%;height:auto;display:block;">';
   const logoHtml = logo
-    ? '<img src="' + logo + '" alt="' + clientName + '" style="max-width:67%;height:auto;display:block;">'
-    : '<div style="border:2px dashed #D2D2D7;border-radius:10px;padding:24px 32px;display:inline-flex;flex-direction:column;align-items:center;gap:8px;background:#F5F5F7;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#636366" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#636366;">Client Logo</div></div>';
+    ? (propLogoInfo && propLogoInfo.dark
+        ? '<div id="client-logo-block" style="max-width:67%;background:#1D1D1F;border-radius:12px;padding:22px 28px;">' + logoImgTag + '</div>'
+        : '<div id="client-logo-block" style="max-width:67%;">' + logoImgTag + '</div>')
+    : '<div id="client-logo-block" style="border:2px dashed #D2D2D7;border-radius:10px;padding:24px 32px;display:inline-flex;flex-direction:column;align-items:center;gap:8px;background:#F5F5F7;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#636366" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#636366;">Client Logo</div></div>';
 
 
   const lines = [];
@@ -484,19 +536,33 @@ function propBuildHTML(clientName) {
   const isOtherVertical = propVertical === 'other';
   let about1 = clientName + (isOtherVertical ? ' is a company based in ' : ' is a ' + v.label.toLowerCase() + ' company based in ') + (location || 'the area');
   const clientsPhrase = isOtherVertical ? 'clients' : 'residential and commercial clients';
-  if (area && area !== 'the local area') about1 += ', serving ' + clientsPhrase + ' across ' + area;
-  else about1 += ', serving ' + clientsPhrase + ' in the local area';
+  // The service-area field sometimes holds a descriptive sentence ("Nationwide franchise
+  // with 40 locations across…") rather than a region list — grafting that onto "serving
+  // clients across" produces a broken sentence, so let long/descriptive text stand alone.
+  const areaIsDescription = area && (area.length > 70 || /^(a|an|the|nationwide|national|regional|multi|family|locally)\b/i.test(area.trim()));
+  if (area && area !== 'the local area' && areaIsDescription) {
+    about1 += '. ' + area.trim().charAt(0).toUpperCase() + area.trim().slice(1);
+  } else if (area && area !== 'the local area') {
+    about1 += ', serving ' + clientsPhrase + ' across ' + area;
+  } else {
+    about1 += ', serving ' + clientsPhrase + ' in the local area';
+  }
   if (svc_str) about1 += '. Services include ' + svc_str + '.';
 
   let about2 = (founded ? 'Founded in ' + founded + ', ' : '') + clientName + ' has built a reputation for quality work and reliable service.';
   if (diffs) about2 += ' ' + diffs;
 
 
+  // "Other" vertical: swap contractor phrasing for business-neutral language
+  const intoWork = isOtherVertical ? 'new customers' : 'booked work';
+  const qualTraffic = isOtherVertical ? 'qualified traffic' : 'qualified local traffic';
+  const svcAreaTargeting = isOtherVertical ? 'location targeting' : 'service-area targeting';
+
   let sow1, sow2, sow3, sow4, sow5;
   if (isRGS) {
-    sow1 = clientName + ' will engage efelle to run its Revenue Growth Service (RGS), a fully managed digital marketing program built around the company\'s existing website. The program is designed to increase visibility, drive qualified local traffic, and convert that traffic into booked work.';
+    sow1 = clientName + ' will engage efelle to run its Revenue Growth Service (RGS), a fully managed digital marketing program built around the company\'s existing website. The program is designed to increase visibility, drive ' + qualTraffic + ', and convert that traffic into ' + intoWork + '.';
     sow2 = 'The engagement begins with a kickoff and strategy session to align on goals, service priorities, and target markets. efelle will then configure the campaign infrastructure — Google Ads and META campaigns, conversion tracking, analytics, and lead attribution — so every lead source is measurable from day one.';
-    sow3 = 'Ongoing work includes website content updates (new and refreshed pages, landing pages, and on-page SEO improvements to the existing site), Local SEO (service-area targeting, map pack optimization, structured data), AI search visibility (GEO) so the business appears in AI-generated answers, reputation management, and continuous optimization across every channel.';
+    sow3 = 'Ongoing work includes website content updates (new and refreshed pages, landing pages, and on-page SEO improvements to the existing site), Local SEO (' + svcAreaTargeting + ', map pack optimization, structured data), AI search visibility (GEO) so the business appears in AI-generated answers, reputation management, and continuous optimization across every channel.';
     sow4 = 'Each month, ' + clientName + ' receives a clear report covering leads, traffic, ad performance, rankings, and ROI. The program runs with a three-month minimum term, then continues month-to-month with 30 days\' notice to cancel. Ad spend is paid directly to Google and META.';
     sow5 = '';
   } else if (isWO) {
@@ -541,7 +607,7 @@ function propBuildHTML(clientName) {
     : 'We\'ll build your lead-machine,<br><em>And fuel the engine with digital marketing.</em>';
 
   const rgsLead = isRGS
-    ? 'Your website already represents your business — our job is to make sure customers actually find it, and that visits turn into booked work. The RGS program drives consistent traffic and converts it into revenue from month one. Every channel is managed, tracked, and reported monthly so you see exactly where your leads are coming from.'
+    ? 'Your website already represents your business — our job is to make sure customers actually find it, and that visits turn into ' + intoWork + '. The RGS program drives consistent traffic and converts it into revenue from month one. Every channel is managed, tracked, and reported monthly so you see exactly where your leads are coming from.'
     : isWO
     ? 'We\'ll make website updates to help it convert — built around trust signals, project proof, and CRO strategies that turn visitors into booked appointments. But conversion only matters if people find you. The RGS program is included in this proposal — driving consistent traffic and converting it into revenue from month one. Every channel is managed, tracked, and reported monthly so you see exactly where your leads are coming from.'
     : (optional
@@ -560,8 +626,8 @@ function propBuildHTML(clientName) {
     : '';
 
   const rgsMainCards = isWO
-    ? '<div class="rgs-card"><div class="rgs-card-title">Google Ads (PPC)</div><div class="rgs-card-desc">Targeted paid search campaigns that put you in front of homeowners actively searching for your services. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to Google.</span></div></div><div class="rgs-card"><div class="rgs-card-title">META Ads</div><div class="rgs-card-desc">Facebook and Instagram campaigns targeting homeowners by location, home value, and neighborhood. Build awareness year-round and surge during peak seasons. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to META.</span></div></div><div class="rgs-card"><div class="rgs-card-title">AI Search Visibility (GEO)</div><div class="rgs-card-desc">As Google AI Overviews and ChatGPT become how consumers find service providers, we optimize your content to appear in these AI-generated answers before they even search.</div></div><div class="rgs-card"><div class="rgs-card-title">Monthly Reporting &amp; Continuous Optimization</div><div class="rgs-card-desc">Every month you get a clear report — leads, traffic, ad performance, rankings, and ROI. We review what\'s working, adjust what isn\'t, and keep pushing the program forward. No set-it-and-forget-it.</div></div>'
-    : ('<div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Local SEO</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_local || 'Ongoing optimization so you rank when homeowners search for your services near them. Service area pages, map pack ranking, structured data.') + '</div></div>' + contentUpdatesCard + '<div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Google Ads (PPC)</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_ppc || 'Targeted paid search campaigns that put you in front of homeowners actively searching for your services. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to Google.</span>') + '</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'META Ads</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_meta || 'Facebook and Instagram campaigns targeting homeowners by location, home value, and behavior. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to META.</span>') + '</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Reputation Management</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_rep || 'Review requests, response management, and amplification across Google, Facebook, and industry directories.') + '</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'AI Search Visibility (GEO)</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">As Google AI Overviews and ChatGPT become how consumers find service providers, we optimize your content to appear in these AI-generated answers before they even search.</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Monthly Reporting &amp; Optimization</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">Every month you get a clear report — leads, traffic, ad performance, rankings, and ROI. We review what\'s working, adjust what isn\'t, and keep pushing the program forward. No set-it-and-forget-it.</div></div>');
+    ? '<div class="rgs-card"><div class="rgs-card-title">Google Ads (PPC)</div><div class="rgs-card-desc">Targeted paid search campaigns that put you in front of homeowners actively searching for your services. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to Google.</span></div></div><div class="rgs-card"><div class="rgs-card-title">META Ads [Facebook &amp; Instagram]</div><div class="rgs-card-desc">Facebook and Instagram campaigns targeting homeowners by location, home value, and neighborhood. Build awareness year-round and surge during peak seasons. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to META.</span></div></div><div class="rgs-card"><div class="rgs-card-title">AI Search Visibility (GEO)</div><div class="rgs-card-desc">As Google AI Overviews and ChatGPT become how consumers find service providers, we optimize your content to appear in these AI-generated answers before they even search.</div></div><div class="rgs-card"><div class="rgs-card-title">Monthly Reporting &amp; Continuous Optimization</div><div class="rgs-card-desc">Every month you get a clear report — leads, traffic, ad performance, rankings, and ROI. We review what\'s working, adjust what isn\'t, and keep pushing the program forward. No set-it-and-forget-it.</div></div>'
+    : ('<div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Local SEO</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_local || 'Ongoing optimization so you rank when homeowners search for your services near them. Service area pages, map pack ranking, structured data.') + '</div></div>' + contentUpdatesCard + '<div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Google Ads (PPC)</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_ppc || 'Targeted paid search campaigns that put you in front of homeowners actively searching for your services. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to Google.</span>') + '</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'META Ads [Facebook &amp; Instagram]</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_meta || 'Facebook and Instagram campaigns targeting homeowners by location, home value, and behavior. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to META.</span>') + '</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Reputation Management</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + (v.rgs_rep || 'Review requests, response management, and amplification across Google, Facebook, and industry directories.') + '</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'AI Search Visibility (GEO)</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">As Google AI Overviews and ChatGPT become how consumers find service providers, we optimize your content to appear in these AI-generated answers before they even search.</div></div><div class="rgs-card"><div class="rgs-card-title">' + CHECK + 'Monthly Reporting &amp; Optimization</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">Every month you get a clear report — leads, traffic, ad performance, rankings, and ROI. We review what\'s working, adjust what isn\'t, and keep pushing the program forward. No set-it-and-forget-it.</div></div>');
 
   // Add-on cards — WO includes Local SEO + Reputation Mgmt as add-ons
   const rgsAddonCards = isWO
@@ -733,7 +799,13 @@ function propBuildHTML(clientName) {
   // Process steps + timeline
   const newWebsiteSteps = '<div class="step"><div class="step-num">1</div><div class="step-content"><h3>Discovery Call (30 min)</h3><p>We learn about your business, your service area, your service types, and your goals. No fluff — just the information we need to build something that works for your specific market.</p></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><h3>Strategy &amp; Site Architecture</h3><p>We map out your site structure, service pages, and conversion flows before we touch design. Built around how customers search for and evaluate your services, not how agencies think.</p></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><h3>Design &amp; Development</h3><p>Your site is built on our proven semi-custom framework — which means it moves faster than a fully custom build without sacrificing quality. Award-winning UX, your brand, your market.</p></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><h3>Launch &amp; SEO Foundation</h3><p>We launch with Local SEO, schema markup, Google Business Profile optimization, and tracking in place from day one. You\'re not starting from zero.</p></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><h3>RGS Program Kicks In</h3><p>Month one of your digital marketing program starts. Google Ads, META, SEO optimization, and reputation management — all running, all tracked, all reported monthly. Watch the leads come in.</p></div></div>';
   const woSteps = '<div class="step"><div class="step-num">1</div><div class="step-content"><h3>Kickoff Call (30 min)</h3><p>We review the audit findings together, confirm priorities, and align on the highest-impact improvements for your market and goals. No fluff — just a clear plan.</p></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><h3>Schema &amp; Structured Data</h3><p>We implement schema markup across key pages so search engines and AI platforms accurately understand your services, service areas, and business details.</p></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><h3>Location &amp; Service Page Updates</h3><p>Priority pages get updated with hyper-specific, locally relevant content — improving geographic targeting, keyword alignment, and semantic clarity across your top markets.</p></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><h3>On-Page SEO Fixes</h3><p>Metadata, page titles, low-content pages, readability issues, and crawlability improvements addressed systematically from the audit findings.</p></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><h3>RGS Program Kicks In</h3><p>Month one of your digital marketing program starts. Google Ads, META, AI visibility optimization — all running, all tracked, all reported monthly. Watch the leads come in.</p></div></div>';
-  const rgsOnlySteps = '<div class="step"><div class="step-num">1</div><div class="step-content"><h3>Kickoff &amp; Strategy Call (30 min)</h3><p>We learn your business, your service area, your priority services, and your goals — then align on target markets and where your marketing budget works hardest. No fluff, just a clear plan.</p></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><h3>Tracking &amp; Campaign Setup</h3><p>Conversion tracking, analytics, and lead attribution get configured first — so every lead is measurable from day one. Then we build your Google Ads and META campaigns around your services and service area.</p></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><h3>Local SEO, Content &amp; AI Visibility Foundation</h3><p>Google Business Profile optimization, structured data, service-area targeting, and content updates to your existing site\'s priority pages — plus GEO optimization so your business shows up in Google AI Overviews and ChatGPT answers.</p></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><h3>Campaigns Go Live</h3><p>Ads start running, reputation management kicks in, and leads begin flowing. We monitor closely in the first weeks and tune targeting, budgets, and messaging based on real performance.</p></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><h3>Monthly Reporting &amp; Optimization</h3><p>Every month you get a clear report — leads, traffic, ad performance, rankings, and ROI. We review what\'s working, adjust what isn\'t, and keep pushing the program forward. No set-it-and-forget-it.</p></div></div>';
+  let rgsOnlySteps = '<div class="step"><div class="step-num">1</div><div class="step-content"><h3>Kickoff &amp; Strategy Call (30 min)</h3><p>We learn your business, your service area, your priority services, and your goals — then align on target markets and where your marketing budget works hardest. No fluff, just a clear plan.</p></div></div><div class="step"><div class="step-num">2</div><div class="step-content"><h3>Tracking &amp; Campaign Setup</h3><p>Conversion tracking, analytics, and lead attribution get configured first — so every lead is measurable from day one. Then we build your Google Ads and META campaigns around your services and service area.</p></div></div><div class="step"><div class="step-num">3</div><div class="step-content"><h3>Local SEO, Content &amp; AI Visibility Foundation</h3><p>Google Business Profile optimization, structured data, service-area targeting, and content updates to your existing site\'s priority pages — plus GEO optimization so your business shows up in Google AI Overviews and ChatGPT answers.</p></div></div><div class="step"><div class="step-num">4</div><div class="step-content"><h3>Campaigns Go Live</h3><p>Ads start running, reputation management kicks in, and leads begin flowing. We monitor closely in the first weeks and tune targeting, budgets, and messaging based on real performance.</p></div></div><div class="step"><div class="step-num">5</div><div class="step-content"><h3>Monthly Reporting &amp; Optimization</h3><p>Every month you get a clear report — leads, traffic, ad performance, rankings, and ROI. We review what\'s working, adjust what isn\'t, and keep pushing the program forward. No set-it-and-forget-it.</p></div></div>';
+  if (isOtherVertical) {
+    rgsOnlySteps = rgsOnlySteps
+      .replace('your service area, your priority services', 'your markets, your priority offerings')
+      .replace('around your services and service area', 'around your offerings and target markets')
+      .replace('service-area targeting', 'geographic targeting');
+  }
   const processStepsHtml = isRGS ? rgsOnlySteps : isWO ? woSteps : newWebsiteSteps;
   const processTimeline = isRGS ? '2–3 Weeks to Launch' : isWO ? '2–4 Weeks' : '6-10 Weeks';
   const processH2 = isRGS
@@ -804,7 +876,7 @@ function propBuildHTML(clientName) {
     '[[SOW_P2]]':               sow2,
     '[[SOW_P3]]':               sow3,
     '[[SOW_P4]]':               sow4,
-    '[[SOW_P5]]':               sow5,
+    '[[SOW_P5_BLOCK]]':         sow5 ? '<p style="font-size:12px; color:var(--gray-1); line-height:1.75; margin-top:14px;">' + sow5 + '</p>' : '',
     '[[OFFER_H2]]':             offerH2,
     '[[OFFER_LEAD]]':           offerLead,
     '[[OFFER_TEXT]]':           adjustForMarketType(offerFull),
@@ -896,9 +968,29 @@ function propBuildHTML(clientName) {
     const pStart = html.indexOf('<!-- PORTFOLIO -->');
     const pEnd   = html.indexOf('<!-- HOW IT WORKS -->');
     if (pStart >= 0 && pEnd >= 0) html = html.slice(0, pStart) + caseSection + html.slice(pEnd);
+    // Swap the website build calendar for an RGS program launch strip
+    const rgsPhases = [
+      ['WK 1', 'Kickoff &amp; Strategy', false],
+      ['WK 1–2', 'Tracking &amp; Campaign Build', false],
+      ['WK 2–3', 'SEO, Content &amp; GEO Foundation', false],
+      ['WK 3', 'Campaigns Go Live', true],
+      ['ONGOING', 'Optimize &amp; Report Monthly', true],
+    ];
+    const phaseStrip = '<div style="border-top:1px solid var(--gray-4); padding-top:20px;">'
+      + '<div style="font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange); margin-bottom:16px; text-align:center;">Program Launch Timeline — At a Glance</div>'
+      + '<div style="display:flex; gap:10px; align-items:stretch;">'
+      + rgsPhases.map(p =>
+          '<div style="flex:1; border-radius:8px; padding:12px 10px; text-align:center; '
+          + (p[2] ? 'background:#FFF4EE; border:1.5px solid #F56300;' : 'background:#F5F5F7; border:1px solid #D2D2D7;')
+          + '"><div style="font-size:8px; font-weight:700; letter-spacing:0.08em; color:' + (p[2] ? '#F56300' : '#636366') + ';">' + p[0] + '</div>'
+          + '<div style="font-size:9.5px; font-weight:600; color:' + (p[2] ? '#F56300' : '#3A3A3C') + '; margin-top:6px; line-height:1.4;">' + p[1] + '</div></div>').join('')
+      + '</div></div>';
     const cStart = html.indexOf('<!-- BUILD_CALENDAR_START -->');
     const cEnd   = html.indexOf('<!-- BUILD_CALENDAR_END -->');
-    if (cStart >= 0 && cEnd >= 0) html = html.slice(0, cStart) + html.slice(cEnd + '<!-- BUILD_CALENDAR_END -->'.length);
+    if (cStart >= 0 && cEnd >= 0) html = html.slice(0, cStart) + phaseStrip + html.slice(cEnd + '<!-- BUILD_CALENDAR_END -->'.length);
+    // The RGS-only card grid (7 cards) fills a full printed page — push the
+    // add-ons + ROI band to the next page so the ROI band isn't stranded alone.
+    html = html.replace('</style>', '@media print { #rgs-addons { break-before:page; page-break-before:always; } }\n</style>');
   }
   return html;
 }
@@ -933,6 +1025,17 @@ async function propGenerate() {
 
   setTimeout(async () => {
     try {
+      // Analyze the client logo: embed via server proxy + detect white-heavy
+      // logos that need a dark backdrop to be visible on the white page.
+      propLogoInfo = null;
+      const logoFieldUrl = document.getElementById('prop-logo').value.trim();
+      if (logoFieldUrl) {
+        const dataUri = logoFieldUrl.startsWith('data:') ? logoFieldUrl : await fetchLogoDataUri(logoFieldUrl);
+        if (dataUri) {
+          const whiteRatio = await analyzeLogoWhiteness(dataUri);
+          propLogoInfo = { dataUri, dark: whiteRatio >= 0.25 };
+        }
+      }
       const html = propBuildHTML(clientName);
       propReportHtml = html;
       progress.classList.remove('visible');
@@ -1040,16 +1143,21 @@ window.applyLogoToProposal = function() {
   const frame = document.getElementById('prop-report-frame');
   const doc = frame.contentDocument || frame.contentWindow.document;
 
+  const logoBlock = doc.getElementById('client-logo-block');
   const placeholder = doc.querySelector('[style*="dashed"]');
   const existingLogo = doc.querySelector('img[alt][style*="max-width"]');
-  const target = placeholder || existingLogo;
+  const target = logoBlock || placeholder || existingLogo;
 
   if (target) {
+    const wrap = doc.createElement('div');
+    wrap.id = 'client-logo-block';
+    wrap.style.cssText = 'max-width:67%;';
     const img = doc.createElement('img');
     img.src = logoSrc;
     img.alt = 'Client Logo';
-    img.style.cssText = 'max-width:67%;height:auto;display:block;';
-    target.parentNode.replaceChild(img, target);
+    img.style.cssText = 'width:100%;height:auto;display:block;';
+    wrap.appendChild(img);
+    target.parentNode.replaceChild(wrap, target);
   } else {
     statusEl.innerHTML = '<span style="color:#fb923c;">Could not find logo placeholder in the proposal.</span>';
     return;

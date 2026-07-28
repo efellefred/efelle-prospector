@@ -515,6 +515,45 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
   }
 });
 
+// ─── Fetch an image as a data URI (for logo analysis + embedding) ────
+app.post('/api/fetch-image', requireAuth, async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'url is required' });
+  // Block internal/private URLs (SSRF protection) — same rules as /api/fetch-url
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' ||
+        host.startsWith('10.') || host.startsWith('192.168.') || host.startsWith('172.') ||
+        host.endsWith('.local') || host.includes('metadata.google') || host.includes('169.254.')) {
+      return res.status(403).json({ error: 'Internal URLs are not allowed' });
+    }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return res.status(403).json({ error: 'Only HTTP/HTTPS URLs are allowed' });
+    }
+  } catch (e) { return res.status(400).json({ error: 'Invalid URL' }); }
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) return res.status(response.status).json({ error: 'Failed to fetch image: ' + response.status });
+    const contentType = (response.headers.get('content-type') || '').split(';')[0].trim();
+    if (!contentType.startsWith('image/')) {
+      return res.status(415).json({ error: 'URL is not an image (' + (contentType || 'unknown type') + ')' });
+    }
+    const buf = Buffer.from(await response.arrayBuffer());
+    if (buf.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Image too large (max 5 MB)' });
+    res.json({ dataUri: 'data:' + contentType + ';base64,' + buf.toString('base64'), bytes: buf.length });
+  } catch (err) {
+    console.error('Image fetch error:', err.message);
+    res.status(502).json({ error: 'Failed to fetch image: ' + err.message });
+  }
+});
+
 // ─── Discover sitemaps from a website ────────────────────────────────
 
 // ─── Screenshot a website (desktop + mobile) ────────────────────────

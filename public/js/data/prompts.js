@@ -463,7 +463,7 @@ Rules:
 - address: the full street address including street number, street name, city, state and zip if present on the site (e.g. "21109 Church Lake Dr E, Bonney Lake, WA 98391"). Look in the footer, contact page, and header. Return "" if not found.
 - phone: phone number if present, else ""
 - services: array of service names (3-6 items)
-- service_area: brief description of coverage area
+- service_area: a short list of the cities/regions served (e.g. "Seattle, Bellevue, and the Eastside" or "Washington, Oregon, and Idaho") — a place list only, NOT a sentence describing the business
 - founded: year founded if present, else ""
 - differentiators: 1-2 sentences on what makes them stand out (certifications, ratings, awards, team size, guarantees). Empty string if none found.
 - logo_url: the direct URL of the company logo image, ONLY if you actually observed that exact URL in fetched page content. NEVER construct, infer, or guess a URL from the site's platform or common patterns (e.g. /wp-content/uploads/...) — a guessed URL is worse than none. If you did not directly observe the logo file URL, return "".`;
