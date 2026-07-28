@@ -106,6 +106,8 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     #sec-rgs      { break-before:page; page-break-before:always; }
     #sec-why      { break-before:page; page-break-before:always; }
     #sec-portfolio { break-before:page; page-break-before:always; }
+    .case-study-page { break-before:page; page-break-before:always; }
+    .cs-img-card { break-inside:avoid; page-break-inside:avoid; }
     #sec-built    { break-before:page; page-break-before:always; }
     /* sec-built gets its own page so the section stays complete */
     #sec-process  { break-before:page; page-break-before:always; }

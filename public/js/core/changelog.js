@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.5.0',
+    date: '2026-07-28',
+    title: 'RGS Case Study Pages',
+    changes: [
+      'RGS Only proposals now include two pages of real digital marketing results — SKR, Kryptek, Copendium, and Humble case-study graphics, two per page',
+      'Case studies use the same image-card format as the website portfolio and print one page each',
+      'Images are embedded directly into the proposal file, so downloads and PDFs are self-contained',
+    ]
+  },
+  {
     version: '4.4.0',
     date: '2026-07-28',
     title: 'Other Vertical & RGS Content Updates',

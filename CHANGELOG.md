@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.5.0 — 2026-07-28 — RGS Case Study Pages
+
+- RGS Only proposals now include two pages of real digital marketing results — SKR, Kryptek, Copendium, and Humble case-study graphics, two per page
+- Case studies use the same image-card format as the website portfolio and print one page each
+- Images are embedded directly into the proposal file, so downloads and PDFs are self-contained
+
 ## 4.4.0 — 2026-07-28 — Other Vertical & RGS Content Updates
 
 - New "Other" industry vertical for companies outside home services — fully neutral proposal copy with no home-services verbiage anywhere

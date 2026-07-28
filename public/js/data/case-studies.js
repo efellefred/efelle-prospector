@@ -1,19 +1,16 @@
 // ---------------------------------------------------------------------------
 // RGS case studies — shown on RGS Only proposals in place of the website
-// portfolio. While this list is empty, the section is skipped entirely.
+// portfolio, two per page in the same image-card format the portfolio uses.
+// Images are auto-embedded as data URIs by the existing inlineImages pipeline.
 //
-// To add a case study: upload the card image/graphic to the web server, then
-// add an entry here. Only `img` is required; the other fields render when set.
-// IMPORTANT: use real client results only — no invented stats.
-//
-// Example:
-// {
-//   img: 'https://www.seattlewebdesign.com/uploads/_proposal/casestudy-acme.jpg',
-//   client: 'Acme Plumbing',
-//   industry: 'Plumbing',
-//   stat: '3.1× lead volume in 6 months',
-//   blurb: 'One sentence on what the RGS program delivered.',
-// },
+// Order matters: entries are paired into pages (1st+2nd, 3rd+4th, ...).
+// `img` is required; `client` is used for the image alt text.
+// IMPORTANT: use real client result graphics only — no invented stats.
 // ---------------------------------------------------------------------------
 
-export const RGS_CASE_STUDIES = [];
+export const RGS_CASE_STUDIES = [
+  { img: 'https://www.seattlewebdesign.com/uploads/_proposal/efelle-case-study-skr.jpg',       client: 'SKR' },
+  { img: 'https://www.seattlewebdesign.com/uploads/_proposal/efelle-case-study-kryptek.jpg',   client: 'Kryptek' },
+  { img: 'https://www.seattlewebdesign.com/uploads/_proposal/efelle-case-study-copendium.jpg', client: 'Copendium' },
+  { img: 'https://www.seattlewebdesign.com/uploads/_proposal/efelle-case-study-humble.jpg',    client: 'Humble' },
+];

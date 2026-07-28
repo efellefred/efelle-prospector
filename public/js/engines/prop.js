@@ -847,26 +847,21 @@ function propBuildHTML(clientName) {
   if (isRGS) {
     // No website build in scope: drop the website portfolio + "Built For" (feature cards & site
     // architecture) sections, and the 3-month build calendar inside the process timeline box.
-    // If RGS case studies are configured, they take the portfolio's place.
-    const caseCards = RGS_CASE_STUDIES.map(cs =>
-      '<div style="border:1px solid var(--gray-4);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);background:#fff;">'
-      + (cs.img ? '<img src="' + cs.img + '" alt="' + (cs.client || 'RGS case study') + '" style="width:100%;height:auto;display:block;">' : '')
-      + ((cs.client || cs.industry || cs.stat || cs.blurb)
-        ? '<div style="padding:16px 18px;">'
-          + (cs.client ? '<div style="font-size:13px;font-weight:800;color:var(--black);">' + cs.client + '</div>' : '')
-          + (cs.industry ? '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-2);margin-top:2px;">' + cs.industry + '</div>' : '')
-          + (cs.stat ? '<div style="font-size:20px;font-weight:800;color:var(--orange);margin-top:8px;">' + cs.stat + '</div>' : '')
-          + (cs.blurb ? '<div style="font-size:11.5px;color:var(--gray-1);line-height:1.6;margin-top:6px;">' + cs.blurb + '</div>' : '')
-          + '</div>'
-        : '')
-      + '</div>').join('');
-    const caseSection = RGS_CASE_STUDIES.length
-      ? '<div class="section" id="sec-case-studies">'
-        + '<span class="section-badge">RGS Results</span>'
-        + '<h2>Real programs.<br><em>Real growth.</em></h2>'
-        + '<p class="lead">A few of the businesses running our Revenue Growth Service today — and what the program has done for them.</p>'
-        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px;">' + caseCards + '</div>'
-        + '</div>\n\n'
+    // If RGS case studies are configured, they take the portfolio's place — same
+    // image-card format as the website portfolio, two graphics per printed page.
+    const csPages = [];
+    for (let i = 0; i < RGS_CASE_STUDIES.length; i += 2) csPages.push(RGS_CASE_STUDIES.slice(i, i + 2));
+    const csCard = cs => '<div class="cs-img-card" style="border:1px solid var(--gray-4); border-radius:14px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06);"><img src="' + cs.img + '" alt="' + (cs.client || 'efelle RGS case study') + '" style="width:100%; height:auto; display:block;"></div>';
+    const caseSection = csPages.length
+      ? csPages.map((page, idx) =>
+          '<div class="section case-study-page" id="sec-case-' + (idx + 1) + '">'
+          + '<span class="section-badge">Digital Marketing Results</span>'
+          + (idx === 0
+            ? '<h2>Real programs.<br><em>Real growth.</em></h2><p class="lead">A few of the businesses running our Revenue Growth Service — and the results the program has generated for them.</p>'
+            : '')
+          + '<div style="display:flex; flex-direction:column; gap:24px; margin-top:' + (idx === 0 ? '28px' : '16px') + ';">'
+          + page.map(csCard).join('')
+          + '</div></div>').join('\n\n') + '\n\n'
       : '';
     const pStart = html.indexOf('<!-- PORTFOLIO -->');
     const pEnd   = html.indexOf('<!-- HOW IT WORKS -->');
