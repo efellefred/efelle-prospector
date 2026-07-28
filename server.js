@@ -472,7 +472,7 @@ app.post('/api/messages', requireAuth, async (req, res) => {
 // ─── Fetch & extract text from a URL ────────────────────────────────
 
 app.post('/api/fetch-url', requireAuth, async (req, res) => {
-  const { url } = req.body;
+  const { url, raw } = req.body;
   if (!url) return res.status(400).json({ error: 'url is required' });
   // Block internal/private URLs (SSRF protection)
   try {
@@ -498,6 +498,8 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
     });
     if (!response.ok) return res.status(response.status).json({ error: 'Failed to fetch URL: ' + response.status });
     const html = await response.text();
+    // Raw mode: return the actual HTML so callers can parse markup (e.g. logo <img> tags)
+    if (raw) return res.json({ html: html.slice(0, 500000), length: html.length });
     // Strip tags, scripts, styles to get clean text
     const text = html
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')

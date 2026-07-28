@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.5.1',
+    date: '2026-07-28',
+    title: 'Logo URL Hallucination Fix',
+    changes: [
+      'Fixed: Research Client could fill in an AI-invented logo URL that doesn\'t exist (e.g. a fake /wp-content/ path)',
+      'The homepage logo scraper now actually works — the server was stripping all HTML before the scraper could read it',
+      'Logo scraper also handles lazy-loaded images (data-src / srcset)',
+      'Every logo URL is now verified to load before it\'s filled in; unverifiable AI suggestions are discarded with a clear warning',
+      'Status messages now say where the logo came from (homepage source vs. AI research)',
+    ]
+  },
+  {
     version: '4.5.0',
     date: '2026-07-28',
     title: 'RGS Case Study Pages',

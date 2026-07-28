@@ -15,17 +15,29 @@ const TYPE_LABELS = {
   wsr: { label: 'Website Report' },
 };
 
+// Verify an image URL actually loads — works cross-origin (no CORS needed for a render test)
+function imageExists(url) {
+  return new Promise(resolve => {
+    if (!url) return resolve(false);
+    const img = new Image();
+    const t = setTimeout(() => { img.src = ''; resolve(false); }, 8000);
+    img.onload = () => { clearTimeout(t); resolve(true); };
+    img.onerror = () => { clearTimeout(t); resolve(false); };
+    img.src = url;
+  });
+}
+
 // Scrape the actual homepage HTML to find the real logo URL
 async function scrapeLogoFromHomepage(url) {
   try {
     const res = await fetch('/api/fetch-url', {
       method: 'POST',
       headers: getApiHeaders(),
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, raw: true }),
     });
     if (!res.ok) return null;
     const data = await res.json();
-    const html = data.text || '';
+    const html = data.html || '';
 
     // Parse the HTML to find logo images
     const parser = new DOMParser();
@@ -37,7 +49,12 @@ async function scrapeLogoFromHomepage(url) {
     let bestLogo = null;
 
     for (const img of imgs) {
-      const src = img.getAttribute('src') || '';
+      // Lazy-loaded sites put the real URL in data-src/data-lazy-src/srcset instead of src
+      const src = img.getAttribute('src')
+        || img.getAttribute('data-src')
+        || img.getAttribute('data-lazy-src')
+        || (img.getAttribute('srcset') || '').split(',')[0].trim().split(/\s+/)[0]
+        || '';
       const alt = (img.getAttribute('alt') || '').toLowerCase();
       const cls = (img.getAttribute('class') || '').toLowerCase();
       const id  = (img.getAttribute('id') || '').toLowerCase();
@@ -371,7 +388,18 @@ async function propFetchClient() {
 
     if (finalAddress) document.getElementById('prop-address').value = finalAddress;
 
-    const logoUrl = scrapedLogo || data.logo_url || '';
+    // Logo: real homepage markup first, then the AI's URL only if it verifiably loads.
+    // Never populate an unverified AI-guessed URL — they're frequently hallucinated.
+    setStatus('Verifying logo URL…', 'searching');
+    let logoUrl = '';
+    let logoSource = '';
+    let aiLogoRejected = false;
+    if (scrapedLogo && await imageExists(scrapedLogo)) {
+      logoUrl = scrapedLogo; logoSource = 'website';
+    } else if (data.logo_url) {
+      if (await imageExists(data.logo_url)) { logoUrl = data.logo_url; logoSource = 'research'; }
+      else aiLogoRejected = true;
+    }
     const hasLogo = !!logoUrl;
     const hasAddress = !!finalAddress;
     if (logoUrl) document.getElementById('prop-logo').value = logoUrl;
@@ -379,8 +407,10 @@ async function propFetchClient() {
     if (!hasAddress) statusParts.push('<span style="color:#fb923c">No address found — paste it in the Address field below.</span>');
     if (hasAddress && addressSource === 'google') statusParts.push('<span style="color:#fb923c">Address found via Google — please verify it\'s correct.</span>');
     if (hasAddress && addressSource === 'website') statusParts.push('<span style="color:#2dd4bf">Address found on website.</span>');
-    if (!hasLogo) statusParts.push('<span style="color:#fb923c">No logo found — paste a logo URL in the Logo field below.</span>');
-    if (scrapedLogo) statusParts.push('<span style="color:#2dd4bf">Logo found from homepage source code.</span>');
+    if (!hasLogo && aiLogoRejected) statusParts.push('<span style="color:#fb923c">AI-suggested logo URL didn\'t exist and was discarded — paste the real logo URL below.</span>');
+    else if (!hasLogo) statusParts.push('<span style="color:#fb923c">No logo found — paste a logo URL in the Logo field below.</span>');
+    if (logoSource === 'website') statusParts.push('<span style="color:#2dd4bf">Logo found in homepage source code.</span>');
+    if (logoSource === 'research') statusParts.push('<span style="color:#fb923c">Logo URL came from AI research (verified it loads) — confirm it\'s the right image.</span>');
     status.innerHTML = '<span style="color:#2dd4bf">' + statusParts.join(' ') + '</span>';
   } catch(e) {
     console.error('propFetchClient error:', e);

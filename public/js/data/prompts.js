@@ -466,4 +466,4 @@ Rules:
 - service_area: brief description of coverage area
 - founded: year founded if present, else ""
 - differentiators: 1-2 sentences on what makes them stand out (certifications, ratings, awards, team size, guarantees). Empty string if none found.
-- logo_url: the direct URL of the company logo image found on the site (look for <img> tags with "logo" in src, alt, class, or id). Return the full absolute URL, else "".`;
+- logo_url: the direct URL of the company logo image, ONLY if you actually observed that exact URL in fetched page content. NEVER construct, infer, or guess a URL from the site's platform or common patterns (e.g. /wp-content/uploads/...) — a guessed URL is worse than none. If you did not directly observe the logo file URL, return "".`;
