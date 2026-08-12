@@ -526,8 +526,16 @@ function propBuildHTML(clientName) {
     : '<div id="client-logo-block" style="border:2px dashed #D2D2D7;border-radius:10px;padding:24px 32px;display:inline-flex;flex-direction:column;align-items:center;gap:8px;background:#F5F5F7;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#636366" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#636366;">Client Logo</div></div>';
 
 
+  // If the address is street-only (research often misses city/state/zip), append the
+  // City, State field so the letterhead block is complete. An address counts as complete
+  // only if it already has a state code (", WA") or a zip — checking for the city name is
+  // unreliable because street names often contain it ("227 Bellevue Way").
+  const addressComplete = /,\s*[A-Z]{2}\b/.test(address) || /\b\d{5}(?:-\d{4})?\b/.test(address);
+  const fullAddress = (address && !addressComplete && location) ? address + ', ' + location : address;
+
   const lines = [];
-  if (address) lines.push(address);
+  if (fullAddress) lines.push(fullAddress);
+  else if (location) lines.push(location);
   if (phone)   lines.push('<a href="tel:' + phone + '" style="color:#636366;text-decoration:none;">' + phone + '</a>');
   if (website) lines.push('<a href="' + website + '" style="color:#F56300;text-decoration:none;" target="_blank">' + website.replace(/https?:\/\//,'').replace(/\/$/, '') + '</a>');
   const addressHtml = lines.length ? '<div style="font-size:11px;color:#636366;line-height:1.8;text-align:center;">' + lines.join('<br>') + '</div>' : '';
@@ -868,7 +876,7 @@ function propBuildHTML(clientName) {
     '[[ABOUT_P1]]':             about1,
     '[[ABOUT_P2]]':             about2,
     '[[CLIENT_LOGO]]':          logoHtml,
-    '[[CLIENT_ADDRESS]]':       address || '',
+    '[[CLIENT_ADDRESS]]':       fullAddress || location || '',
     '[[CLIENT_PHONE]]':         phone || '',
     '[[CLIENT_WEBSITE]]':       website ? website.replace(/https?:\/\//,'').replace(/\/$/, '') : '',
     '[[ADDRESS]]':              addressHtml,
@@ -1214,17 +1222,21 @@ document.getElementById('prop-chat-send').addEventListener('click', async () => 
   messagesEl.scrollTop = messagesEl.scrollHeight;
 
   try {
-    // Use find-and-replace approach so the model doesn't need to reproduce the entire HTML
+    // Use find-and-replace approach so the model doesn't need to reproduce the entire HTML.
+    // Strip embedded base64 images from what the model sees — they're huge and were pushing
+    // everything after the About section out of the old 60K window (the model literally
+    // couldn't see the agreement page). Finds never target image data, so this is safe.
+    const modelView = propReportHtml.replace(/src="data:[^"]*"/g, 'src="[embedded-image]"').slice(0, 300000);
     const res = await fetch('/api/messages', {
       method: 'POST',
       headers: getApiHeaders(),
       body: JSON.stringify({
         model: API_MODEL,
-        max_tokens: 4096,
+        max_tokens: 8192,
         system: `You are a proposal editor. The user gives you HTML and an edit instruction.
 
 Return ONLY a JSON array of find-and-replace operations. Each operation has:
-- "find": the exact text/HTML to find in the document (must be unique enough to match only once)
+- "find": the exact text/HTML to find in the document, copied character-for-character
 - "replace": the replacement text/HTML
 
 Example response:
@@ -1232,12 +1244,14 @@ Example response:
 
 Rules:
 - Return ONLY the JSON array, no explanation, no markdown fences
-- Use the minimum number of replacements needed
-- Match the exact HTML including tags and attributes
+- Every occurrence of "find" is replaced, so to change a value everywhere (e.g. a price), ONE op with the exact old text is enough
+- To ADD new content, use a short exact anchor: put an existing snippet in "find" and return it in "replace" with the new content appended before/after it
+- Copy "find" strings EXACTLY from the document above — including tags, attributes, entities like &amp;, and apostrophes — or they will not match
+- img src values shown as "[embedded-image]" are placeholders; never include them in a "find"
 - Keep all styling intact unless the user specifically asks to change it`,
         messages: [{
           role: 'user',
-          content: `Here is the current proposal HTML (truncated to key content sections):\n\n${propReportHtml.slice(0, 60000)}\n\nEdit instruction: ${instruction}`
+          content: `Here is the current proposal HTML:\n\n${modelView}\n\nEdit instruction: ${instruction}`
         }]
       })
     });
@@ -1267,23 +1281,48 @@ Rules:
     if (!Array.isArray(replacements)) throw new Error('AI returned unexpected format — try again');
     let updatedHtml = propReportHtml;
     let changeCount = 0;
+    let failedCount = 0;
+
+    // Exact match first; then retry with common entity/quote variants the model gets wrong
+    const findVariant = (html, find) => {
+      if (html.includes(find)) return find;
+      const variants = [
+        find.replace(/&(?!amp;|lt;|gt;|quot;|#)/g, '&amp;'),
+        find.replace(/&amp;/g, '&'),
+        find.replace(/'/g, '’'),
+        find.replace(/’/g, "'"),
+        find.replace(/"/g, '&quot;'),
+      ];
+      for (const v of variants) { if (v !== find && html.includes(v)) return v; }
+      return null;
+    };
 
     for (const op of replacements) {
-      if (op.find && op.replace !== undefined && updatedHtml.includes(op.find)) {
-        updatedHtml = updatedHtml.replace(op.find, op.replace);
+      if (!op.find || op.replace === undefined) continue;
+      const match = findVariant(updatedHtml, op.find);
+      if (match) {
+        // Replace EVERY occurrence — "change the price everywhere" must mean everywhere
+        updatedHtml = updatedHtml.split(match).join(op.replace);
         changeCount++;
+      } else {
+        failedCount++;
       }
     }
 
-    if (changeCount === 0) throw new Error('No matching text found to replace — try being more specific');
+    if (changeCount === 0) throw new Error('No matching text found to replace — try quoting the exact text you see in the proposal');
 
     // Update the proposal
     propReportHtml = updatedHtml;
     await writeToFrame(document.getElementById('prop-report-frame'), propReportHtml);
 
-    // Show success
-    thinkMsg.textContent = '✓ ' + changeCount + ' change' + (changeCount > 1 ? 's' : '') + ' applied';
-    thinkMsg.style.color = '#2dd4bf';
+    // Honest reporting: only claim what actually landed, and flag what didn't
+    if (failedCount === 0) {
+      thinkMsg.textContent = '✓ ' + changeCount + ' change' + (changeCount > 1 ? 's' : '') + ' applied';
+      thinkMsg.style.color = '#2dd4bf';
+    } else {
+      thinkMsg.textContent = '⚠ ' + changeCount + ' of ' + (changeCount + failedCount) + ' changes applied — ' + failedCount + ' couldn\'t find matching text. Try again, quoting the exact text you see in the proposal.';
+      thinkMsg.style.color = '#fb923c';
+    }
   } catch (e) {
     thinkMsg.textContent = '⚠ ' + (e.message || 'Failed to edit');
     thinkMsg.style.color = '#f87171';

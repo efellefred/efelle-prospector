@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.6.1 — 2026-08-12 — AI Editor Overhaul & Address Fix
+
+- Fixed: AI Editor could only see the first part of the proposal (embedded images were crowding out the later pages) — it now sees the whole document, so edits to the agreement/signature page work
+- AI Editor now replaces every occurrence of a value — "change the price everywhere" actually changes it everywhere
+- Honest results: the editor reports exactly how many changes landed and warns when one couldn't find its target (no more false "✓ applied")
+- Editor tolerates common mismatches (& vs &amp;, curly vs straight apostrophes) when locating text
+- Fixed: page-1 address block now appends City, State when the researched address is street-only
+
 ## 4.6.0 — 2026-07-28 — Smart Logo Background & PDF Polish
 
 - Client logos with substantial white areas automatically get a dark backdrop so they stay visible on the white page

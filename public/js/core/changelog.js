@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.6.1',
+    date: '2026-08-12',
+    title: 'AI Editor Overhaul & Address Fix',
+    changes: [
+      'Fixed: AI Editor could only see the first part of the proposal (embedded images were crowding out the later pages) — it now sees the whole document, so edits to the agreement/signature page work',
+      'AI Editor now replaces every occurrence of a value — "change the price everywhere" actually changes it everywhere',
+      'Honest results: the editor reports exactly how many changes landed and warns when one couldn\'t find its target (no more false "✓ applied")',
+      'Editor tolerates common mismatches (& vs &amp;, curly vs straight apostrophes) when locating text',
+      'Fixed: page-1 address block now appends City, State when the researched address is street-only',
+    ]
+  },
+  {
     version: '4.6.0',
     date: '2026-07-28',
     title: 'Smart Logo Background & PDF Polish',
