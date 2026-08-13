@@ -383,6 +383,8 @@ function propReset() {
   if (chatPanel) chatPanel.style.display = 'none';
   const pubPanel = document.getElementById('prop-publish-panel');
   if (pubPanel) pubPanel.style.display = 'none';
+  // Reset research mode to URL
+  if (document.getElementById('research-mode-url')) window.selectResearchMode('url');
   const chatMessages = document.getElementById('prop-chat-messages');
   if (chatMessages) chatMessages.innerHTML = '';
   // Reset report frame
@@ -402,12 +404,35 @@ function propGoStage2() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// Research mode: 'url' scrapes the client's website; 'name' researches businesses
+// with no website via their Google Business Profile / Facebook / directory listings.
+let propResearchMode = 'url';
+window.selectResearchMode = function(mode) {
+  propResearchMode = mode;
+  document.getElementById('research-mode-url').classList.toggle('selected', mode === 'url');
+  document.getElementById('research-mode-name').classList.toggle('selected', mode === 'name');
+  document.getElementById('prop-client-url').style.display = mode === 'url' ? '' : 'none';
+  document.getElementById('research-hint').textContent = mode === 'url'
+    ? '↳ Company name, location, services, address, phone, and logo URL will be pulled automatically after clicking Research Client.'
+    : '↳ Fill in Company Name (and City, State if you know it) below, then click Research Client — we\'ll research their Google Business Profile, Facebook, and directory listings.';
+};
+
 async function propFetchClient() {
   const url = document.getElementById('prop-client-url').value.trim();
-  if (!url) return;
+  const isNameMode = propResearchMode === 'name';
+  const bizName = document.getElementById('prop-name').value.trim();
+  const bizLoc = document.getElementById('prop-location').value.trim();
   // Server mode: session token handles auth, no API key needed in browser
   const btn = document.getElementById('prop-fetch-btn');
   const status = document.getElementById('prop-url-status');
+  if (isNameMode && !bizName) {
+    status.innerHTML = '<span style="color:#fb923c">Enter the Company Name below first (City, State helps too), then click Research Client.</span>';
+    return;
+  }
+  if (!isNameMode && !url) {
+    status.innerHTML = '<span style="color:#fb923c">Paste the client\'s website URL first — or switch to "No website — research online".</span>';
+    return;
+  }
   btn.disabled = true; btn.textContent = '⟳ Fetching…';
   function setStatus(msg, state) {
     const color = state === 'searching' ? '#a78bfa' : state === 'building' ? '#2dd4bf' : state === 'done' ? '#2dd4bf' : state === 'warn' ? '#fb923c' : state === 'error' ? '#f87171' : '#9ca3af';
@@ -417,7 +442,9 @@ async function propFetchClient() {
   try {
     const researchPromise = callWithWebSearch(
       PROP_RESEARCH_SYSTEM,
-      'Research this business website and extract their information including their logo image URL: ' + url,
+      isNameMode
+        ? 'This business has no website. Research the business "' + bizName + '"' + (bizLoc ? ' located in ' + bizLoc : '') + ' using their Google Business Profile, Facebook page, Yelp, Angi, BBB, and other business directory listings. Extract their information. Include only facts you actually found in those listings — leave any field empty rather than guessing.'
+        : 'Research this business website and extract their information including their logo image URL: ' + url,
       2000,
       (msg, state) => { setStatus(msg, state); }
     );
@@ -438,12 +465,16 @@ async function propFetchClient() {
     if (data.service_area) document.getElementById('prop-area').value = data.service_area;
     if (data.founded)      document.getElementById('prop-founded').value = data.founded;
     if (data.differentiators) document.getElementById('prop-differentiators').value = data.differentiators;
-    // Scrape the ACTUAL homepage for the real logo URL (don't trust Claude's guess)
-    setStatus('Scraping homepage for logo and address…', 'searching');
-    const [scrapedLogo, scrapedAddress] = await Promise.all([
-      scrapeLogoFromHomepage(url),
-      scrapeAddressFromSite(url),
-    ]);
+    // Scrape the ACTUAL homepage for the real logo URL (don't trust Claude's guess).
+    // Name mode has no site to scrape — rely on verified research + Gemini fallback.
+    let scrapedLogo = null, scrapedAddress = null;
+    if (!isNameMode) {
+      setStatus('Scraping homepage for logo and address…', 'searching');
+      [scrapedLogo, scrapedAddress] = await Promise.all([
+        scrapeLogoFromHomepage(url),
+        scrapeAddressFromSite(url),
+      ]);
+    }
 
     // Address: use scraped > Claude's research > Gemini lookup
     let finalAddress = scrapedAddress || data.address || '';
@@ -453,7 +484,7 @@ async function propFetchClient() {
       setStatus('Looking up business address via Google…', 'searching');
       const geminiAddress = await lookupAddressViaGemini(
         data.company_name || document.getElementById('prop-name').value,
-        url
+        url || ('no website — business located in ' + (bizLoc || 'unknown city'))
       );
       if (geminiAddress) {
         finalAddress = geminiAddress;
@@ -1384,6 +1415,64 @@ Rules:
   }
 });
 
+// ─── Toolbar dropdown menus (Edit ▾ / Download ▾) ────────────────────
+function setupToolbarMenu(btnId, menuId) {
+  const btn = document.getElementById(btnId);
+  const menu = document.getElementById(menuId);
+  if (!btn || !menu) return;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const wasOpen = menu.style.display === 'block';
+    document.querySelectorAll('.dl-menu').forEach(m => { m.style.display = 'none'; });
+    menu.style.display = wasOpen ? 'none' : 'block';
+  });
+}
+setupToolbarMenu('prop-edit-menu-btn', 'prop-edit-menu');
+setupToolbarMenu('prop-download-menu-btn', 'prop-download-menu');
+document.addEventListener('click', () => {
+  document.querySelectorAll('.dl-menu').forEach(m => { m.style.display = 'none'; });
+});
+
+// ─── Email intro (opens the user's mail client — fully editable) ─────
+document.getElementById('prop-email-btn').addEventListener('click', async () => {
+  if (!propReportHtml) return;
+  const btn = document.getElementById('prop-email-btn');
+  const orig = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '⟳ Preparing…';
+  const company = document.getElementById('prop-name').value.trim() || 'your company';
+  const contact = document.getElementById('prop-contact').value.trim();
+  const firstName = contact ? contact.split(/\s+/)[0] : 'there';
+  // The email's signing instructions need the hosted link — publish (or refresh
+  // the existing link) first so the email always points at the current version.
+  let link = '';
+  try {
+    const slug = pubSlug();
+    const existingToken = localStorage.getItem('prospector_pub_' + slug) || undefined;
+    const res = await fetch('/api/publish', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({ html: propReportHtml, company, token: existingToken }),
+    });
+    const d = await res.json();
+    if (res.ok) {
+      localStorage.setItem('prospector_pub_' + slug, d.token);
+      renderPublishPanel(d.token, d);
+      link = window.location.origin + '/p/' + d.token;
+    }
+  } catch (e) { /* fall through — email still opens without a link */ }
+  const subject = 'Your proposal from efelle creative — ' + company;
+  const body = 'Hi ' + firstName + ',\n\n'
+    + 'Thank you for the opportunity! Your proposal for ' + company + ' is ready to view here:\n\n'
+    + (link || '[paste proposal link here]') + '\n\n'
+    + 'When you\'re ready to move forward, it takes about ten seconds: open the link, type your name in the "Ready to move forward?" bar at the bottom of the page, and click Accept & Sign. No printing or scanning needed — your acceptance is recorded instantly and we\'ll reach out right away to schedule your kickoff call.\n\n'
+    + 'Questions? Just reply to this email or call us at 206.384.4909.\n\n'
+    + 'Best,\n'
+    + 'efelle creative\n'
+    + 'efelle.com | 206.384.4909';
+  window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  btn.innerHTML = orig; btn.disabled = false;
+});
+
 // ─── Publish Link (hosted proposal with open tracking + click-to-sign) ─
 function pubSlug() {
   return (document.getElementById('prop-name').value || 'proposal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -1451,7 +1540,8 @@ document.getElementById('prop-publish-btn').addEventListener('click', async () =
 // ─── Download PDF (server-rendered — consistent pagination) ─────────
 document.getElementById('prop-pdf-btn').addEventListener('click', async () => {
   if (!propReportHtml) return;
-  const btn = document.getElementById('prop-pdf-btn');
+  // The menu item hides when the menu closes — show progress on the menu button
+  const btn = document.getElementById('prop-download-menu-btn');
   const orig = btn.innerHTML;
   btn.disabled = true; btn.innerHTML = '⟳ Rendering PDF…';
   try {

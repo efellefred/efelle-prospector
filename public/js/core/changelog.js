@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.10.0',
+    date: '2026-08-13',
+    title: 'No-Website Research, Email Intro & Cleaner Toolbar',
+    changes: [
+      'New research toggle: "No website — research online" researches leads without a site via their Google Business Profile, Facebook, Yelp, and directory listings — enter the company name (and city) and click Research Client',
+      'New ✉️ Email button: publishes/refreshes the proposal link and opens a pre-written intro email with signing instructions — fully editable before you send',
+      'Toolbar streamlined: Edit ▾ menu (Add Logo, Edit with AI, Update Address / Details) and Download ▾ menu (PDF, HTML); Print and Publish Link unchanged',
+    ]
+  },
+  {
     version: '4.9.1',
     date: '2026-08-13',
     title: 'Official Signature Rendering',

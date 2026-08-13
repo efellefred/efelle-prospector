@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.10.0 — 2026-08-13 — No-Website Research, Email Intro & Cleaner Toolbar
+
+- New research toggle: "No website — research online" researches leads without a site via their Google Business Profile, Facebook, Yelp, and directory listings — enter the company name (and city) and click Research Client
+- New ✉️ Email button: publishes/refreshes the proposal link and opens a pre-written intro email with signing instructions — fully editable before you send
+- Toolbar streamlined: Edit ▾ menu (Add Logo, Edit with AI, Update Address / Details) and Download ▾ menu (PDF, HTML); Print and Publish Link unchanged
+
 ## 4.9.1 — 2026-08-13 — Official Signature Rendering
 
 - When a prospect accepts a hosted proposal, their typed name now renders in script on the signature line and the date fills the date line

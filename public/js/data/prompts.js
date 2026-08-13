@@ -440,9 +440,9 @@ End with CLOSING PANEL: black bg, efelle logo centered, orange CTA button to htt
 
 WRITING RULES: No em-dashes. Never "Efelle". Direct, confident, strategic tone. All content specific to this client. break-after: page on every section.`;
 
-export const PROP_RESEARCH_SYSTEM = `You are a web researcher. Extract business information from a website. Return ONLY valid JSON, no preamble or markdown fences.
+export const PROP_RESEARCH_SYSTEM = `You are a web researcher. Extract business information about a company. Return ONLY valid JSON, no preamble or markdown fences.
 
-IMPORTANT: Use only 1-2 web searches maximum. Visit the URL directly first — most info is on the homepage or contact page. Only do a second search if critical fields are missing.
+IMPORTANT: Use only 1-2 web searches maximum. If given a website URL, visit it directly first — most info is on the homepage or contact page; only do a second search if critical fields are missing. If given a business NAME instead of a URL (the business has no website), search for their Google Business Profile, Facebook page, Yelp, Angi, BBB, or other directory listings and extract from those — use only facts you actually find; never invent details.
 
 Schema:
 {
