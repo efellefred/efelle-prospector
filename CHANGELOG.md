@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.13.0 — 2026-08-13 — RGS Card Updates & Sales Notes Proposal Linking
+
+- Local SEO cards now include citation building for NAP consistency (all verticals)
+- Google Ads (PPC) renamed to "PPC Ads [Google & Bing]" with ad-spend note updated to match
+- Optional Add-Ons now a 3-up row with new "Social Media Engagement" ($250/mo) — we answer chats, comments & messages and post regular content
+- The whole RGS section — price band, 6 program cards, 3 add-ons, and the 223% band — now fits on a single printed page (tightened print spacing)
+- Sales Notes: link an existing proposal from the Library as source material — its content feeds the notes and its published link becomes the Proposal Link; files and pasted notes still welcome alongside
+
 ## 4.12.0 — 2026-08-13 — New Engine: Generate Sales Notes
 
 - New home-screen tool: upload discovery files (PDF, TXT, MD, CSV, screenshots — up to 6 files / 15 MB) and/or paste notes, and get a formatted Sales Notes handoff doc in efelle's standard format

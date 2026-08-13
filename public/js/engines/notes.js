@@ -6,7 +6,7 @@ import { getApiHeaders } from '../core/api.js';
 import { API_MODEL } from '../core/state.js';
 import { NOTES_SYSTEM } from '../data/prompts.js';
 import { writeToFrame } from '../core/utils.js';
-import { saveReport } from '../core/reports.js';
+import { saveReport, initSearchableClientDropdown } from '../core/reports.js';
 
 const MAX_FILES = 6;
 const MAX_TOTAL_BYTES = 15 * 1024 * 1024;
@@ -16,6 +16,65 @@ const IMAGE_TYPES = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', w
 let notesFiles = []; // { name, size, kind: 'pdf'|'image'|'text', mediaType, data }
 let notesReportHtml = '';
 let notesCompany = '';
+let linkedProposal = null; // { id, clientName, text, hostedUrl }
+
+// ── Link an existing Prospector proposal as source material ──────────
+function renderLinkedProposal() {
+  const wrap = document.getElementById('notes-prop-linked');
+  if (!linkedProposal) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = '';
+  wrap.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:#0c1a14;border:1px solid #10B98155;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2ddd4;">'
+    + '<span>📎</span><span style="flex:1;">Linked proposal: <strong>' + linkedProposal.clientName.replace(/</g, '&lt;') + '</strong>'
+    + (linkedProposal.hostedUrl ? ' <span style="color:#34d399;">· hosted link will be used as the Proposal Link</span>' : ' <span style="color:#6b7a94;">· no published link yet (publish it for a shareable Proposal Link)</span>')
+    + '</span></div>';
+  const rm = document.createElement('button');
+  rm.textContent = '✕';
+  rm.style.cssText = 'border:none;background:transparent;color:#f87171;cursor:pointer;font-size:13px;padding:2px 4px;';
+  rm.addEventListener('click', () => { linkedProposal = null; renderLinkedProposal(); });
+  wrap.firstChild.appendChild(rm);
+}
+
+async function selectLinkedProposal(report) {
+  notesErr('');
+  try {
+    const res = await fetch('/api/reports/' + encodeURIComponent(report.id) + '/html', { headers: getApiHeaders() });
+    if (!res.ok) throw new Error('Could not load that proposal from the library.');
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const text = (doc.body ? doc.body.innerText : '').replace(/\n{3,}/g, '\n\n').replace(/[ \t]{2,}/g, ' ').trim().slice(0, 30000);
+    const slug = (report.clientName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const token = localStorage.getItem('prospector_pub_' + slug);
+    linkedProposal = {
+      id: report.id,
+      clientName: report.clientName || 'Client',
+      text,
+      hostedUrl: token ? window.location.origin + '/p/' + token : null,
+    };
+    const companyField = document.getElementById('notes-company');
+    if (!companyField.value.trim()) companyField.value = linkedProposal.clientName;
+    document.getElementById('notes-prop-search').value = '';
+    renderLinkedProposal();
+  } catch (e) { notesErr(e.message); }
+}
+
+// (Re)build the proposal picker with a FRESH library list every time the Sales
+// Notes screen opens — a proposal generated moments ago must be pickable, and
+// module-load init would run before login. Clone-replace strips old listeners.
+async function initNotesPicker() {
+  const oldInput = document.getElementById('notes-prop-search');
+  if (!oldInput) return;
+  const freshInput = oldInput.cloneNode(true);
+  freshInput.value = '';
+  oldInput.parentNode.replaceChild(freshInput, oldInput);
+  await initSearchableClientDropdown('notes-prop-search', 'notes-prop-search-results', 'prop', selectLinkedProposal);
+}
+const notesScreen = document.getElementById('screen-notes');
+if (notesScreen) {
+  const notesObserver = new MutationObserver(() => {
+    if (notesScreen.classList.contains('visible')) initNotesPicker();
+  });
+  notesObserver.observe(notesScreen, { attributes: true, attributeFilter: ['class'] });
+}
 
 function notesErr(msg) {
   const el = document.getElementById('notes-error');
@@ -80,6 +139,16 @@ document.getElementById('notes-files').addEventListener('change', async (e) => {
 
 function buildContentBlocks() {
   const blocks = [];
+  if (linkedProposal) {
+    blocks.push({
+      type: 'text',
+      text: '=== Existing Prospector proposal for ' + linkedProposal.clientName + ' (extracted text) ===\n'
+        + (linkedProposal.hostedUrl
+            ? 'The proposal is hosted at: ' + linkedProposal.hostedUrl + ' — use this URL as the "Proposal Link" field, rendered as a clickable link.\n\n'
+            : 'A proposal for this client exists in the Prospector library. If no other proposal link appears in the material, set "Proposal Link" to "In Prospector library".\n\n')
+        + linkedProposal.text,
+    });
+  }
   for (const f of notesFiles) {
     if (f.kind === 'pdf') {
       blocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.data }, title: f.name });
@@ -103,7 +172,7 @@ function buildContentBlocks() {
 document.getElementById('notes-generate-btn').addEventListener('click', async () => {
   notesErr('');
   const pasted = document.getElementById('notes-paste').value.trim();
-  if (!notesFiles.length && !pasted) { notesErr('Add at least one file or paste some notes first.'); return; }
+  if (!notesFiles.length && !pasted && !linkedProposal) { notesErr('Link a proposal, add at least one file, or paste some notes first.'); return; }
 
   const btn = document.getElementById('notes-generate-btn');
   const prog = document.getElementById('notes-progress');

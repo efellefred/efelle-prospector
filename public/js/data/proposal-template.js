@@ -159,13 +159,20 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     .include-grid   { gap:10px; margin-bottom:18px; }
     .include-item   { padding:10px 14px; font-size:11px; }
 
-    /* ── P4: RGS ── */
-    .rgs-grid       { gap:10px; }
-    .rgs-card       { padding:14px 18px; }
+    /* ── P4: RGS — tight enough that price band + 6 cards + 3 add-ons + ROI band share one page ── */
+    .rgs-grid       { gap:8px; }
+    .rgs-grid[style*="margin-top"] { margin-top:12px !important; }
+    .rgs-card       { padding:12px 14px; }
     .rgs-card-title { font-size:11px; }
-    .rgs-card-desc  { font-size:10px; }
-    .rgs-price-band { padding:16px 20px; margin-top:12px; }
+    .rgs-card-desc  { font-size:9.5px; line-height:1.5; }
+    .rgs-price-band { padding:12px 18px; margin-top:8px; }
     .rgs-price-val  { font-size:26px; }
+    #sec-rgs        { padding-top:20px; padding-bottom:16px; }
+    #sec-rgs .lead  { margin-bottom:12px; }
+    #rgs-addons     { margin-top:12px !important; }
+    #rgs-addons > div:first-child { margin-bottom:8px !important; }
+    #rgs-addons .rgs-card div[style*="border-top"] { margin-top:8px !important; padding-top:6px !important; }
+    #sec-rgs .roi-band { margin-top:12px !important; padding:12px 18px !important; }
 
     /* ── P5: Why efelle ── */
     .awards-row           { margin-bottom:16px; }
@@ -319,7 +326,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
 
   <div id="rgs-addons" style="margin-top:24px;">
     <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gray-2); margin-bottom:12px;">Optional Add-Ons</div>
-    <div class="rgs-grid">
+    <div class="rgs-grid" style="grid-template-columns:1fr 1fr 1fr;">
       [[RGS_ADDON_CARDS]]
     </div>
   </div>

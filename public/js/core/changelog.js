@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.13.0',
+    date: '2026-08-13',
+    title: 'RGS Card Updates & Sales Notes Proposal Linking',
+    changes: [
+      'Local SEO cards now include citation building for NAP consistency (all verticals)',
+      'Google Ads (PPC) renamed to "PPC Ads [Google & Bing]" with ad-spend note updated to match',
+      'Optional Add-Ons now a 3-up row with new "Social Media Engagement" ($250/mo) — we answer chats, comments & messages and post regular content',
+      'The whole RGS section — price band, 6 program cards, 3 add-ons, and the 223% band — now fits on a single printed page (tightened print spacing)',
+      'Sales Notes: link an existing proposal from the Library as source material — its content feeds the notes and its published link becomes the Proposal Link; files and pasted notes still welcome alongside',
+    ]
+  },
+  {
     version: '4.12.0',
     date: '2026-08-13',
     title: 'New Engine: Generate Sales Notes',
