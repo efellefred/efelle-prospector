@@ -579,6 +579,41 @@ app.get('/api/publish/:token/status', requireAuth, (req, res) => {
   });
 });
 
+// After acceptance, render the signature into the proposal's Authorization block:
+// typed name in script on the signature line, date on the date line, and a
+// verification line (full timestamp, IP, reference ID) underneath. Anchored on
+// the proposal template's signature markup — if a future template changes that
+// markup, this silently no-ops and the accepted banner still shows.
+function injectSignature(html, rec) {
+  const a = rec.accepted;
+  if (!a) return html;
+  const name = escapeHtmlText(a.name);
+  const whenFull = new Date(a.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' PT';
+  const dateOnly = new Date(a.t).toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' });
+  let out = html;
+  // Fill the two empty signature lines (signature + date)
+  const lineRe = /<div style="display:grid; grid-template-columns:1fr 0\.5fr; gap:20px; margin-bottom:4px;">\s*<div style="border-bottom:1px solid #1D1D1F;[^"]*"><\/div>\s*<div style="border-bottom:1px solid #1D1D1F;[^"]*"><\/div>\s*<\/div>/;
+  if (lineRe.test(out)) {
+    out = out.replace(lineRe,
+      '<div style="display:grid; grid-template-columns:1fr 0.5fr; gap:20px; margin-bottom:4px;">'
+      + '<div style="border-bottom:1px solid #1D1D1F; min-height:26px; display:flex; align-items:flex-end;"><span style="font-family:\'Segoe Script\',\'Brush Script MT\',\'Lucida Handwriting\',cursive; font-size:19px; color:#1D1D1F; line-height:1; padding-bottom:2px;">' + name + '</span></div>'
+      + '<div style="border-bottom:1px solid #1D1D1F; min-height:26px; display:flex; align-items:flex-end;"><span style="font-size:12px; color:#1D1D1F; padding-bottom:4px;">' + escapeHtmlText(dateOnly) + '</span></div>'
+      + '</div>');
+  }
+  // Verification line under the Signature/Date labels
+  const labelsRe = /(<div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0\.10em; color:var\(--gray-2\);">Date<\/div>\s*<\/div>)/;
+  if (labelsRe.test(out)) {
+    out = out.replace(labelsRe,
+      '$1<div style="margin-top:10px; font-size:9px; color:#636366; line-height:1.6; letter-spacing:0.02em;">'
+      + '&#10003; Digitally accepted by ' + name
+      + ' &nbsp;&middot;&nbsp; ' + escapeHtmlText(whenFull)
+      + ' &nbsp;&middot;&nbsp; IP ' + escapeHtmlText(a.ip || 'unavailable')
+      + ' &nbsp;&middot;&nbsp; Ref ' + escapeHtmlText(rec.token.slice(0, 8).toUpperCase())
+      + '</div>');
+  }
+  return out;
+}
+
 function acceptUiHtml(rec) {
   const hideOnPrint = '<style>@media print { .pub-ui { display:none !important; } } body { margin-bottom:120px; }</style>';
   if (rec.accepted) {
@@ -626,7 +661,8 @@ app.get('/p/:token', publicViewLimiter, (req, res) => {
     writePublished(rec);
   } catch (e) { /* tracking must never block viewing */ }
   const ui = acceptUiHtml(rec);
-  const html = rec.html.includes('</body>') ? rec.html.replace('</body>', ui + '</body>') : rec.html + ui;
+  const signed = rec.accepted ? injectSignature(rec.html, rec) : rec.html;
+  const html = signed.includes('</body>') ? signed.replace('</body>', ui + '</body>') : signed + ui;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   res.send(html);

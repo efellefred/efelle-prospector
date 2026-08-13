@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.9.1 — 2026-08-13 — Official Signature Rendering
+
+- When a prospect accepts a hosted proposal, their typed name now renders in script on the signature line and the date fills the date line
+- A verification line appears under the signature: full timestamp (Pacific Time), the signer's IP address, and a reference ID
+- The signed record prints — save the accepted proposal as PDF for your files
+
 ## 4.9.0 — 2026-08-13 — Hosted Proposal Links, Open Tracking & Click-to-Sign
 
 - New "Publish Link" button hosts the proposal at a shareable, unguessable URL (prospector.efelle.com/p/…) — send prospects a link instead of an attachment

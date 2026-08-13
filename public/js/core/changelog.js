@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.9.1',
+    date: '2026-08-13',
+    title: 'Official Signature Rendering',
+    changes: [
+      'When a prospect accepts a hosted proposal, their typed name now renders in script on the signature line and the date fills the date line',
+      'A verification line appears under the signature: full timestamp (Pacific Time), the signer\'s IP address, and a reference ID',
+      'The signed record prints — save the accepted proposal as PDF for your files',
+    ]
+  },
+  {
     version: '4.9.0',
     date: '2026-08-13',
     title: 'Hosted Proposal Links, Open Tracking & Click-to-Sign',
