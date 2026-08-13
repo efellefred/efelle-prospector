@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.12.0',
+    date: '2026-08-13',
+    title: 'New Engine: Generate Sales Notes',
+    changes: [
+      'New home-screen tool: upload discovery files (PDF, TXT, MD, CSV, screenshots — up to 6 files / 15 MB) and/or paste notes, and get a formatted Sales Notes handoff doc in efelle\'s standard format',
+      'Strictly source-grounded: the report contains only information found in your material — unknown fields show a dash, nothing is invented',
+      'Download as HTML or server-rendered PDF (named "Sales Notes - {Company}") — ready to drop into Basecamp',
+      'Reports auto-save to the Library under the new Sales Notes type',
+    ]
+  },
+  {
     version: '4.11.0',
     date: '2026-08-13',
     title: 'Logo Preview & Reliability Fixes',

@@ -10,6 +10,7 @@ const TYPE_LABELS = {
   cca:  { label: 'Strategy Plan',  color: '#a78bfa' },
   cap:  { label: 'Action Plan',    color: '#2dd4bf' },
   prop: { label: 'Proposal',       color: '#F56300' },
+  notes: { label: 'Sales Notes',   color: '#10B981' },
   wsr:  { label: 'W.A.R. Report', color: '#34d399' },
   competitor: { label: 'Competitor Report', color: '#ec4899' },
 };
@@ -146,6 +147,12 @@ async function libraryEditReport(id, type) {
 
       const frame = document.getElementById('prop-report-frame');
       await writeToFrame(frame, html);
+
+    } else if (type === 'notes') {
+      if (typeof showEngine === 'function') showEngine('notes');
+      if (typeof window.setNotesReportHtml === 'function') window.setNotesReportHtml(html, report.clientName);
+      const frame = document.getElementById('notes-report-frame');
+      if (frame) await writeToFrame(frame, html);
 
     } else if (type === 'cca') {
       if (typeof showEngine === 'function') showEngine('cca');

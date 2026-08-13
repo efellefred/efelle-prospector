@@ -2,6 +2,13 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.12.0 — 2026-08-13 — New Engine: Generate Sales Notes
+
+- New home-screen tool: upload discovery files (PDF, TXT, MD, CSV, screenshots — up to 6 files / 15 MB) and/or paste notes, and get a formatted Sales Notes handoff doc in efelle's standard format
+- Strictly source-grounded: the report contains only information found in your material — unknown fields show a dash, nothing is invented
+- Download as HTML or server-rendered PDF (named "Sales Notes - {Company}") — ready to drop into Basecamp
+- Reports auto-save to the Library under the new Sales Notes type
+
 ## 4.11.0 — 2026-08-13 — Logo Preview & Reliability Fixes
 
 - Live logo preview in Client Details: the moment a logo URL is filled (by research or by hand), you see the actual image on both white and dark backgrounds — with a clear warning if the URL doesn't load

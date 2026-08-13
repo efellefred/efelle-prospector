@@ -38,7 +38,7 @@ const sessions = new Map();
 // the server PDF renderer, and downloaded HTML files — the default same-origin
 // policy silently blanks images on all of those surfaces.
 app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '40mb' })); // Sales Notes uploads: up to 15 MB of files as base64
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/screenshots', express.static(path.join(__dirname, 'data', 'screenshots')));
 app.use('/uploads', express.static(path.join(__dirname, 'data', 'uploads')));
