@@ -41,6 +41,21 @@ async function fetchLogoDataUri(url) {
   } catch (e) { return null; }
 }
 
+// Store a logo on our server and get back a small hosted URL — keeps proposals free
+// of multi-hundred-KB base64 blobs. Returns an absolute URL, or null on failure.
+async function uploadLogoToServer(dataUri) {
+  try {
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({ dataUri }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.url ? new URL(data.url, window.location.origin).href : null;
+  } catch (e) { return null; }
+}
+
 // Fraction of the logo's visible (non-transparent) pixels that are near-white.
 // Used to decide whether the logo needs a dark backdrop on the white proposal page.
 function analyzeLogoWhiteness(dataUri) {
@@ -515,9 +530,9 @@ function propBuildHTML(clientName) {
   const p4 = vpd[3] || null;
 
 
-  // Use the proxied data URI when available (always embeds; client sites rarely allow CORS),
-  // and add a dark backdrop when the logo has substantial white areas that would vanish on white.
-  const logoSrc = (propLogoInfo && propLogoInfo.dataUri) || logo;
+  // Prefer our server-hosted copy of the logo (small URL, no base64 bloat), falling back
+  // to the client's original URL; add a dark backdrop when the logo is white-heavy.
+  const logoSrc = (propLogoInfo && propLogoInfo.src) || logo;
   const logoImgTag = '<img src="' + logoSrc + '" alt="' + clientName + '" style="width:100%;height:auto;display:block;">';
   const logoHtml = logo
     ? (propLogoInfo && propLogoInfo.dark
@@ -1033,15 +1048,19 @@ async function propGenerate() {
 
   setTimeout(async () => {
     try {
-      // Analyze the client logo: embed via server proxy + detect white-heavy
-      // logos that need a dark backdrop to be visible on the white page.
+      // Analyze the client logo (white-heavy logos get a dark backdrop) and host it
+      // on our server — a small URL in the file instead of an embedded base64 blob.
       propLogoInfo = null;
       const logoFieldUrl = document.getElementById('prop-logo').value.trim();
       if (logoFieldUrl) {
         const dataUri = logoFieldUrl.startsWith('data:') ? logoFieldUrl : await fetchLogoDataUri(logoFieldUrl);
         if (dataUri) {
           const whiteRatio = await analyzeLogoWhiteness(dataUri);
-          propLogoInfo = { dataUri, dark: whiteRatio >= 0.25 };
+          const hostedUrl = await uploadLogoToServer(dataUri);
+          // Fallback order: our hosted copy > the client's original URL (never base64,
+          // unless a data URI was pasted directly and hosting it failed)
+          const src = hostedUrl || (logoFieldUrl.startsWith('data:') ? dataUri : null);
+          propLogoInfo = { src, dark: whiteRatio >= 0.25 };
         }
       }
       const html = propBuildHTML(clientName);
@@ -1129,7 +1148,7 @@ document.getElementById('prop-logo-file-input').addEventListener('change', (e) =
   reader.readAsDataURL(file);
 });
 
-window.applyLogoToProposal = function() {
+window.applyLogoToProposal = async function() {
   const statusEl = document.getElementById('prop-logo-status');
   const urlMode = document.getElementById('logo-url-input-wrap').style.display !== 'none';
   let logoSrc = '';
@@ -1145,7 +1164,11 @@ window.applyLogoToProposal = function() {
       statusEl.innerHTML = '<span style="color:#fb923c;">Choose an image file first.</span>';
       return;
     }
-    logoSrc = logoFileDataUrl;
+    // Host the uploaded file on our server so the proposal stays small; only
+    // fall back to embedding the file directly if the upload fails.
+    statusEl.innerHTML = '<span style="color:#9ca3af;">Uploading logo…</span>';
+    const hosted = await uploadLogoToServer(logoFileDataUrl);
+    logoSrc = hosted || logoFileDataUrl;
   }
 
   const frame = document.getElementById('prop-report-frame');

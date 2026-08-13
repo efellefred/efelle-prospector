@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.7.0 — 2026-08-13 — Hosted Logos — No More Base64 Bloat
+
+- Client logos are now stored on the Prospector server and referenced by a small URL instead of being embedded as base64 — downloaded proposals drop from ~1 MB to ~100 KB
+- Applies to both researched logo URLs and manually uploaded logo files
+- Re-uploading the same logo reuses the same stored file (no duplicates)
+- If hosting fails, the proposal falls back to the client's original logo URL — never a giant embedded blob
+- Smaller files also mean faster AI Editor turnaround and lighter report library storage
+
 ## 4.6.1 — 2026-08-12 — AI Editor Overhaul & Address Fix
 
 - Fixed: AI Editor could only see the first part of the proposal (embedded images were crowding out the later pages) — it now sees the whole document, so edits to the agreement/signature page work

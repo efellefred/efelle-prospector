@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.7.0',
+    date: '2026-08-13',
+    title: 'Hosted Logos — No More Base64 Bloat',
+    changes: [
+      'Client logos are now stored on the Prospector server and referenced by a small URL instead of being embedded as base64 — downloaded proposals drop from ~1 MB to ~100 KB',
+      'Applies to both researched logo URLs and manually uploaded logo files',
+      'Re-uploading the same logo reuses the same stored file (no duplicates)',
+      'If hosting fails, the proposal falls back to the client\'s original logo URL — never a giant embedded blob',
+      'Smaller files also mean faster AI Editor turnaround and lighter report library storage',
+    ]
+  },
+  {
     version: '4.6.1',
     date: '2026-08-12',
     title: 'AI Editor Overhaul & Address Fix',

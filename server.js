@@ -37,6 +37,7 @@ app.use(helmet({ contentSecurityPolicy: false })); // Security headers (CSP off 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/screenshots', express.static(path.join(__dirname, 'data', 'screenshots')));
+app.use('/uploads', express.static(path.join(__dirname, 'data', 'uploads')));
 
 // Rate limit on login — 5 attempts per minute per IP
 const loginLimiter = rateLimit({
@@ -512,6 +513,30 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('URL fetch error:', err.message);
     res.status(502).json({ error: 'Failed to fetch URL: ' + err.message });
+  }
+});
+
+// ─── Store an image on the persistent volume (client logos) ─────────
+// Content-addressed filenames: re-uploading the same logo reuses the same file.
+app.post('/api/upload-image', requireAuth, (req, res) => {
+  const { dataUri } = req.body;
+  if (!dataUri || typeof dataUri !== 'string') return res.status(400).json({ error: 'dataUri is required' });
+  const m = dataUri.match(/^data:(image\/(?:png|jpeg|jpg|gif|webp|svg\+xml));base64,([A-Za-z0-9+/=\s]+)$/);
+  if (!m) return res.status(415).json({ error: 'dataUri must be a base64-encoded image' });
+  let buf;
+  try { buf = Buffer.from(m[2], 'base64'); } catch (e) { return res.status(400).json({ error: 'Invalid base64 data' }); }
+  if (!buf.length) return res.status(400).json({ error: 'Empty image data' });
+  if (buf.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Image too large (max 5 MB)' });
+  const ext = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'image/svg+xml': 'svg' }[m[1]];
+  try {
+    const dir = path.join(__dirname, 'data', 'uploads');
+    fs.mkdirSync(dir, { recursive: true });
+    const file = 'logo-' + crypto.createHash('sha1').update(buf).digest('hex').slice(0, 16) + '.' + ext;
+    fs.writeFileSync(path.join(dir, file), buf);
+    res.json({ url: '/uploads/' + file, bytes: buf.length });
+  } catch (err) {
+    console.error('Image upload error:', err.message);
+    res.status(500).json({ error: 'Failed to store image: ' + err.message });
   }
 });
 
