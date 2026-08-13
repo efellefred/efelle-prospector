@@ -4,6 +4,15 @@
 
 const CHANGELOG = [
   {
+    version: '4.7.1',
+    date: '2026-08-13',
+    title: 'WO Agreement Copy Fix',
+    changes: [
+      'Work Order proposals\' agreement page now matches the payment breakdown: 50% deposit / 50% at the 45-day milestone (it previously showed the new-website "24 months interest-free" plan and a hosting fee that don\'t apply to WOs)',
+      'WO agreement copy rewritten for an updates engagement: scope description, client responsibilities, and ownership language ("you retain full ownership of your website and content")',
+    ]
+  },
+  {
     version: '4.7.0',
     date: '2026-08-13',
     title: 'Hosted Logos — No More Base64 Bloat',

@@ -2,6 +2,11 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.7.1 — 2026-08-13 — WO Agreement Copy Fix
+
+- Work Order proposals' agreement page now matches the payment breakdown: 50% deposit / 50% at the 45-day milestone (it previously showed the new-website "24 months interest-free" plan and a hosting fee that don't apply to WOs)
+- WO agreement copy rewritten for an updates engagement: scope description, client responsibilities, and ownership language ("you retain full ownership of your website and content")
+
 ## 4.7.0 — 2026-08-13 — Hosted Logos — No More Base64 Bloat
 
 - Client logos are now stored on the Prospector server and referenced by a small URL instead of being embedded as base64 — downloaded proposals drop from ~1 MB to ~100 KB
