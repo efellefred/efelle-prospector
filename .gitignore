@@ -2,3 +2,6 @@ node_modules/
 .env
 data/reports/*.html
 data/reports/*.json
+data/published/
+data/uploads/
+data/case-studies.json

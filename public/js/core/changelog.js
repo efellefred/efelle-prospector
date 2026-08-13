@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.9.0',
+    date: '2026-08-13',
+    title: 'Hosted Proposal Links, Open Tracking & Click-to-Sign',
+    changes: [
+      'New "Publish Link" button hosts the proposal at a shareable, unguessable URL (prospector.efelle.com/p/…) — send prospects a link instead of an attachment',
+      'Open tracking: every open of the link is counted with a timestamp — view count and last-opened time show in the app (note: your own opens count too)',
+      'Click-to-sign: prospects type their name, confirm authorization, and accept right on the proposal — the acceptance (name, date, IP) is recorded and an ACCEPTED banner appears',
+      'Re-publishing after edits updates the live copy at the same URL; acceptance and view history are preserved',
+      'Links are private-by-obscurity (long random tokens), hidden from search engines, and rate-limited',
+    ]
+  },
+  {
     version: '4.8.0',
     date: '2026-08-13',
     title: 'Case Study Manager & One-Click PDF',

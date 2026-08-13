@@ -516,6 +516,144 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
   }
 });
 
+// ─── Hosted proposal links (public, unguessable tokens) ──────────────
+// data/published/<token>.json = { token, company, html, publishedAt, updatedAt,
+// views: [{t, ua}], accepted: {name, t, ip} | null }
+const PUBLISHED_DIR = path.join(__dirname, 'data', 'published');
+
+function escapeHtmlText(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function readPublished(token) {
+  if (!/^[A-Za-z0-9_-]{10,40}$/.test(token || '')) return null;
+  const file = path.join(PUBLISHED_DIR, token + '.json');
+  if (!fs.existsSync(file)) return null;
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { return null; }
+}
+function writePublished(rec) {
+  fs.mkdirSync(PUBLISHED_DIR, { recursive: true });
+  fs.writeFileSync(path.join(PUBLISHED_DIR, rec.token + '.json'), JSON.stringify(rec));
+}
+
+// Publish (or republish to the same token → stable URL)
+app.post('/api/publish', requireAuth, (req, res) => {
+  const { html, company, token } = req.body;
+  if (!html || typeof html !== 'string') return res.status(400).json({ error: 'html is required' });
+  if (html.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Document too large' });
+  let rec = token ? readPublished(token) : null;
+  if (rec) {
+    rec.html = html;
+    if (company) rec.company = String(company).slice(0, 120);
+    rec.updatedAt = Date.now();
+  } else {
+    rec = {
+      token: crypto.randomBytes(12).toString('base64url'),
+      company: String(company || '').slice(0, 120),
+      html,
+      publishedAt: Date.now(),
+      updatedAt: Date.now(),
+      views: [],
+      accepted: null,
+    };
+  }
+  try {
+    writePublished(rec);
+    res.json({ token: rec.token, url: '/p/' + rec.token, views: rec.views.length, accepted: rec.accepted });
+  } catch (err) {
+    console.error('Publish error:', err.message);
+    res.status(500).json({ error: 'Publish failed: ' + err.message });
+  }
+});
+
+// Status for the app UI (views + acceptance)
+app.get('/api/publish/:token/status', requireAuth, (req, res) => {
+  const rec = readPublished(req.params.token);
+  if (!rec) return res.status(404).json({ error: 'Not found' });
+  res.json({
+    token: rec.token,
+    views: rec.views.length,
+    lastViewedAt: rec.views.length ? rec.views[rec.views.length - 1].t : null,
+    accepted: rec.accepted,
+    publishedAt: rec.publishedAt,
+    updatedAt: rec.updatedAt,
+  });
+});
+
+function acceptUiHtml(rec) {
+  const hideOnPrint = '<style>@media print { .pub-ui { display:none !important; } } body { margin-bottom:120px; }</style>';
+  if (rec.accepted) {
+    return hideOnPrint
+      + '<div class="pub-ui" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#065F46;color:#fff;padding:12px 20px;text-align:center;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,0.25);">'
+      + '&#10003; Proposal accepted by <strong>' + escapeHtmlText(rec.accepted.name) + '</strong> on '
+      + new Date(rec.accepted.t).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      + ' &mdash; the efelle team will reach out shortly to schedule your kickoff call.'
+      + '</div>';
+  }
+  return hideOnPrint
+    + '<div class="pub-ui" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1D1D1F;padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,0.35);font-family:\'Plus Jakarta Sans\',sans-serif;">'
+    + '<div style="max-width:780px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;">'
+    + '<div style="color:#fff;font-weight:700;font-size:14px;white-space:nowrap;">Ready to move forward?</div>'
+    + '<input id="pub-accept-name" type="text" placeholder="Type your full name" style="flex:1;min-width:180px;max-width:280px;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;font-family:inherit;">'
+    + '<label style="color:rgba(255,255,255,0.75);font-size:11px;display:flex;align-items:center;gap:6px;max-width:260px;line-height:1.4;"><input id="pub-accept-check" type="checkbox" style="width:15px;height:15px;flex-shrink:0;"> I am authorized to approve this proposal on behalf of my company</label>'
+    + '<button id="pub-accept-btn" style="padding:11px 22px;border:none;border-radius:8px;background:#F56300;color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap;">Accept &amp; Sign</button>'
+    + '</div>'
+    + '<div id="pub-accept-status" style="text-align:center;color:#fb923c;font-size:12px;min-height:16px;margin-top:6px;"></div>'
+    + '</div>'
+    + '<script>document.getElementById("pub-accept-btn").addEventListener("click", async function() {'
+    + 'var name = document.getElementById("pub-accept-name").value.trim();'
+    + 'var checked = document.getElementById("pub-accept-check").checked;'
+    + 'var st = document.getElementById("pub-accept-status");'
+    + 'if (name.length < 2) { st.textContent = "Please type your full name."; return; }'
+    + 'if (!checked) { st.textContent = "Please confirm you are authorized to approve this proposal."; return; }'
+    + 'this.disabled = true; this.textContent = "Recording\\u2026";'
+    + 'try {'
+    + 'var r = await fetch("/api/p/" + ' + JSON.stringify(rec.token) + ' + "/accept", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name }) });'
+    + 'var d = await r.json();'
+    + 'if (!r.ok) throw new Error(d.error || "Failed");'
+    + 'location.reload();'
+    + '} catch (e) { st.textContent = e.message || "Something went wrong \\u2014 please try again."; this.disabled = false; this.textContent = "Accept & Sign"; }'
+    + '});</script>';
+}
+
+// Public proposal view — logs the open, injects the accept UI
+const publicViewLimiter = rateLimit({ windowMs: 60 * 1000, max: 60 });
+app.get('/p/:token', publicViewLimiter, (req, res) => {
+  const rec = readPublished(req.params.token);
+  if (!rec) return res.status(404).send('<div style="font-family:sans-serif;padding:60px;text-align:center;"><h2>Proposal not found</h2><p>This link may have expired — please contact efelle creative at 206.384.4909.</p></div>');
+  try {
+    rec.views.push({ t: Date.now(), ua: (req.headers['user-agent'] || '').slice(0, 200) });
+    if (rec.views.length > 500) rec.views = rec.views.slice(-500);
+    writePublished(rec);
+  } catch (e) { /* tracking must never block viewing */ }
+  const ui = acceptUiHtml(rec);
+  const html = rec.html.includes('</body>') ? rec.html.replace('</body>', ui + '</body>') : rec.html + ui;
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.send(html);
+});
+
+// Public acceptance — first acceptance wins, later attempts return the record
+const acceptLimiter = rateLimit({ windowMs: 60 * 1000, max: 10 });
+app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
+  const rec = readPublished(req.params.token);
+  if (!rec) return res.status(404).json({ error: 'Not found' });
+  if (rec.accepted) return res.json({ ok: true, accepted: rec.accepted, already: true });
+  const name = ((req.body || {}).name || '').toString().trim().slice(0, 120);
+  if (name.length < 2) return res.status(400).json({ error: 'Please type your full name' });
+  rec.accepted = {
+    name,
+    t: Date.now(),
+    ip: (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim(),
+  };
+  try {
+    writePublished(rec);
+    console.log('Proposal ACCEPTED: "' + rec.company + '" by ' + name);
+    res.json({ ok: true, accepted: rec.accepted });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to record acceptance' });
+  }
+});
+
 // ─── Render a proposal to PDF server-side ────────────────────────────
 // Consistent pagination on every machine — no browser print dialog variance.
 app.post('/api/proposal-pdf', requireAuth, async (req, res) => {

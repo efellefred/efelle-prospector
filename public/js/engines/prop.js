@@ -381,6 +381,8 @@ function propReset() {
   if (statusEl) statusEl.innerHTML = '';
   const chatPanel = document.getElementById('prop-chat-panel');
   if (chatPanel) chatPanel.style.display = 'none';
+  const pubPanel = document.getElementById('prop-publish-panel');
+  if (pubPanel) pubPanel.style.display = 'none';
   const chatMessages = document.getElementById('prop-chat-messages');
   if (chatMessages) chatMessages.innerHTML = '';
   // Reset report frame
@@ -1093,6 +1095,10 @@ async function propGenerate() {
       const frame = document.getElementById('prop-report-frame');
       await writeToFrame(frame, html);
 
+      // If this company already has a published link, surface its status
+      document.getElementById('prop-publish-panel').style.display = 'none';
+      refreshPublishStatus();
+
       // Populate propClientData from form fields for saving
       propClientData = {
         company_name: clientName,
@@ -1375,6 +1381,70 @@ Rules:
     sendBtn.disabled = false;
     sendBtn.textContent = 'Send';
     messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+});
+
+// ─── Publish Link (hosted proposal with open tracking + click-to-sign) ─
+function pubSlug() {
+  return (document.getElementById('prop-name').value || 'proposal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function renderPublishPanel(token, status) {
+  const panel = document.getElementById('prop-publish-panel');
+  const fullUrl = window.location.origin + '/p/' + token;
+  const views = status ? status.views : 0;
+  const last = status && status.lastViewedAt ? new Date(status.lastViewedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : null;
+  const accepted = status && status.accepted;
+  panel.style.display = '';
+  panel.innerHTML =
+    '<span style="color:#10B981;font-weight:700;">🔗 Published</span> — '
+    + '<a href="' + fullUrl + '" target="_blank" style="color:#34d399;">' + fullUrl + '</a> '
+    + '<button onclick="navigator.clipboard.writeText(\'' + fullUrl + '\').then(() => { this.textContent = \'✓ Copied\'; setTimeout(() => this.textContent = \'Copy\', 2000); })" style="margin:0 8px;padding:2px 10px;border-radius:5px;border:1px solid #10B98155;background:transparent;color:#34d399;font-size:11px;cursor:pointer;">Copy</button>'
+    + '<span style="color:#4b5563;">·</span> ' + views + ' view' + (views === 1 ? '' : 's')
+    + (last ? ' <span style="color:#4b5563;">·</span> last opened ' + last : '')
+    + (accepted
+        ? ' <span style="color:#4b5563;">·</span> <span style="color:#34d399;font-weight:700;">✓ ACCEPTED by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString() + '</span>'
+        : '')
+    + ' <button onclick="refreshPublishStatus()" title="Refresh views/acceptance" style="padding:2px 8px;border-radius:5px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;cursor:pointer;">↻</button>'
+    + '<div style="font-size:10px;color:#4b5563;">Views include your own opens of the link. Re-publish after edits to update the live copy at the same URL.</div>';
+}
+
+window.refreshPublishStatus = async function() {
+  const token = localStorage.getItem('prospector_pub_' + pubSlug());
+  if (!token) return;
+  try {
+    const res = await fetch('/api/publish/' + token + '/status', { headers: getApiHeaders() });
+    if (!res.ok) return;
+    renderPublishPanel(token, await res.json());
+  } catch (e) { /* panel keeps last state */ }
+};
+
+document.getElementById('prop-publish-btn').addEventListener('click', async () => {
+  if (!propReportHtml) return;
+  const btn = document.getElementById('prop-publish-btn');
+  const orig = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '⟳ Publishing…';
+  try {
+    const slug = pubSlug();
+    const existingToken = localStorage.getItem('prospector_pub_' + slug) || undefined;
+    const res = await fetch('/api/publish', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({
+        html: propReportHtml,
+        company: document.getElementById('prop-name').value.trim(),
+        token: existingToken,
+      }),
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Publish failed');
+    localStorage.setItem('prospector_pub_' + slug, d.token);
+    renderPublishPanel(d.token, d);
+    btn.innerHTML = '✓ Published';
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2500);
+  } catch (e) {
+    btn.innerHTML = '⚠ ' + (e.message || 'Failed');
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 4000);
   }
 });
 

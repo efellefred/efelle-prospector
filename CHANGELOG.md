@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.9.0 — 2026-08-13 — Hosted Proposal Links, Open Tracking & Click-to-Sign
+
+- New "Publish Link" button hosts the proposal at a shareable, unguessable URL (prospector.efelle.com/p/…) — send prospects a link instead of an attachment
+- Open tracking: every open of the link is counted with a timestamp — view count and last-opened time show in the app (note: your own opens count too)
+- Click-to-sign: prospects type their name, confirm authorization, and accept right on the proposal — the acceptance (name, date, IP) is recorded and an ACCEPTED banner appears
+- Re-publishing after edits updates the live copy at the same URL; acceptance and view history are preserved
+- Links are private-by-obscurity (long random tokens), hidden from search engines, and rate-limited
+
 ## 4.8.0 — 2026-08-13 — Case Study Manager & One-Click PDF
 
 - New "RGS Case Studies" manager in Settings — add, remove, reorder, and relabel the case-study graphics on RGS Only proposals without a code change
