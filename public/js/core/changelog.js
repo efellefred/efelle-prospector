@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.8.0',
+    date: '2026-08-13',
+    title: 'Case Study Manager & One-Click PDF',
+    changes: [
+      'New "RGS Case Studies" manager in Settings — add, remove, reorder, and relabel the case-study graphics on RGS Only proposals without a code change',
+      'Case-study changes apply to newly generated proposals immediately (stored on the server, survives deploys)',
+      'New "Download PDF" button renders the proposal to PDF on the server — identical pagination every time, no browser print dialog',
+      'The old print-dialog flow remains available as "Print / Save as PDF"',
+    ]
+  },
+  {
     version: '4.7.1',
     date: '2026-08-13',
     title: 'WO Agreement Copy Fix',

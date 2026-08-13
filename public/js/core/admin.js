@@ -1,4 +1,5 @@
 import { getApiHeaders } from './api.js';
+import { RGS_CASE_STUDIES } from '../data/case-studies.js';
 
 const ADMIN_EMAILS = ['fred@efelle.com'];
 
@@ -148,11 +149,91 @@ if (!checkAndShowAdmin()) {
   };
 }
 
-// Load keys when settings screen becomes visible
+// ─── RGS Case Study manager ─────────────────────────────────────────
+let csList = null; // working copy shown in the settings panel
+
+function csRender() {
+  const wrap = document.getElementById('cs-manager-rows');
+  if (!wrap || !csList) return;
+  wrap.innerHTML = '';
+  csList.forEach((cs, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:8px;align-items:center;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:8px 10px;';
+    row.innerHTML =
+      '<img src="' + (cs.img || '') + '" alt="" style="width:56px;height:32px;object-fit:cover;border-radius:4px;background:#1a1f2e;flex-shrink:0;" onerror="this.style.opacity=0.2">'
+      + '<input type="text" data-cs-field="img" data-cs-i="' + i + '" value="' + (cs.img || '').replace(/"/g, '&quot;') + '" placeholder="https://…/case-study.jpg" style="flex:1;min-width:0;background:transparent;border:1px solid #252d3d;border-radius:6px;padding:7px 10px;color:#e2ddd4;font-family:monospace;font-size:11px;" />'
+      + '<input type="text" data-cs-field="client" data-cs-i="' + i + '" value="' + (cs.client || '').replace(/"/g, '&quot;') + '" placeholder="Client" style="width:110px;background:transparent;border:1px solid #252d3d;border-radius:6px;padding:7px 10px;color:#e2ddd4;font-size:11px;" />'
+      + '<button onclick="csMove(' + i + ',-1)" title="Move up" style="border:none;background:transparent;color:#6b7a94;cursor:pointer;font-size:13px;padding:2px 4px;">↑</button>'
+      + '<button onclick="csMove(' + i + ',1)" title="Move down" style="border:none;background:transparent;color:#6b7a94;cursor:pointer;font-size:13px;padding:2px 4px;">↓</button>'
+      + '<button onclick="csRemove(' + i + ')" title="Remove" style="border:none;background:transparent;color:#f87171;cursor:pointer;font-size:13px;padding:2px 4px;">✕</button>';
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('input[data-cs-field]').forEach(inp => {
+    inp.addEventListener('change', () => {
+      csList[parseInt(inp.dataset.csI)][inp.dataset.csField] = inp.value.trim();
+      if (inp.dataset.csField === 'img') csRender();
+    });
+  });
+}
+
+async function loadCaseStudiesAdmin() {
+  if (!isAdmin()) return;
+  try {
+    const res = await fetch('/api/case-studies', { headers: getApiHeaders() });
+    const d = res.ok ? await res.json() : {};
+    csList = Array.isArray(d.caseStudies) ? d.caseStudies.map(c => ({ img: c.img || '', client: c.client || '' })) : RGS_CASE_STUDIES.map(c => ({ img: c.img, client: c.client || '' }));
+  } catch (e) {
+    csList = RGS_CASE_STUDIES.map(c => ({ img: c.img, client: c.client || '' }));
+  }
+  csRender();
+}
+
+window.csAddRow = function() {
+  if (!csList) csList = [];
+  csList.push({ img: '', client: '' });
+  csRender();
+};
+
+window.csMove = function(i, dir) {
+  const j = i + dir;
+  if (!csList || j < 0 || j >= csList.length) return;
+  [csList[i], csList[j]] = [csList[j], csList[i]];
+  csRender();
+};
+
+window.csRemove = function(i) {
+  if (!csList) return;
+  csList.splice(i, 1);
+  csRender();
+};
+
+window.csSave = async function() {
+  const statusEl = document.getElementById('cs-save-status');
+  const toSave = (csList || []).filter(c => c.img);
+  statusEl.textContent = 'Saving…'; statusEl.style.color = '#6b7a94';
+  try {
+    const res = await fetch('/api/case-studies', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({ caseStudies: toSave }),
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Save failed');
+    csList = toSave;
+    csRender();
+    statusEl.textContent = '✓ Saved ' + d.count + ' case stud' + (d.count === 1 ? 'y' : 'ies') + ' — applies to newly generated proposals.';
+    statusEl.style.color = '#34d399';
+  } catch (e) {
+    statusEl.textContent = '⚠ ' + e.message;
+    statusEl.style.color = '#f87171';
+  }
+};
+
+// Load keys + case studies when settings screen becomes visible
 const settingsScreen = document.getElementById('screen-settings');
 if (settingsScreen) {
   const screenObserver = new MutationObserver(() => {
-    if (settingsScreen.classList.contains('visible')) loadCurrentKeys();
+    if (settingsScreen.classList.contains('visible')) { loadCurrentKeys(); loadCaseStudiesAdmin(); }
   });
   screenObserver.observe(settingsScreen, { attributes: true, attributeFilter: ['class'] });
 }

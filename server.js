@@ -516,6 +516,69 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
   }
 });
 
+// ─── Render a proposal to PDF server-side ────────────────────────────
+// Consistent pagination on every machine — no browser print dialog variance.
+app.post('/api/proposal-pdf', requireAuth, async (req, res) => {
+  if (!puppeteer) return res.status(501).json({ error: 'PDF rendering not available on this server' });
+  const { html, filename } = req.body;
+  if (!html || typeof html !== 'string') return res.status(400).json({ error: 'html is required' });
+  if (html.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Document too large' });
+  const safeName = (filename || 'proposal.pdf').replace(/[^\w.\- ]/g, '').slice(0, 120) || 'proposal.pdf';
+  let browser = null;
+  try {
+    browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+    });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
+    const pdf = await page.pdf({ printBackground: true, preferCSSPageSize: true, timeout: 60000 });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="' + safeName + '"');
+    res.send(Buffer.from(pdf));
+  } catch (err) {
+    console.error('Proposal PDF error:', err.message);
+    res.status(500).json({ error: 'PDF render failed: ' + err.message });
+  } finally {
+    if (browser) try { await browser.close(); } catch (e) {}
+  }
+});
+
+// ─── RGS case studies (shown on RGS Only proposals) ─────────────────
+// Stored on the persistent volume so the team can manage them from Settings
+// without a code deploy. When no file exists, the client uses its bundled list.
+const CASE_STUDIES_FILE = path.join(__dirname, 'data', 'case-studies.json');
+app.get('/api/case-studies', requireAuth, (req, res) => {
+  try {
+    if (fs.existsSync(CASE_STUDIES_FILE)) {
+      return res.json({ caseStudies: JSON.parse(fs.readFileSync(CASE_STUDIES_FILE, 'utf8')) });
+    }
+  } catch (e) { console.error('case-studies read error:', e.message); }
+  res.json({ caseStudies: null });
+});
+app.post('/api/case-studies', requireAdmin, (req, res) => {
+  const { caseStudies } = req.body;
+  if (!Array.isArray(caseStudies) || caseStudies.length > 20) {
+    return res.status(400).json({ error: 'caseStudies must be an array of up to 20 entries' });
+  }
+  const cleaned = [];
+  for (const cs of caseStudies) {
+    const img = (cs && typeof cs.img === 'string') ? cs.img.trim() : '';
+    if (!/^(https?:\/\/|\/uploads\/)/.test(img)) {
+      return res.status(400).json({ error: 'Each entry needs an image URL starting with https:// or /uploads/' });
+    }
+    cleaned.push({ img, client: (cs.client || '').toString().slice(0, 80) });
+  }
+  try {
+    fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
+    fs.writeFileSync(CASE_STUDIES_FILE, JSON.stringify(cleaned, null, 2));
+    res.json({ ok: true, count: cleaned.length });
+  } catch (err) {
+    console.error('case-studies write error:', err.message);
+    res.status(500).json({ error: 'Failed to save: ' + err.message });
+  }
+});
+
 // ─── Store an image on the persistent volume (client logos) ─────────
 // Content-addressed filenames: re-uploading the same logo reuses the same file.
 app.post('/api/upload-image', requireAuth, (req, res) => {

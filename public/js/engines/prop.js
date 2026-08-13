@@ -84,8 +84,20 @@ function analyzeLogoWhiteness(dataUri) {
   });
 }
 
-// Set by propGenerate before each build: { dataUri, dark } for the client logo
+// Set by propGenerate before each build: { src, dark } for the client logo
 let propLogoInfo = null;
+
+// Case studies for the current build: the server-managed list (Settings → RGS Case
+// Studies) when one exists, otherwise the bundled defaults from case-studies.js.
+let activeCaseStudies = RGS_CASE_STUDIES;
+async function loadActiveCaseStudies() {
+  try {
+    const res = await fetch('/api/case-studies', { headers: getApiHeaders() });
+    if (!res.ok) return RGS_CASE_STUDIES;
+    const d = await res.json();
+    return Array.isArray(d.caseStudies) ? d.caseStudies : RGS_CASE_STUDIES;
+  } catch (e) { return RGS_CASE_STUDIES; }
+}
 
 // Scrape the actual homepage HTML to find the real logo URL
 async function scrapeLogoFromHomepage(url) {
@@ -983,7 +995,7 @@ function propBuildHTML(clientName) {
     // If RGS case studies are configured, they take the portfolio's place — same
     // image-card format as the website portfolio, two graphics per printed page.
     const csPages = [];
-    for (let i = 0; i < RGS_CASE_STUDIES.length; i += 2) csPages.push(RGS_CASE_STUDIES.slice(i, i + 2));
+    for (let i = 0; i < activeCaseStudies.length; i += 2) csPages.push(activeCaseStudies.slice(i, i + 2));
     const csCard = cs => '<div class="cs-img-card" style="border:1px solid var(--gray-4); border-radius:14px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06);"><img src="' + cs.img + '" alt="' + (cs.client || 'efelle RGS case study') + '" style="width:100%; height:auto; display:block;"></div>';
     const caseSection = csPages.length
       ? csPages.map((page, idx) =>
@@ -1056,6 +1068,8 @@ async function propGenerate() {
 
   setTimeout(async () => {
     try {
+      // Pick up the server-managed case-study list (falls back to bundled defaults)
+      activeCaseStudies = await loadActiveCaseStudies();
       // Analyze the client logo (white-heavy logos get a dark backdrop) and host it
       // on our server — a small URL in the file instead of an embedded base64 blob.
       propLogoInfo = null;
@@ -1361,6 +1375,43 @@ Rules:
     sendBtn.disabled = false;
     sendBtn.textContent = 'Send';
     messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+});
+
+// ─── Download PDF (server-rendered — consistent pagination) ─────────
+document.getElementById('prop-pdf-btn').addEventListener('click', async () => {
+  if (!propReportHtml) return;
+  const btn = document.getElementById('prop-pdf-btn');
+  const orig = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '⟳ Rendering PDF…';
+  try {
+    const today = new Date();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const yy = String(today.getFullYear()).slice(-2);
+    const co = (document.getElementById('prop-name').value || 'proposal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const filename = 'efelle-proposal-' + co + '-' + mm + dd + yy + '.pdf';
+    const res = await fetch('/api/proposal-pdf', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({ html: propReportHtml, filename }),
+    });
+    if (!res.ok) {
+      let msg = 'PDF render failed (' + res.status + ')';
+      try { msg = (await res.json()).error || msg; } catch (e) {}
+      throw new Error(msg);
+    }
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    btn.innerHTML = '✓ PDF downloaded';
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 3000);
+  } catch (e) {
+    btn.innerHTML = '⚠ ' + (e.message || 'Failed');
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 4000);
   }
 });
 
