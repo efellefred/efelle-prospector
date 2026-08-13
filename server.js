@@ -33,7 +33,11 @@ const ADMIN_EMAILS = ['fred@efelle.com'];
 const sessions = new Map();
 
 // Middleware
-app.use(helmet({ contentSecurityPolicy: false })); // Security headers (CSP off for iframe srcdoc)
+// Security headers. CSP off for iframe srcdoc. CORP must be cross-origin:
+// hosted logos/screenshots are embedded by print windows (about:blank origin),
+// the server PDF renderer, and downloaded HTML files — the default same-origin
+// policy silently blanks images on all of those surfaces.
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/screenshots', express.static(path.join(__dirname, 'data', 'screenshots')));
@@ -491,8 +495,13 @@ app.post('/api/fetch-url', requireAuth, async (req, res) => {
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Upgrade-Insecure-Requests': '1',
       },
       redirect: 'follow',
       signal: AbortSignal.timeout(15000),
@@ -641,12 +650,21 @@ function acceptUiHtml(rec) {
     + 'if (name.length < 2) { st.textContent = "Please type your full name."; return; }'
     + 'if (!checked) { st.textContent = "Please confirm you are authorized to approve this proposal."; return; }'
     + 'this.disabled = true; this.textContent = "Recording\\u2026";'
+    // Retry on server errors / network blips (e.g. a brief server restart) so a
+    // prospect mid-signature never sees a bare "Failed" for a transient condition.
+    + 'var lastErr = "";'
+    + 'for (var attempt = 1; attempt <= 3; attempt++) {'
     + 'try {'
     + 'var r = await fetch("/api/p/" + ' + JSON.stringify(rec.token) + ' + "/accept", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name }) });'
-    + 'var d = await r.json();'
-    + 'if (!r.ok) throw new Error(d.error || "Failed");'
-    + 'location.reload();'
-    + '} catch (e) { st.textContent = e.message || "Something went wrong \\u2014 please try again."; this.disabled = false; this.textContent = "Accept & Sign"; }'
+    + 'var d = null; try { d = await r.json(); } catch (pe) {}'
+    + 'if (r.ok) { location.reload(); return; }'
+    + 'if (d && d.error && r.status < 500) { lastErr = d.error; break; }'
+    + 'lastErr = (d && d.error) || ("Server returned " + r.status);'
+    + '} catch (e) { lastErr = "Connection issue"; }'
+    + 'if (attempt < 3) { st.textContent = "Server is briefly busy \\u2014 retrying (" + attempt + " of 2)\\u2026"; await new Promise(function(rs) { setTimeout(rs, 3000); }); }'
+    + '}'
+    + 'st.textContent = lastErr + " \\u2014 please try again in a minute, or call us at 206.384.4909 and we\\u2019ll take care of it.";'
+    + 'this.disabled = false; this.textContent = "Accept & Sign";'
     + '});</script>';
 }
 

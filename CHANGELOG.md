@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.11.0 — 2026-08-13 — Logo Preview & Reliability Fixes
+
+- Live logo preview in Client Details: the moment a logo URL is filled (by research or by hand), you see the actual image on both white and dark backgrounds — with a clear warning if the URL doesn't load
+- FIXED: logos were invisible in the Print window, server PDFs, and downloaded HTML files — a security header was silently blocking our hosted logo images on those surfaces (they always worked on the published link)
+- Click-to-sign now auto-retries if it hits a brief server restart — prospects see "retrying…" instead of a false "Failed"
+- Fixed: proposals opened from the Library now restore their vertical/type, so Edit → Update Address / Details works instead of erroring
+- Logo detection hardened for bot-protected sites (fuller browser headers) with a verified Clearbit logo-index fallback — never guessed, only used if the image actually loads
+
 ## 4.10.0 — 2026-08-13 — No-Website Research, Email Intro & Cleaner Toolbar
 
 - New research toggle: "No website — research online" researches leads without a site via their Google Business Profile, Facebook, Yelp, and directory listings — enter the company name (and city) and click Research Client

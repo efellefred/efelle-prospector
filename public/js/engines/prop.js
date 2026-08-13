@@ -342,6 +342,20 @@ function selectMarketType(type) {
   document.getElementById('market-both').classList.toggle('selected', type === 'both');
 }
 
+// Restore engine state when a saved proposal is opened from the Library —
+// without this, navigating back to Client Details trips the vertical guard.
+window.restorePropState = function(report) {
+  const m = (report && report.metadata) || {};
+  if (m.vertical && VERTICALS[m.vertical]) {
+    const card = document.querySelector('.vertical-card[data-v="' + m.vertical + '"]');
+    if (card) selectVertical(card);
+    else propVertical = m.vertical;
+  }
+  if (m.type) selectPropType(m.type);
+  if (m.marketType) selectMarketType(m.marketType);
+  if (m.rgs) selectRGS(m.rgs);
+};
+
 function propGoStage1() {
   document.querySelectorAll('.prop-stage').forEach(s => s.classList.remove('active'));
   document.getElementById('prop-stage-1').classList.add('active');
@@ -385,6 +399,7 @@ function propReset() {
   if (pubPanel) pubPanel.style.display = 'none';
   // Reset research mode to URL
   if (document.getElementById('research-mode-url')) window.selectResearchMode('url');
+  if (typeof updateLogoPreview === 'function') updateLogoPreview();
   const chatMessages = document.getElementById('prop-chat-messages');
   if (chatMessages) chatMessages.innerHTML = '';
   // Reset report frame
@@ -506,9 +521,20 @@ async function propFetchClient() {
       if (await imageExists(data.logo_url)) { logoUrl = data.logo_url; logoSource = 'research'; }
       else aiLogoRejected = true;
     }
+    // Tertiary fallback: Clearbit's logo index (real crawled logos, not guesses) —
+    // covers sites whose bot protection blocks our server-side scrape. Only used
+    // if the image verifiably loads.
+    if (!logoUrl && !isNameMode && url) {
+      try {
+        const host = new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace(/^www\./, '');
+        const clearbitUrl = 'https://logo.clearbit.com/' + host;
+        if (await imageExists(clearbitUrl)) { logoUrl = clearbitUrl; logoSource = 'clearbit'; }
+      } catch (e) { /* bad URL — skip */ }
+    }
     const hasLogo = !!logoUrl;
     const hasAddress = !!finalAddress;
     if (logoUrl) document.getElementById('prop-logo').value = logoUrl;
+    updateLogoPreview();
     let statusParts = ['✓ Client info populated — scroll down to review and generate proposal.'];
     if (!hasAddress) statusParts.push('<span style="color:#fb923c">No address found — paste it in the Address field below.</span>');
     if (hasAddress && addressSource === 'google') statusParts.push('<span style="color:#fb923c">Address found via Google — please verify it\'s correct.</span>');
@@ -517,6 +543,7 @@ async function propFetchClient() {
     else if (!hasLogo) statusParts.push('<span style="color:#fb923c">No logo found — paste a logo URL in the Logo field below.</span>');
     if (logoSource === 'website') statusParts.push('<span style="color:#2dd4bf">Logo found in homepage source code.</span>');
     if (logoSource === 'research') statusParts.push('<span style="color:#fb923c">Logo URL came from AI research (verified it loads) — confirm it\'s the right image.</span>');
+    if (logoSource === 'clearbit') statusParts.push('<span style="color:#fb923c">Logo pulled from Clearbit\'s logo index — verify it\'s their current logo.</span>');
     status.innerHTML = '<span style="color:#2dd4bf">' + statusParts.join(' ') + '</span>';
   } catch(e) {
     console.error('propFetchClient error:', e);
@@ -1149,6 +1176,7 @@ async function propGenerate() {
           vertical: propVertical,
           type: propType,
           marketType: propMarketType,
+          rgs: propRGS,
         }, propClientData, propReportHtml);
       } catch (e) { console.warn('Auto-save failed:', e.message); }
 
@@ -1260,6 +1288,38 @@ window.applyLogoToProposal = async function() {
     document.getElementById('prop-logo-panel').style.display = 'none';
   }, 1000);
 };
+
+// ─── Live logo preview in the form — see exactly what the URL loads ──
+// Shown on both white and dark backgrounds so white-heavy logos are visible.
+let logoPreviewTimer = null;
+function updateLogoPreview() {
+  const wrap = document.getElementById('prop-logo-preview');
+  const img = document.getElementById('prop-logo-preview-img');
+  const imgDark = document.getElementById('prop-logo-preview-img-dark');
+  const note = document.getElementById('prop-logo-preview-note');
+  const val = document.getElementById('prop-logo').value.trim();
+  if (!val) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  note.textContent = 'Loading…'; note.style.color = '#6b7a94';
+  img.style.display = 'none';
+  const probe = new Image();
+  probe.onload = () => {
+    img.src = val; imgDark.src = val; img.style.display = 'block';
+    note.textContent = '✓ This is the logo that will appear in the proposal.';
+    note.style.color = '#34d399';
+  };
+  probe.onerror = () => {
+    img.style.display = 'none'; imgDark.src = '';
+    note.textContent = '⚠ This URL doesn\'t load an image — fix it, or generate with the placeholder and use Edit → Add Logo.';
+    note.style.color = '#fb923c';
+  };
+  probe.src = val;
+}
+window.updateLogoPreview = updateLogoPreview;
+document.getElementById('prop-logo').addEventListener('input', () => {
+  clearTimeout(logoPreviewTimer);
+  logoPreviewTimer = setTimeout(updateLogoPreview, 600);
+});
 
 document.getElementById('prop-logo').addEventListener('change', async () => {
   if (propReportHtml) {
@@ -1618,6 +1678,7 @@ function populatePropClientSelect() {
   );
 }
 
+window.loadPropClient = loadPropClient;
 async function loadPropClient(reportId) {
   if (!reportId) return;
   try {
@@ -1642,6 +1703,7 @@ async function loadPropClient(reportId) {
     setVal('prop-phone', d.phone || '');
     setVal('prop-founded', d.founded || d.year_founded || '');
     setVal('prop-logo', d.logo || d.logo_url || '');
+    if (typeof updateLogoPreview === 'function') updateLogoPreview();
     setVal('prop-differentiators', d.key_differentiators || d.differentiators || d.unique_selling_points || '');
 
     // Services — CCA uses primary_services (string), could also be array

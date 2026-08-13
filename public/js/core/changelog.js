@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.11.0',
+    date: '2026-08-13',
+    title: 'Logo Preview & Reliability Fixes',
+    changes: [
+      'Live logo preview in Client Details: the moment a logo URL is filled (by research or by hand), you see the actual image on both white and dark backgrounds — with a clear warning if the URL doesn\'t load',
+      'FIXED: logos were invisible in the Print window, server PDFs, and downloaded HTML files — a security header was silently blocking our hosted logo images on those surfaces (they always worked on the published link)',
+      'Click-to-sign now auto-retries if it hits a brief server restart — prospects see "retrying…" instead of a false "Failed"',
+      'Fixed: proposals opened from the Library now restore their vertical/type, so Edit → Update Address / Details works instead of erroring',
+      'Logo detection hardened for bot-protected sites (fuller browser headers) with a verified Clearbit logo-index fallback — never guessed, only used if the image actually loads',
+    ]
+  },
+  {
     version: '4.10.0',
     date: '2026-08-13',
     title: 'No-Website Research, Email Intro & Cleaner Toolbar',

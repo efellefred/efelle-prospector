@@ -139,6 +139,11 @@ async function libraryEditReport(id, type) {
       // Set the module-scoped propReportHtml via the global setter
       if (typeof window.setPropReportHtml === 'function') window.setPropReportHtml(html);
 
+      // Restore engine state (vertical/type/market) + client form fields so
+      // Edit → Update Address / Details and re-generation work from the Library
+      if (typeof window.restorePropState === 'function') window.restorePropState(report);
+      if (typeof window.loadPropClient === 'function') window.loadPropClient(id);
+
       const frame = document.getElementById('prop-report-frame');
       await writeToFrame(frame, html);
 
