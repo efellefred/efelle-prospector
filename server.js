@@ -546,22 +546,26 @@ function writePublished(rec) {
 
 // Publish (or republish to the same token → stable URL)
 app.post('/api/publish', requireAuth, (req, res) => {
-  const { html, company, token, contactEmail } = req.body;
+  const { html, company, token, contactEmail, contactEmails } = req.body;
   if (!html || typeof html !== 'string') return res.status(400).json({ error: 'html is required' });
   if (html.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Document too large' });
-  const cleanEmail = (typeof contactEmail === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim()))
-    ? contactEmail.trim().toLowerCase() : '';
+  // Accept an array (current client) or a single string (older client); validate each
+  const rawEmails = Array.isArray(contactEmails) ? contactEmails : (contactEmail ? [contactEmail] : []);
+  const cleanEmails = [...new Set(rawEmails
+    .filter(e => typeof e === 'string')
+    .map(e => e.trim().toLowerCase())
+    .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)))].slice(0, 5);
   let rec = token ? readPublished(token) : null;
   if (rec) {
     rec.html = html;
     if (company) rec.company = String(company).slice(0, 120);
-    if (cleanEmail) rec.contactEmail = cleanEmail;
+    if (cleanEmails.length) rec.contactEmails = cleanEmails;
     rec.updatedAt = Date.now();
   } else {
     rec = {
       token: crypto.randomBytes(12).toString('base64url'),
       company: String(company || '').slice(0, 120),
-      contactEmail: cleanEmail,
+      contactEmails: cleanEmails,
       html,
       publishedAt: Date.now(),
       updatedAt: Date.now(),
@@ -571,7 +575,7 @@ app.post('/api/publish', requireAuth, (req, res) => {
   }
   try {
     writePublished(rec);
-    res.json({ token: rec.token, url: '/p/' + rec.token, views: rec.views.length, accepted: rec.accepted, hubspot: (HUBSPOT_TOKEN && rec.contactEmail) ? rec.contactEmail : null });
+    res.json({ token: rec.token, url: '/p/' + rec.token, views: rec.views.length, accepted: rec.accepted, hubspot: hubspotEmailsFor(rec).join(', ') || null });
   } catch (err) {
     console.error('Publish error:', err.message);
     res.status(500).json({ error: 'Publish failed: ' + err.message });
@@ -589,9 +593,17 @@ app.get('/api/publish/:token/status', requireAuth, (req, res) => {
     accepted: rec.accepted,
     publishedAt: rec.publishedAt,
     updatedAt: rec.updatedAt,
-    hubspot: (HUBSPOT_TOKEN && rec.contactEmail) ? rec.contactEmail : null,
+    hubspot: hubspotEmailsFor(rec).join(', ') || null,
   });
 });
+
+// Emails eligible for HubSpot sync on a published record (handles the older
+// single-email field for records published before multi-email support)
+function hubspotEmailsFor(rec) {
+  if (!HUBSPOT_TOKEN) return [];
+  if (Array.isArray(rec.contactEmails) && rec.contactEmails.length) return rec.contactEmails;
+  return rec.contactEmail ? [rec.contactEmail] : [];
+}
 
 // ─── HubSpot sync (opens + acceptances → notes on the contact) ───────
 // Fire-and-forget: never blocks or breaks proposal viewing/signing.
@@ -619,26 +631,29 @@ async function hubspotFindContact(email) {
 }
 
 async function hubspotLogNote(rec, body) {
-  if (!HUBSPOT_TOKEN || !rec.contactEmail) return;
-  try {
-    const contactId = await hubspotFindContact(rec.contactEmail);
-    if (!contactId) {
-      console.log('[HubSpot] no contact found for ' + rec.contactEmail + ' — note skipped');
-      return;
+  const emails = hubspotEmailsFor(rec);
+  if (!emails.length) return;
+  for (const email of emails) {
+    try {
+      const contactId = await hubspotFindContact(email);
+      if (!contactId) {
+        console.log('[HubSpot] no contact found for ' + email + ' — note skipped');
+        continue;
+      }
+      const res = await fetch('https://api.hubapi.com/crm/v3/objects/notes', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + HUBSPOT_TOKEN, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          properties: { hs_timestamp: Date.now(), hs_note_body: body },
+          associations: [{ to: { id: contactId }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }] }],
+        }),
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) throw new Error('note create ' + res.status + ' ' + (await res.text()).slice(0, 200));
+      console.log('[HubSpot] note logged for ' + email + ': ' + body.slice(0, 60));
+    } catch (err) {
+      console.warn('[HubSpot] sync failed for ' + email + ' (non-blocking): ' + err.message);
     }
-    const res = await fetch('https://api.hubapi.com/crm/v3/objects/notes', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + HUBSPOT_TOKEN, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        properties: { hs_timestamp: Date.now(), hs_note_body: body },
-        associations: [{ to: { id: contactId }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }] }],
-      }),
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!res.ok) throw new Error('note create ' + res.status + ' ' + (await res.text()).slice(0, 200));
-    console.log('[HubSpot] note logged for ' + rec.contactEmail + ': ' + body.slice(0, 60));
-  } catch (err) {
-    console.warn('[HubSpot] sync failed (non-blocking): ' + err.message);
   }
 }
 
@@ -731,7 +746,7 @@ app.get('/p/:token', publicViewLimiter, (req, res) => {
     rec.views.push({ t: Date.now(), ua: (req.headers['user-agent'] || '').slice(0, 200) });
     if (rec.views.length > 500) rec.views = rec.views.slice(-500);
     // HubSpot: note the first open, then at most one "opened again" note per 6h
-    if (HUBSPOT_TOKEN && rec.contactEmail && (!rec.hsLastViewNoteAt || Date.now() - rec.hsLastViewNoteAt > 6 * 60 * 60 * 1000)) {
+    if (hubspotEmailsFor(rec).length && (!rec.hsLastViewNoteAt || Date.now() - rec.hsLastViewNoteAt > 6 * 60 * 60 * 1000)) {
       rec.hsLastViewNoteAt = Date.now();
       const n = rec.views.length;
       hubspotLogNote(rec, '📄 efelle proposal ' + (n === 1 ? 'opened' : 'opened again (view #' + n + ')')

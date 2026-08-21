@@ -1516,7 +1516,7 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: getApiHeaders(),
-      body: JSON.stringify({ html: propReportHtml, company, contactEmail: document.getElementById('prop-contact-email').value.trim().toLowerCase(), token: existingToken }),
+      body: JSON.stringify({ html: propReportHtml, company, contactEmails: pubContactEmails(), token: existingToken }),
     });
     const d = await res.json();
     if (res.ok) {
@@ -1541,6 +1541,14 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
 // ─── Publish Link (hosted proposal with open tracking + click-to-sign) ─
 function pubSlug() {
   return (document.getElementById('prop-name').value || 'proposal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// Contact Email(s) field → validated array (comma/semicolon/space separated)
+function pubContactEmails() {
+  return document.getElementById('prop-contact-email').value
+    .split(/[,;\s]+/)
+    .map(e => e.trim().toLowerCase())
+    .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
 }
 
 function renderPublishPanel(token, status) {
@@ -1592,7 +1600,7 @@ document.getElementById('prop-publish-btn').addEventListener('click', async () =
       body: JSON.stringify({
         html: propReportHtml,
         company: document.getElementById('prop-name').value.trim(),
-        contactEmail: document.getElementById('prop-contact-email').value.trim().toLowerCase(),
+        contactEmails: pubContactEmails(),
         token: existingToken,
       }),
     });

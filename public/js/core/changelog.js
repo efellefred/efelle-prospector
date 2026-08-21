@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.14.1',
+    date: '2026-08-14',
+    title: 'Multiple Contact Emails',
+    changes: [
+      'The Contact Email field now accepts multiple addresses separated by commas — useful when two people at the company can sign',
+      'Proposal opens and the acceptance log as notes on each listed HubSpot contact (up to 5)',
+      'Invalid entries are ignored and duplicates removed automatically',
+    ]
+  },
+  {
     version: '4.14.0',
     date: '2026-08-14',
     title: 'HubSpot Sync for Proposal Activity',

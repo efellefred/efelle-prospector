@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.14.1 — 2026-08-14 — Multiple Contact Emails
+
+- The Contact Email field now accepts multiple addresses separated by commas — useful when two people at the company can sign
+- Proposal opens and the acceptance log as notes on each listed HubSpot contact (up to 5)
+- Invalid entries are ignored and duplicates removed automatically
+
 ## 4.14.0 — 2026-08-14 — HubSpot Sync for Proposal Activity
 
 - New Contact Email field on the proposal client form (auto-filled by Research Client when an email is found on the site or listings — never guessed)
