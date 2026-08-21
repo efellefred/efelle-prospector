@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.18.0',
+    date: '2026-08-14',
+    title: 'Live Listed Prices & Auto-Updating Links',
+    changes: [
+      'The listed RGS price itself now updates in real time as add-ons are checked — in the offer panel, the Payment Breakdown row, and the RGS price band (the separate "Selected monthly total" line is gone; the sticky bar still shows the full selection)',
+      'Published links auto-update: AI edits, logo changes, and regenerations push to the live link automatically — no need to re-publish',
+      'Once the client signs, the published version LOCKS — edits can no longer change the signed record (the app tells you when a link is locked)',
+    ]
+  },
+  {
     version: '4.17.1',
     date: '2026-08-14',
     title: 'Logo Background Control',

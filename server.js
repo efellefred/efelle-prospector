@@ -556,6 +556,16 @@ app.post('/api/publish', requireAuth, (req, res) => {
     .map(e => e.trim().toLowerCase())
     .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)))].slice(0, 5);
   let rec = token ? readPublished(token) : null;
+  // A signed proposal is a contract record — its published version is frozen
+  if (rec && rec.accepted) {
+    return res.status(409).json({
+      error: 'locked',
+      message: 'This proposal has been signed — its published version is locked.',
+      token: rec.token,
+      url: '/p/' + rec.token,
+      accepted: rec.accepted,
+    });
+  }
   if (rec) {
     rec.html = html;
     if (company) rec.company = String(company).slice(0, 120);
@@ -746,12 +756,14 @@ function acceptUiHtml(rec) {
     + 'var stickyO = document.getElementById("pub-sticky-onetime");'
     + 'function updateTotal() {'
     + 'var total = wrap ? (parseInt(wrap.getAttribute("data-base") || "0", 10) || 0) : 0;'
-    + 'var oneTime = 0;'
-    + 'document.querySelectorAll(".prog-opt-check").forEach(function(c) { if (c.checked) { total += parseInt(c.getAttribute("data-mprice") || "0", 10) || 0; oneTime += parseInt(c.getAttribute("data-oprice") || "0", 10) || 0; } });'
+    + 'var oneTime = 0, addonSum = 0;'
+    + 'document.querySelectorAll(".prog-opt-check").forEach(function(c) { if (c.checked) { var m = parseInt(c.getAttribute("data-mprice") || "0", 10) || 0; total += m; oneTime += parseInt(c.getAttribute("data-oprice") || "0", 10) || 0; if ((c.getAttribute("data-opt") || "").indexOf("addon_") === 0) addonSum += m; } });'
     + 'var mStr = "$" + total.toLocaleString("en-US");'
     + 'if (totalEl && ' + (rec.accepted ? 'false' : 'true') + ') totalEl.textContent = mStr;'
     + 'if (stickyO) stickyO.textContent = oneTime > 0 ? ("$" + oneTime.toLocaleString("en-US") + " one-time + ") : "";'
     + 'if (stickyM) stickyM.textContent = mStr + "/mo";'
+    // The listed RGS program prices update in place: base program + checked add-ons
+    + 'document.querySelectorAll(".live-rgs-monthly").forEach(function(s) { var b = parseInt(s.getAttribute("data-base") || "0", 10) || 0; s.textContent = "$" + (b + addonSum).toLocaleString("en-US"); });'
     + '}'
     + 'document.querySelectorAll(".prog-opt-check").forEach(function(c) { c.addEventListener("change", updateTotal); });'
     + 'updateTotal();'

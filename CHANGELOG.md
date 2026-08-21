@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.18.0 — 2026-08-14 — Live Listed Prices & Auto-Updating Links
+
+- The listed RGS price itself now updates in real time as add-ons are checked — in the offer panel, the Payment Breakdown row, and the RGS price band (the separate "Selected monthly total" line is gone; the sticky bar still shows the full selection)
+- Published links auto-update: AI edits, logo changes, and regenerations push to the live link automatically — no need to re-publish
+- Once the client signs, the published version LOCKS — edits can no longer change the signed record (the app tells you when a link is locked)
+
 ## 4.17.1 — 2026-08-14 — Logo Background Control
 
 - New Logo Background toggle (Auto / Light / Dark) next to the logo preview — pick Light for colorful logos with white accents (like Mt. Baker) that were auto-getting the dark backdrop

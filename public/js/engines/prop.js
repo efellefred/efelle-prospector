@@ -588,6 +588,9 @@ function propBuildHTML(clientName) {
   const hp = isRGS ? 0 : (Number.isFinite(hpRaw) ? Math.max(0, hpRaw) : (isWO ? 0 : 85));
   const rp = parseInt(document.getElementById('price-rgs').value) || ((isWO || isRGS) ? 2800 : 2500);
   const hours = isWO ? (parseInt(document.getElementById('price-hours').value) || 40) : 0;
+  // The displayed RGS program price — on the hosted page these listed figures
+  // update in place as add-ons are checked (base program + selected add-ons)
+  const liveRgs = '<span class="live-rgs-monthly" data-base="' + rp + '">' + fmt(rp) + '</span>';
   const d1 = Math.round(wp * 0.50);  // 50% deposit (both new site and WO)
   const d2 = isWO ? Math.round(wp * 0.50) : 0;  // WO: 50% milestone; new site: no milestone
   const monthlyPay = fmt(Math.round((wp - d1) / 24));
@@ -777,7 +780,7 @@ function propBuildHTML(clientName) {
   const offerSecondaryBlock = isRGS
     ? ''
     : isWO
-    ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(rp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Digital Marketing<br>Program</div></div>'
+    ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + liveRgs + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Digital Marketing<br>Program</div></div>'
     : (hp > 0
       ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(hp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Hosting, Support<br>&amp; CMS Maint</div></div>'
       : '');
@@ -786,18 +789,18 @@ function propBuildHTML(clientName) {
   const payRow = (label, val, border, orange) => '<div style="display:flex; justify-content:space-between; align-items:center; padding:' + (orange ? '16px' : '10px') + ' 0;' + (border ? ' border-bottom:1px solid rgba(0,0,0,0.06);' : '') + '"><span style="font-size:13px; ' + (orange ? 'font-weight:700; color:var(--orange);' : 'color:var(--gray-1);') + ' display:flex; align-items:center;">' + label + '</span><span style="font-size:13px; font-weight:700; color:' + (orange ? 'var(--orange)' : 'var(--black)') + '; display:flex; align-items:center;">' + val + '</span></div>';
   const hostingRow = hp > 0 ? payRow('Website Hosting, Support &amp; CMS Maintenance', fmt(hp) + '/mo', true, false) : '';
   const paymentRows = isRGS
-    ? (payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', true, true)
+    ? (payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/mo', true, true)
       + payRow('Three-month minimum term, then month-to-month', '30 days\' notice to cancel', true, false)
       + payRow('Ad spend (Google &amp; META)', 'Paid directly to platforms', false, false))
     : isWO
     ? (payRow('50% Deposit upon project approval', fmt(d1), true, false)
       + payRow('50% Milestone Payment @ 45 days', fmt(d2), true, false)
       + hostingRow
-      + payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', false, true))
+      + payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/mo', false, true))
     : (payRow('50% project deposit upon approval', fmt(d1), true, false)
       + payRow('50% project balance paid over 24 months, 0% interest', '$' + Math.round(m50).toLocaleString() + '/mo', true, false)
       + hostingRow
-      + (optional ? '' : payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', false, true)));
+      + (optional ? '' : payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/mo', false, true)));
 
   // ── SITE ARCHITECTURE DIAGRAM ──────────────────────────────────────
   // ── SITE ARCHITECTURE WIREFRAME DIAGRAM ─────────────────────────────
@@ -969,10 +972,7 @@ function propBuildHTML(clientName) {
   // option; the 0% build financing is NOT monthly-recurring) + any checked add-ons.
   // The server-injected script on hosted pages re-computes this as boxes change.
   const monthlyTotalLine = (initial, base) =>
-    '<div id="monthly-total" data-base="' + (base || 0) + '" style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15); font-size:12px; color:rgba(255,255,255,0.75);">'
-    + 'Selected monthly total: <span id="monthly-total-val" style="font-size:15px; font-weight:800; color:var(--orange);">' + fmt(initial) + '</span><span style="color:rgba(255,255,255,0.5);">/mo</span>'
-    + '<span style="font-size:9.5px; color:rgba(255,255,255,0.4);"> &nbsp;·&nbsp; updates with your selections, incl. optional add-ons above</span>'
-    + '</div>';
+    '<span id="monthly-total" data-base="' + (base || 0) + '" style="display:none;"></span>';
   let programSummaryBlock;
   if (isRGS) {
     programSummaryBlock = '<div style="flex:1; min-width:280px;">'
@@ -1066,7 +1066,7 @@ function propBuildHTML(clientName) {
     '[[RGS_LEAD]]':             adjustForMarketType(rgsLead),
     '[[RGS_MAIN_CARDS]]':       adjustForMarketType(rgsMainCards),
     '[[RGS_ADDON_CARDS]]':      adjustForMarketType(rgsAddonCards),
-    '[[RGS_PRICE]]':            fmt(rp),
+    '[[RGS_PRICE]]':            liveRgs,
     '[[RGS_AGREEMENT_PARA]]':   isRGS
       ? 'This proposal covers our <strong>Revenue Growth Service (RGS)</strong>, a fully managed digital marketing program at <strong>' + fmt(rp) + '/month</strong> focused on increasing visibility, driving qualified traffic, and improving lead generation for your existing website. RGS runs with a three-month minimum term, then continues month-to-month with 30 days\' notice to cancel.'
       : optional
@@ -1231,9 +1231,11 @@ async function propGenerate() {
       const frame = document.getElementById('prop-report-frame');
       await writeToFrame(frame, html);
 
-      // If this company already has a published link, surface its status
+      // If this company already has a published link, surface its status and
+      // push the freshly generated version to it (no-op if signed/locked)
       document.getElementById('prop-publish-panel').style.display = 'none';
       refreshPublishStatus();
+      autoRepublish();
 
       // Populate propClientData from form fields for saving
       propClientData = {
@@ -1368,6 +1370,7 @@ window.applyLogoToProposal = async function() {
   }
 
   propReportHtml = doc.documentElement.outerHTML;
+  autoRepublish();
 
   statusEl.innerHTML = '<span style="color:#34d399;">✓ Logo applied.</span>';
   setTimeout(() => {
@@ -1559,9 +1562,10 @@ Rules:
 
     if (changeCount === 0) throw new Error('No matching text found to replace — try quoting the exact text you see in the proposal');
 
-    // Update the proposal
+    // Update the proposal (and the live published link, if one exists)
     propReportHtml = updatedHtml;
     await writeToFrame(document.getElementById('prop-report-frame'), propReportHtml);
+    autoRepublish();
 
     // Honest reporting: only claim what actually landed, and flag what didn't
     if (failedCount === 0) {
@@ -1624,6 +1628,9 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
       localStorage.setItem('prospector_pub_' + slug, d.token);
       renderPublishPanel(d.token, d);
       link = window.location.origin + '/p/' + d.token;
+    } else if (res.status === 409 && existingToken) {
+      // Signed and locked — the existing link is still the right one to send
+      link = window.location.origin + '/p/' + existingToken;
     }
   } catch (e) { /* fall through — email still opens without a link */ }
   const subject = 'Your proposal from efelle creative — ' + company;
@@ -1652,10 +1659,37 @@ function pubContactEmails() {
     .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
 }
 
-function renderPublishPanel(token, status) {
+// Auto-republish: once a link exists for this company, every edit (AI editor,
+// logo changes, regeneration) silently updates the live copy — until the client
+// signs, at which point the server locks the published version (409).
+let autoRepubTimer = null;
+function autoRepublish() {
+  const token = localStorage.getItem('prospector_pub_' + pubSlug());
+  if (!token || !propReportHtml) return;
+  clearTimeout(autoRepubTimer);
+  autoRepubTimer = setTimeout(async () => {
+    try {
+      const res = await fetch('/api/publish', {
+        method: 'POST',
+        headers: getApiHeaders(),
+        body: JSON.stringify({
+          html: propReportHtml,
+          company: document.getElementById('prop-name').value.trim(),
+          contactEmails: pubContactEmails(),
+          token,
+        }),
+      });
+      const d = await res.json();
+      if (res.status === 409) { renderPublishPanel(token, { views: null, accepted: d.accepted, locked: true }); return; }
+      if (res.ok) renderPublishPanel(d.token, d, 'live link updated with your latest edits');
+    } catch (e) { /* silent — manual Publish Link still available */ }
+  }, 1200);
+}
+
+function renderPublishPanel(token, status, flash) {
   const panel = document.getElementById('prop-publish-panel');
   const fullUrl = window.location.origin + '/p/' + token;
-  const views = status ? status.views : 0;
+  const views = (status && typeof status.views === 'number') ? status.views : 0;
   const last = status && status.lastViewedAt ? new Date(status.lastViewedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : null;
   const accepted = status && status.accepted;
   panel.style.display = '';
@@ -1671,10 +1705,12 @@ function renderPublishPanel(token, status) {
           + '</span>'
         : '')
     + ' <button onclick="refreshPublishStatus()" title="Refresh views/acceptance" style="padding:2px 8px;border-radius:5px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;cursor:pointer;">↻</button>'
+    + (status && status.locked ? ' <span style="color:#fb923c;font-weight:700;">🔒 Signed — published version locked (edits no longer update the link)</span>' : '')
+    + (flash ? ' <span style="color:#34d399;font-size:10px;">↻ ' + flash + '</span>' : '')
     + (status && status.hubspot
         ? ' <span style="color:#4b5563;">·</span> <span style="color:#f59e0b;" title="Opens and acceptance log as notes on this HubSpot contact">⬡ HubSpot: ' + String(status.hubspot).replace(/</g, '&lt;') + '</span>'
         : '')
-    + '<div style="font-size:10px;color:#4b5563;">Views include your own opens of the link. Re-publish after edits to update the live copy at the same URL.'
+    + '<div style="font-size:10px;color:#4b5563;">Views include your own opens of the link. Edits update the live link automatically until the client signs.'
     + (status && status.hubspot ? '' : ' Add a Contact Email on the client form and re-publish to log activity to HubSpot.')
     + '</div>';
 }
@@ -1708,6 +1744,12 @@ document.getElementById('prop-publish-btn').addEventListener('click', async () =
       }),
     });
     const d = await res.json();
+    if (res.status === 409) {
+      renderPublishPanel(existingToken, { views: null, accepted: d.accepted, locked: true });
+      btn.innerHTML = '🔒 Signed — locked';
+      setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 3000);
+      return;
+    }
     if (!res.ok) throw new Error(d.error || 'Publish failed');
     localStorage.setItem('prospector_pub_' + slug, d.token);
     renderPublishPanel(d.token, d);
