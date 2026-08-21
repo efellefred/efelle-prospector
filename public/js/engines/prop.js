@@ -729,12 +729,14 @@ function propBuildHTML(clientName) {
   const CHECK = '<div style="width:16px;height:16px;border-radius:3px;background:#32D74B;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:8px;vertical-align:middle;"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
   const EMPTY_BOX = '<div style="width:16px;height:16px;border-radius:3px;border:2px solid rgba(255,255,255,0.6);display:inline-flex;flex-shrink:0;margin-right:8px;vertical-align:middle;"></div>';
   const DESC_INDENT = 'padding-left:24px;';
-  // Add-ons render as a compact price list (not cards) so any number of rows fits
-  const addonCard = (title, desc, price) => '<div class="addon-row" style="display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.08);">'
-    + EMPTY_BOX
+  // Add-ons render as a compact price list (not cards) so any number of rows fits.
+  // The checkbox is a real, clickable input: on the hosted page it feeds the live
+  // "Selected Monthly Total" and is recorded (and locked) with the acceptance.
+  const addonCard = (key, title, desc, priceNum) => '<label class="addon-row" style="display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.08); cursor:pointer;">'
+    + '<input type="checkbox" class="prog-opt-check" data-opt="addon_' + key + '" data-label="' + ('Add-on: ' + title.replace(/&amp;/g, '&') + ' — $' + priceNum + '/mo').replace(/"/g, '&quot;') + '" data-mprice="' + priceNum + '" style="width:16px; height:16px; accent-color:#F56300; flex-shrink:0; margin-top:1px;">'
     + '<div style="flex:1; line-height:1.55;"><span style="font-size:12px; font-weight:700; color:var(--white);">' + title + '</span><span style="font-size:10.5px; color:rgba(255,255,255,0.65);"> — ' + desc + '</span></div>'
-    + '<div style="font-size:13px; font-weight:800; color:var(--white); white-space:nowrap; padding-top:1px;">' + price + '</div>'
-    + '</div>';
+    + '<div style="font-size:13px; font-weight:800; color:var(--white); white-space:nowrap; padding-top:1px;">$' + priceNum + '<span style="font-size:11px; font-weight:400; color:var(--gray-2);">/month</span></div>'
+    + '</label>';
 
   // RGS-only: the program includes ongoing content updates to the existing site (no design/dev rebuild)
   const contentUpdatesCard = isRGS
@@ -747,13 +749,12 @@ function propBuildHTML(clientName) {
 
   // Add-on cards — 3-up row; descriptions kept tight so the RGS section stays on one page.
   // WO additionally offers Local SEO + Reputation Mgmt (they're in its main grid otherwise).
-  const addonPrice = (n) => '$' + n + '<span style="font-size:11px; font-weight:400; color:var(--gray-2);">/month</span>';
-  const gbpCard    = addonCard('Google Business Profile Mgt', 'GBP optimization — photos, Q&amp;A, service areas — plus continuous posting to help you rank in the local map pack.', addonPrice(400));
-  const aiCard     = addonCard('AI Phone &amp; Appt Automation', 'Missed calls send leads to your competitor. Our system answers 24/7, qualifies leads &amp; books appointments with reminders &amp; follow-ups.', addonPrice(550));
-  const socialCard = addonCard('Social Media Engagement', 'We answer your chats, comments &amp; messages, and post regular content that keeps your brand active and responsive.', addonPrice(250));
+  const gbpCard    = addonCard('gbp', 'Google Business Profile Mgt', 'GBP optimization — photos, Q&amp;A, service areas — plus continuous posting to help you rank in the local map pack.', 400);
+  const aiCard     = addonCard('ai_phone', 'AI Phone &amp; Appt Automation', 'Missed calls send leads to your competitor. Our system answers 24/7, qualifies leads &amp; books appointments with reminders &amp; follow-ups.', 550);
+  const socialCard = addonCard('social', 'Social Media Engagement', 'We answer your chats, comments &amp; messages, and post regular content that keeps your brand active and responsive.', 250);
   const rgsAddonCards = isWO
-    ? (addonCard('Local SEO', 'Ongoing optimization to rank for nearby searches — service area pages, map pack ranking, structured data &amp; citation building.', addonPrice(650))
-      + addonCard('Reputation Management', 'Review requests, response management, and amplification across Google, Facebook &amp; industry directories.', addonPrice(350))
+    ? (addonCard('local_seo', 'Local SEO', 'Ongoing optimization to rank for nearby searches — service area pages, map pack ranking, structured data &amp; citation building.', 650)
+      + addonCard('reputation', 'Reputation Management', 'Review requests, response management, and amplification across Google, Facebook &amp; industry directories.', 350)
       + gbpCard + aiCard + socialCard)
     : (gbpCard + aiCard + socialCard);
 
@@ -948,27 +949,38 @@ function propBuildHTML(clientName) {
   // boxes (live on the hosted page and recorded with the acceptance; printable
   // as tick-boxes on paper). Hosting rides with the website option.
   const hostingNote = hp > 0 ? ' + ' + fmt(hp) + '/mo hosting' : '';
-  const progOptRow = (key, label, checked) =>
+  const progOptRow = (key, label, checked, mprice, oprice) =>
     '<label class="prog-opt" title="You can select one or both programs" style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:8px;">'
-    + '<input type="checkbox" class="prog-opt-check" data-opt="' + key + '" data-label="' + label.replace(/"/g, '&quot;') + '"' + (checked ? ' checked' : '') + ' style="width:15px; height:15px; accent-color:#F56300; flex-shrink:0;">'
+    + '<input type="checkbox" class="prog-opt-check" data-opt="' + key + '" data-label="' + label.replace(/"/g, '&quot;') + '" data-mprice="' + (mprice || 0) + '" data-oprice="' + (oprice || 0) + '"' + (checked ? ' checked' : '') + ' style="width:15px; height:15px; accent-color:#F56300; flex-shrink:0;">'
     + '<span style="font-size:13px; color:var(--white); font-weight:500;">' + label + '</span>'
     + '</label>';
+  // Live monthly total: programs' recurring portions (hosting rides with the website
+  // option; the 0% build financing is NOT monthly-recurring) + any checked add-ons.
+  // The server-injected script on hosted pages re-computes this as boxes change.
+  const monthlyTotalLine = (initial, base) =>
+    '<div id="monthly-total" data-base="' + (base || 0) + '" style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15); font-size:12px; color:rgba(255,255,255,0.75);">'
+    + 'Selected monthly total: <span id="monthly-total-val" style="font-size:15px; font-weight:800; color:var(--orange);">' + fmt(initial) + '</span><span style="color:rgba(255,255,255,0.5);">/mo</span>'
+    + '<span style="font-size:9.5px; color:rgba(255,255,255,0.4);"> &nbsp;·&nbsp; updates with your selections, incl. optional add-ons above</span>'
+    + '</div>';
   let programSummaryBlock;
   if (isRGS) {
-    programSummaryBlock = '<div>'
+    programSummaryBlock = '<div style="flex:1; min-width:280px;">'
       + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:4px;">Program Summary</div>'
       + '<div style="font-size:13px; color:var(--white); font-weight:500;">RGS program @ ' + fmt(rp) + '/mo &nbsp;·&nbsp; 3-month minimum, then month-to-month</div>'
+      + monthlyTotalLine(rp, rp)
       + '</div>';
   } else {
     const websiteLabel = isWO
       ? fmt(wp) + ' — Website Updates (Work Order)' + hostingNote
       : fmt(wp) + ' — New Website Project (0% interest plan)' + hostingNote;
     const rgsLabel = fmt(rp) + '/mo — RGS Marketing Program' + (optional ? ' (optional)' : '');
-    programSummaryBlock = '<div>'
+    const initialMonthly = hp + (optional ? 0 : rp); // website checked by default; add-ons start unchecked
+    programSummaryBlock = '<div style="flex:1; min-width:280px;">'
       + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:2px;">Select Your Options</div>'
       + '<div style="font-size:10px; color:rgba(255,255,255,0.45);">Check one or both — your signature authorizes the selected options.</div>'
-      + progOptRow('website', websiteLabel, true)
-      + progOptRow('rgs', rgsLabel, !optional)
+      + progOptRow('website', websiteLabel, true, hp, wp)
+      + progOptRow('rgs', rgsLabel, !optional, rp, 0)
+      + monthlyTotalLine(initialMonthly, 0)
       + '</div>';
   }
 
@@ -1641,7 +1653,7 @@ function renderPublishPanel(token, status) {
     + (last ? ' <span style="color:#4b5563;">·</span> last opened ' + last : '')
     + (accepted
         ? ' <span style="color:#4b5563;">·</span> <span style="color:#34d399;font-weight:700;">✓ ACCEPTED by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString()
-          + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + ')' : '')
+          + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + (accepted.monthlyTotal > 0 ? ' — $' + Number(accepted.monthlyTotal).toLocaleString('en-US') + '/mo' : '') + ')' : '')
           + '</span>'
         : '')
     + ' <button onclick="refreshPublishStatus()" title="Refresh views/acceptance" style="padding:2px 8px;border-radius:5px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;cursor:pointer;">↻</button>'

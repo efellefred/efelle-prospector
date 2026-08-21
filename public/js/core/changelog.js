@@ -4,6 +4,19 @@
 
 const CHANGELOG = [
   {
+    version: '4.17.0',
+    date: '2026-08-14',
+    title: 'Clickable Add-Ons, Live Totals & Signature Polish',
+    changes: [
+      'Add-on checkboxes are now clickable on the hosted proposal — checked add-ons join the client\'s recorded selection and are locked in after signing',
+      'New "Selected monthly total" in the options card by the signature: hosting + RGS + chosen add-ons, updating in real time as the client checks boxes',
+      'New sticky bar at the top of the hosted proposal showing the running selection ("$6,600 one-time + $2,885/mo") wherever the client scrolls — frozen at the accepted amounts after signing',
+      'The accepted monthly total is recorded with the signature and shows in the verification line, the publish panel, and the HubSpot note',
+      'Signature block per feedback: COMPANY and SIGNATURE headings on one line, client name aligned with the company name, company-side rule and caption removed',
+      'Add-ons alone can\'t be signed for — at least one program must be selected (enforced server-side)',
+    ]
+  },
+  {
     version: '4.16.0',
     date: '2026-08-14',
     title: 'Select Your Options, WO Hosting & Signature Alignment',

@@ -668,9 +668,10 @@ function injectSignature(html, rec) {
   const name = escapeHtmlText(a.name);
   const whenFull = new Date(a.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' PT';
   const dateOnly = new Date(a.t).toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' });
-  const optionsSuffix = (Array.isArray(a.options) && a.options.length)
+  const optionsSuffix = ((Array.isArray(a.options) && a.options.length)
     ? ' &nbsp;&middot;&nbsp; Selected: ' + a.options.map(o => escapeHtmlText(o.label || o.key)).join(' + ')
-    : '';
+    : '')
+    + (a.monthlyTotal > 0 ? ' &nbsp;&middot;&nbsp; Monthly total: $' + Number(a.monthlyTotal).toLocaleString('en-US') + '/mo' : '');
   const verification = '<div style="margin-top:10px; font-size:9px; color:#636366; line-height:1.6; letter-spacing:0.02em;">'
     + '&#10003; Digitally accepted by ' + name
     + ' &nbsp;&middot;&nbsp; ' + escapeHtmlText(whenFull)
@@ -690,6 +691,10 @@ function injectSignature(html, rec) {
     out = out.replace('<div class="sig-rule" id="sig-line-date"></div>',
       () => '<div class="sig-rule" id="sig-line-date" style="display:flex; align-items:flex-end;"><span style="font-size:12px; color:#1D1D1F; padding-bottom:5px;">' + escapeHtmlText(dateOnly) + '</span></div>');
     out = out.replace('<div id="sig-verification"></div>', () => '<div id="sig-verification">' + verification + '</div>');
+    // Freeze the displayed monthly total at the accepted amount
+    if (a.monthlyTotal > 0) {
+      out = out.replace(/(<span id="monthly-total-val"[^>]*>)[^<]*/, (m, g1) => g1 + '$' + Number(a.monthlyTotal).toLocaleString('en-US'));
+    }
     // Lock the program checkboxes to what was actually selected
     if (Array.isArray(a.options)) {
       const selectedKeys = new Set(a.options.map(o => o.key));
@@ -719,17 +724,51 @@ function injectSignature(html, rec) {
 }
 
 function acceptUiHtml(rec) {
-  const hideOnPrint = '<style>@media print { .pub-ui { display:none !important; } } body { margin-bottom:120px; }</style>';
+  // Sticky live-total bar: only when the doc has selectable pricing
+  const hasPricing = rec.html.includes('prog-opt-check') || rec.html.includes('id="monthly-total"');
+  const stickyTop = rec.accepted ? '46px' : '0';
+  const bodyTop = rec.accepted ? '96px' : (hasPricing ? '44px' : '0');
+  const stickyBar = hasPricing
+    ? '<div class="pub-ui" id="pub-sticky" style="position:fixed; top:' + stickyTop + '; left:0; right:0; z-index:9998; background:rgba(29,29,31,0.97); padding:9px 20px; display:flex; justify-content:space-between; align-items:center; gap:14px; font-family:\'Plus Jakarta Sans\',sans-serif; box-shadow:0 2px 10px rgba(0,0,0,0.3); flex-wrap:wrap;">'
+      + '<div style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.85); letter-spacing:0.03em;">' + escapeHtmlText(rec.company || 'Your proposal') + ' — efelle proposal</div>'
+      + '<div style="font-size:12.5px; color:rgba(255,255,255,0.75);">Your selection: '
+      + '<span id="pub-sticky-onetime" style="font-weight:800; color:#fff;"></span>'
+      + '<span id="pub-sticky-monthly" style="font-weight:800; color:#F56300;"></span>'
+      + '</div></div>'
+    : '';
+  const hideOnPrint = '<style>@media print { .pub-ui { display:none !important; } } body { margin-bottom:120px; margin-top:' + bodyTop + '; }</style>' + stickyBar;
+  // Live totals script ships with BOTH states — after acceptance the (locked)
+  // checkboxes still drive the sticky bar's frozen numbers.
+  const totalScript = '<script>(function() {'
+    + 'var totalEl = document.getElementById("monthly-total-val");'
+    + 'var wrap = document.getElementById("monthly-total");'
+    + 'var stickyM = document.getElementById("pub-sticky-monthly");'
+    + 'var stickyO = document.getElementById("pub-sticky-onetime");'
+    + 'function updateTotal() {'
+    + 'var total = wrap ? (parseInt(wrap.getAttribute("data-base") || "0", 10) || 0) : 0;'
+    + 'var oneTime = 0;'
+    + 'document.querySelectorAll(".prog-opt-check").forEach(function(c) { if (c.checked) { total += parseInt(c.getAttribute("data-mprice") || "0", 10) || 0; oneTime += parseInt(c.getAttribute("data-oprice") || "0", 10) || 0; } });'
+    + 'var mStr = "$" + total.toLocaleString("en-US");'
+    + 'if (totalEl && ' + (rec.accepted ? 'false' : 'true') + ') totalEl.textContent = mStr;'
+    + 'if (stickyO) stickyO.textContent = oneTime > 0 ? ("$" + oneTime.toLocaleString("en-US") + " one-time + ") : "";'
+    + 'if (stickyM) stickyM.textContent = mStr + "/mo";'
+    + '}'
+    + 'document.querySelectorAll(".prog-opt-check").forEach(function(c) { c.addEventListener("change", updateTotal); });'
+    + 'updateTotal();'
+    + '})();</script>';
   if (rec.accepted) {
     return hideOnPrint
       + '<div class="pub-ui" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#065F46;color:#fff;padding:12px 20px;text-align:center;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,0.25);">'
       + '&#10003; Proposal accepted by <strong>' + escapeHtmlText(rec.accepted.name) + '</strong> on '
       + new Date(rec.accepted.t).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
       + ((Array.isArray(rec.accepted.options) && rec.accepted.options.length)
-          ? ' (' + rec.accepted.options.map(o => escapeHtmlText(o.label || o.key)).join(' + ') + ')'
+          ? ' (' + rec.accepted.options.map(o => escapeHtmlText(o.label || o.key)).join(' + ')
+            + (rec.accepted.monthlyTotal > 0 ? ' — $' + Number(rec.accepted.monthlyTotal).toLocaleString('en-US') + '/mo' : '')
+            + ')'
           : '')
       + ' &mdash; the efelle team will reach out shortly to schedule your kickoff call.'
-      + '</div>';
+      + '</div>'
+      + totalScript;
   }
   return hideOnPrint
     + '<div class="pub-ui" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1D1D1F;padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,0.35);font-family:\'Plus Jakarta Sans\',sans-serif;">'
@@ -741,7 +780,9 @@ function acceptUiHtml(rec) {
     + '</div>'
     + '<div id="pub-accept-status" style="text-align:center;color:#fb923c;font-size:12px;min-height:16px;margin-top:6px;"></div>'
     + '</div>'
-    + '<script>document.getElementById("pub-accept-btn").addEventListener("click", async function() {'
+    + totalScript
+    + '<script>'
+    + 'document.getElementById("pub-accept-btn").addEventListener("click", async function() {'
     + 'var name = document.getElementById("pub-accept-name").value.trim();'
     + 'var checked = document.getElementById("pub-accept-check").checked;'
     + 'var st = document.getElementById("pub-accept-status");'
@@ -749,7 +790,9 @@ function acceptUiHtml(rec) {
     + 'if (!checked) { st.textContent = "Please confirm you are authorized to approve this proposal."; return; }'
     + 'var optEls = [].slice.call(document.querySelectorAll(".prog-opt-check"));'
     + 'var chosenOpts = optEls.filter(function(c) { return c.checked; }).map(function(c) { return { key: c.dataset.opt, label: c.dataset.label }; });'
-    + 'if (optEls.length && !chosenOpts.length) { st.textContent = "Please check at least one option in the Select Your Options box above your signature."; return; }'
+    + 'var hasPrograms = optEls.some(function(c) { return c.dataset.opt.indexOf("addon_") !== 0; });'
+    + 'var chosePrograms = chosenOpts.some(function(o) { return o.key.indexOf("addon_") !== 0; });'
+    + 'if (hasPrograms && !chosePrograms) { st.textContent = "Please check at least one program in the Select Your Options box above your signature (add-ons are optional extras)."; return; }'
     + 'this.disabled = true; this.textContent = "Recording\\u2026";'
     // Retry on server errors / network blips (e.g. a brief server restart) so a
     // prospect mid-signature never sees a bare "Failed" for a transient condition.
@@ -807,19 +850,30 @@ app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
   // validated against, and labels are taken from, the checkboxes actually present
   // in the published document. A forged label can never enter the signed record.
   const docOpts = {};
+  const docPrices = {};
   (rec.html.match(/<input[^>]*class="prog-opt-check"[^>]*>/g) || []).forEach(tag => {
-    const k = /data-opt="([a-z_]{1,20})"/.exec(tag);
+    const k = /data-opt="([a-z_]{1,30})"/.exec(tag);
     const l = /data-label="([^"]*)"/.exec(tag);
-    if (k) docOpts[k[1]] = ((l && l[1]) || k[1]).replace(/&quot;/g, '"').replace(/&amp;/g, '&').slice(0, 150);
+    const p = /data-mprice="(\d{1,6})"/.exec(tag);
+    if (k) {
+      docOpts[k[1]] = ((l && l[1]) || k[1]).replace(/&quot;/g, '"').replace(/&amp;/g, '&').slice(0, 150);
+      docPrices[k[1]] = p ? parseInt(p[1], 10) : 0;
+    }
   });
-  const rawOpts = Array.isArray((req.body || {}).options) ? (req.body || {}).options.slice(0, 8) : [];
+  const rawOpts = Array.isArray((req.body || {}).options) ? (req.body || {}).options.slice(0, 12) : [];
   const requestedKeys = [...new Set(rawOpts.filter(o => o && typeof o.key === 'string').map(o => o.key))];
   const options = requestedKeys.filter(k => Object.prototype.hasOwnProperty.call(docOpts, k)).map(k => ({ key: k, label: docOpts[k] }));
-  // Multi-program proposals REQUIRE a selection — even for direct API calls that
-  // bypass the page script, so the recorded contract scope is never ambiguous.
-  if (Object.keys(docOpts).length && !options.length) {
-    return res.status(400).json({ error: 'Please select at least one program option' });
+  // PROGRAM selection is required when the doc offers programs — add-ons alone
+  // don't constitute an acceptance. Enforced server-side so direct API calls
+  // can't record an ambiguous contract.
+  const docProgramKeys = Object.keys(docOpts).filter(k => !k.startsWith('addon_'));
+  if (docProgramKeys.length && !options.some(o => !o.key.startsWith('addon_'))) {
+    return res.status(400).json({ error: 'Please select at least one program option (add-ons are optional extras)' });
   }
+  // Monthly total for the signed record: doc base (RGS-only) + selected recurring prices
+  const baseMatch = /id="monthly-total" data-base="(\d{1,6})"/.exec(rec.html);
+  const monthlyTotal = (baseMatch ? parseInt(baseMatch[1], 10) : 0)
+    + options.reduce((s, o) => s + (docPrices[o.key] || 0), 0);
   // Rightmost X-Forwarded-For entry is the one appended by our edge proxy —
   // client-prepended entries can't spoof the recorded IP.
   const xff = (req.headers['x-forwarded-for'] || '').toString();
@@ -829,6 +883,7 @@ app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
     ip: (xff ? xff.split(',').pop().trim() : (req.socket.remoteAddress || '').toString()).slice(0, 60),
   };
   if (options.length) rec.accepted.options = options;
+  if (monthlyTotal > 0) rec.accepted.monthlyTotal = monthlyTotal;
   try {
     writePublished(rec);
     console.log('Proposal ACCEPTED: "' + rec.company + '" by ' + name);
@@ -837,6 +892,7 @@ app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
     const noteSafe = (s) => String(s).replace(/</g, '‹').replace(/>/g, '›');
     hubspotLogNote(rec, '✅ efelle proposal ACCEPTED by ' + noteSafe(name) + ' — "' + noteSafe(rec.company) + '"'
       + (options.length ? ' — Selected: ' + options.map(o => noteSafe(o.label)).join(' + ') : '')
+      + (monthlyTotal > 0 ? ' — Monthly total: $' + monthlyTotal.toLocaleString('en-US') + '/mo' : '')
       + ' — signed ' + new Date(rec.accepted.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
       + ' PT — https://prospector.efelle.com/p/' + rec.token);
     res.json({ ok: true, accepted: rec.accepted });

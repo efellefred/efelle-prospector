@@ -566,11 +566,12 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
       <div style="font-size:11px; color:var(--gray-1);"><strong style="color:var(--orange);">Proposal valid through [[EXPIRY]].</strong> Pricing and terms are subject to change after this date.</div>
     </div>
 
-    <!-- Signature grid: align-items:end locks all three rules (company / signature /
-         date) onto one shared baseline; identical .sig-rule + .sig-caption elements.
+    <!-- Signature grid: columns TOP-aligned so the COMPANY and SIGNATURE eyebrows
+         share one line and the client name aligns with the company name; the space
+         under the signer's name holds the signature + date rules (one baseline).
          .sig-atomic keeps signature + verification + options card on one printed page. -->
     <div class="sig-atomic">
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 48px; align-items:end; margin-bottom:40px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 48px; align-items:start; margin-bottom:40px;">
       <div>
         <div class="sig-eyebrow">Company</div>
         <div style="font-size:13px; color:var(--gray-1); line-height:1.6;">
@@ -579,8 +580,6 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
           [[CLIENT_WEBSITE]]<br>
           [[CLIENT_PHONE]]
         </div>
-        <div class="sig-rule" id="sig-line-company"></div>
-        <div class="sig-caption">Company</div>
       </div>
       <div>
         <div class="sig-eyebrow">Signature</div>
