@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.16.0 — 2026-08-14 — Select Your Options, WO Hosting & Signature Alignment
+
+- Proposals with both a website/WO component AND an RGS price now end with "Select Your Options" — checkboxes for each program next to the signature. On the hosted link the client's selection is recorded with their acceptance, locked after signing, and shown in the verification line, publish panel, and HubSpot note
+- Signing requires at least one selected option — enforced on the server too, and selections can't be forged (labels always come from the document itself)
+- Monthly Hosting now available on Work Orders (for migrating an existing site to efelle hosting): a $ value adds it to the payment table, agreement, and the website option label; $0 hides hosting everywhere on any proposal type
+- Custom pricing (including hosting) is now saved with the proposal and restored when you reopen it from the Library — no more values resetting to defaults
+- Authorization block rebuilt as a locked grid: company, signature, and date rules sit on one shared baseline with aligned captions, verified in print; the signature area and options card always print together on one page
+
 ## 4.15.0 — 2026-08-14 — Add-On Price List & Sturdier AI Editor
 
 - Optional Add-Ons now render as a compact price list (checkbox · name — description · price) instead of cards — everything fits cleanly even with all 5 add-ons on Work Order proposals

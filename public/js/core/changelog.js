@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.16.0',
+    date: '2026-08-14',
+    title: 'Select Your Options, WO Hosting & Signature Alignment',
+    changes: [
+      'Proposals with both a website/WO component AND an RGS price now end with "Select Your Options" — checkboxes for each program next to the signature. On the hosted link the client\'s selection is recorded with their acceptance, locked after signing, and shown in the verification line, publish panel, and HubSpot note',
+      'Signing requires at least one selected option — enforced on the server too, and selections can\'t be forged (labels always come from the document itself)',
+      'Monthly Hosting now available on Work Orders (for migrating an existing site to efelle hosting): a $ value adds it to the payment table, agreement, and the website option label; $0 hides hosting everywhere on any proposal type',
+      'Custom pricing (including hosting) is now saved with the proposal and restored when you reopen it from the Library — no more values resetting to defaults',
+      'Authorization block rebuilt as a locked grid: company, signature, and date rules sit on one shared baseline with aligned captions, verified in print; the signature area and options card always print together on one page',
+    ]
+  },
+  {
     version: '4.15.0',
     date: '2026-08-14',
     title: 'Add-On Price List & Sturdier AI Editor',

@@ -668,26 +668,52 @@ function injectSignature(html, rec) {
   const name = escapeHtmlText(a.name);
   const whenFull = new Date(a.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' PT';
   const dateOnly = new Date(a.t).toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' });
+  const optionsSuffix = (Array.isArray(a.options) && a.options.length)
+    ? ' &nbsp;&middot;&nbsp; Selected: ' + a.options.map(o => escapeHtmlText(o.label || o.key)).join(' + ')
+    : '';
+  const verification = '<div style="margin-top:10px; font-size:9px; color:#636366; line-height:1.6; letter-spacing:0.02em;">'
+    + '&#10003; Digitally accepted by ' + name
+    + ' &nbsp;&middot;&nbsp; ' + escapeHtmlText(whenFull)
+    + ' &nbsp;&middot;&nbsp; IP ' + escapeHtmlText(a.ip || 'unavailable')
+    + ' &nbsp;&middot;&nbsp; Ref ' + escapeHtmlText(rec.token.slice(0, 8).toUpperCase())
+    + optionsSuffix
+    + '</div>';
   let out = html;
-  // Fill the two empty signature lines (signature + date)
+
+  // NOTE: every replacement below uses the FUNCTION form — replacement strings
+  // contain user-typed text (the signer's name), and String.replace would
+  // otherwise expand $-patterns in it ($&, $`, …) into document content.
+  if (out.includes('id="sig-line-signature"')) {
+    // Current template (v4.16+): ID-anchored signature grid
+    out = out.replace('<div class="sig-rule" id="sig-line-signature"></div>',
+      () => '<div class="sig-rule" id="sig-line-signature" style="display:flex; align-items:flex-end;"><span style="font-family:\'Segoe Script\',\'Brush Script MT\',\'Lucida Handwriting\',cursive; font-size:19px; color:#1D1D1F; line-height:1; padding-bottom:3px;">' + name + '</span></div>');
+    out = out.replace('<div class="sig-rule" id="sig-line-date"></div>',
+      () => '<div class="sig-rule" id="sig-line-date" style="display:flex; align-items:flex-end;"><span style="font-size:12px; color:#1D1D1F; padding-bottom:5px;">' + escapeHtmlText(dateOnly) + '</span></div>');
+    out = out.replace('<div id="sig-verification"></div>', () => '<div id="sig-verification">' + verification + '</div>');
+    // Lock the program checkboxes to what was actually selected
+    if (Array.isArray(a.options)) {
+      const selectedKeys = new Set(a.options.map(o => o.key));
+      out = out.replace(/<input type="checkbox" class="prog-opt-check" data-opt="([a-z_]+)"([^>]*)>/g, (m, key, rest) => {
+        // DOM serialization (e.g. after Add Logo) emits boolean attrs as checked=""
+      const cleaned = rest.replace(/\s?(checked|disabled)(="[^"]*")?/g, '');
+        return '<input type="checkbox" class="prog-opt-check" data-opt="' + key + '"' + cleaned + (selectedKeys.has(key) ? ' checked' : '') + ' disabled>';
+      });
+    }
+    return out;
+  }
+
+  // Legacy path: proposals published before the v4.16 signature grid
   const lineRe = /<div style="display:grid; grid-template-columns:1fr 0\.5fr; gap:20px; margin-bottom:4px;">\s*<div style="border-bottom:1px solid #1D1D1F;[^"]*"><\/div>\s*<div style="border-bottom:1px solid #1D1D1F;[^"]*"><\/div>\s*<\/div>/;
   if (lineRe.test(out)) {
     out = out.replace(lineRe,
-      '<div style="display:grid; grid-template-columns:1fr 0.5fr; gap:20px; margin-bottom:4px;">'
+      () => '<div style="display:grid; grid-template-columns:1fr 0.5fr; gap:20px; margin-bottom:4px;">'
       + '<div style="border-bottom:1px solid #1D1D1F; min-height:26px; display:flex; align-items:flex-end;"><span style="font-family:\'Segoe Script\',\'Brush Script MT\',\'Lucida Handwriting\',cursive; font-size:19px; color:#1D1D1F; line-height:1; padding-bottom:2px;">' + name + '</span></div>'
       + '<div style="border-bottom:1px solid #1D1D1F; min-height:26px; display:flex; align-items:flex-end;"><span style="font-size:12px; color:#1D1D1F; padding-bottom:4px;">' + escapeHtmlText(dateOnly) + '</span></div>'
       + '</div>');
   }
-  // Verification line under the Signature/Date labels
   const labelsRe = /(<div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0\.10em; color:var\(--gray-2\);">Date<\/div>\s*<\/div>)/;
   if (labelsRe.test(out)) {
-    out = out.replace(labelsRe,
-      '$1<div style="margin-top:10px; font-size:9px; color:#636366; line-height:1.6; letter-spacing:0.02em;">'
-      + '&#10003; Digitally accepted by ' + name
-      + ' &nbsp;&middot;&nbsp; ' + escapeHtmlText(whenFull)
-      + ' &nbsp;&middot;&nbsp; IP ' + escapeHtmlText(a.ip || 'unavailable')
-      + ' &nbsp;&middot;&nbsp; Ref ' + escapeHtmlText(rec.token.slice(0, 8).toUpperCase())
-      + '</div>');
+    out = out.replace(labelsRe, (m, g1) => g1 + verification);
   }
   return out;
 }
@@ -699,6 +725,9 @@ function acceptUiHtml(rec) {
       + '<div class="pub-ui" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#065F46;color:#fff;padding:12px 20px;text-align:center;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,0.25);">'
       + '&#10003; Proposal accepted by <strong>' + escapeHtmlText(rec.accepted.name) + '</strong> on '
       + new Date(rec.accepted.t).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      + ((Array.isArray(rec.accepted.options) && rec.accepted.options.length)
+          ? ' (' + rec.accepted.options.map(o => escapeHtmlText(o.label || o.key)).join(' + ') + ')'
+          : '')
       + ' &mdash; the efelle team will reach out shortly to schedule your kickoff call.'
       + '</div>';
   }
@@ -718,13 +747,16 @@ function acceptUiHtml(rec) {
     + 'var st = document.getElementById("pub-accept-status");'
     + 'if (name.length < 2) { st.textContent = "Please type your full name."; return; }'
     + 'if (!checked) { st.textContent = "Please confirm you are authorized to approve this proposal."; return; }'
+    + 'var optEls = [].slice.call(document.querySelectorAll(".prog-opt-check"));'
+    + 'var chosenOpts = optEls.filter(function(c) { return c.checked; }).map(function(c) { return { key: c.dataset.opt, label: c.dataset.label }; });'
+    + 'if (optEls.length && !chosenOpts.length) { st.textContent = "Please check at least one option in the Select Your Options box above your signature."; return; }'
     + 'this.disabled = true; this.textContent = "Recording\\u2026";'
     // Retry on server errors / network blips (e.g. a brief server restart) so a
     // prospect mid-signature never sees a bare "Failed" for a transient condition.
     + 'var lastErr = "";'
     + 'for (var attempt = 1; attempt <= 3; attempt++) {'
     + 'try {'
-    + 'var r = await fetch("/api/p/" + ' + JSON.stringify(rec.token) + ' + "/accept", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name }) });'
+    + 'var r = await fetch("/api/p/" + ' + JSON.stringify(rec.token) + ' + "/accept", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, options: chosenOpts }) });'
     + 'var d = null; try { d = await r.json(); } catch (pe) {}'
     + 'if (r.ok) { location.reload(); return; }'
     + 'if (d && d.error && r.status < 500) { lastErr = d.error; break; }'
@@ -756,7 +788,8 @@ app.get('/p/:token', publicViewLimiter, (req, res) => {
   } catch (e) { /* tracking must never block viewing */ }
   const ui = acceptUiHtml(rec);
   const signed = rec.accepted ? injectSignature(rec.html, rec) : rec.html;
-  const html = signed.includes('</body>') ? signed.replace('</body>', ui + '</body>') : signed + ui;
+  // Function form: ui contains the signer's name (banner) — see injectSignature note
+  const html = signed.includes('</body>') ? signed.replace('</body>', () => ui + '</body>') : signed + ui;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   res.send(html);
@@ -770,16 +803,41 @@ app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
   if (rec.accepted) return res.json({ ok: true, accepted: rec.accepted, already: true });
   const name = ((req.body || {}).name || '').toString().trim().slice(0, 120);
   if (name.length < 2) return res.status(400).json({ error: 'Please type your full name' });
+  // Program options: the request only says WHICH keys were selected — keys are
+  // validated against, and labels are taken from, the checkboxes actually present
+  // in the published document. A forged label can never enter the signed record.
+  const docOpts = {};
+  (rec.html.match(/<input[^>]*class="prog-opt-check"[^>]*>/g) || []).forEach(tag => {
+    const k = /data-opt="([a-z_]{1,20})"/.exec(tag);
+    const l = /data-label="([^"]*)"/.exec(tag);
+    if (k) docOpts[k[1]] = ((l && l[1]) || k[1]).replace(/&quot;/g, '"').replace(/&amp;/g, '&').slice(0, 150);
+  });
+  const rawOpts = Array.isArray((req.body || {}).options) ? (req.body || {}).options.slice(0, 8) : [];
+  const requestedKeys = [...new Set(rawOpts.filter(o => o && typeof o.key === 'string').map(o => o.key))];
+  const options = requestedKeys.filter(k => Object.prototype.hasOwnProperty.call(docOpts, k)).map(k => ({ key: k, label: docOpts[k] }));
+  // Multi-program proposals REQUIRE a selection — even for direct API calls that
+  // bypass the page script, so the recorded contract scope is never ambiguous.
+  if (Object.keys(docOpts).length && !options.length) {
+    return res.status(400).json({ error: 'Please select at least one program option' });
+  }
+  // Rightmost X-Forwarded-For entry is the one appended by our edge proxy —
+  // client-prepended entries can't spoof the recorded IP.
+  const xff = (req.headers['x-forwarded-for'] || '').toString();
   rec.accepted = {
     name,
     t: Date.now(),
-    ip: (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim(),
+    ip: (xff ? xff.split(',').pop().trim() : (req.socket.remoteAddress || '').toString()).slice(0, 60),
   };
+  if (options.length) rec.accepted.options = options;
   try {
     writePublished(rec);
     console.log('Proposal ACCEPTED: "' + rec.company + '" by ' + name);
-    hubspotLogNote(rec, '✅ efelle proposal ACCEPTED by ' + name + ' — "' + rec.company + '" — signed '
-      + new Date(rec.accepted.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+    // hs_note_body may render as rich text — neutralize angle brackets in
+    // anything user-typed (the labels are doc-derived, the name is not)
+    const noteSafe = (s) => String(s).replace(/</g, '‹').replace(/>/g, '›');
+    hubspotLogNote(rec, '✅ efelle proposal ACCEPTED by ' + noteSafe(name) + ' — "' + noteSafe(rec.company) + '"'
+      + (options.length ? ' — Selected: ' + options.map(o => noteSafe(o.label)).join(' + ') : '')
+      + ' — signed ' + new Date(rec.accepted.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
       + ' PT — https://prospector.efelle.com/p/' + rec.token);
     res.json({ ok: true, accepted: rec.accepted });
   } catch (err) {

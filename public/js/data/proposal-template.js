@@ -48,6 +48,9 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
   .rgs-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .rgs-card { background:var(--black); border-radius:12px; padding:20px 22px; display:flex; flex-direction:column; gap:6px; }
   .addon-row:last-child { border-bottom:none !important; }
+  .sig-rule { border-bottom:1px solid #1D1D1F; height:36px; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  .sig-caption { font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#6E6E73; margin-top:6px; }
+  .sig-eyebrow { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--orange); margin-bottom:6px; }
   .rgs-card-title { font-size:12px; font-weight:700; color:var(--white); }
   .rgs-card-desc { font-size:11px; color:#B0B0B5; line-height:1.6; }
   .rgs-price-band { background:var(--gray-5); border-radius:12px; padding:24px 28px; display:flex; align-items:center; justify-content:space-between; gap:20px; margin-top:20px; }
@@ -122,11 +125,23 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     /* ── Keep atomic elements whole — never split mid-card ── */
     .offer-callout, .roi-band, .comp-band, .rgs-price-band,
     .include-grid, .awards-row, .three-up, .rgs-grid,
-    .feature-card, .rgs-card, .include-item, .step, .award-badge
+    .feature-card, .rgs-card, .include-item, .step, .award-badge,
+    .sig-atomic
       { break-inside:avoid; page-break-inside:avoid; }
 
     /* ── Keep headings attached to their first line of content ── */
     h2, h3, .section-badge { break-after:avoid; page-break-after:avoid; }
+
+    /* ── P8: Agreement + Authorization — compress so the signature block and
+           options card share the page with the agreement text ── */
+    #sec-auth div[style*="max-width:620px"] p { font-size:11px !important; line-height:1.6 !important; margin-bottom:6px !important; }
+    #sec-auth .lead { margin-bottom:12px !important; }
+    .sig-rule { height:28px; }
+    .sig-atomic > div:first-child { margin-bottom:24px !important; }
+    .sig-atomic > div[style*="background:var(--black)"] { margin-top:24px !important; }
+    /* The @page counter footer brands every printed page — the HTML footer line
+       just orphans a blank final page, so hide it in print */
+    .efelle-footer { display:none; }
 
     /* ════════════════════════════════
        GLOBAL SPACING — compress for print
@@ -542,7 +557,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
       <div style="flex:1;">
         <span class="section-badge">Authorization to Proceed</span>
-        <p class="lead" style="margin-bottom:20px;">By signing below, you authorize efelle creative to begin work on the work as outlined above. Our team will reach out ASAP to schedule your kickoff call and go to work for you!</p>
+        <p class="lead" style="margin-bottom:20px;">[[AUTH_LEAD]]</p>
       </div>
     </div>
 
@@ -551,48 +566,42 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
       <div style="font-size:11px; color:var(--gray-1);"><strong style="color:var(--orange);">Proposal valid through [[EXPIRY]].</strong> Pricing and terms are subject to change after this date.</div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-bottom:20px; align-items:stretch;">
-
-      <!-- LEFT: Company info -->
+    <!-- Signature grid: align-items:end locks all three rules (company / signature /
+         date) onto one shared baseline; identical .sig-rule + .sig-caption elements.
+         .sig-atomic keeps signature + verification + options card on one printed page. -->
+    <div class="sig-atomic">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 48px; align-items:end; margin-bottom:40px;">
       <div>
-        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--orange); margin-bottom:6px;">Company</div>
-        <div style="font-size:13px; color:var(--gray-1); line-height:1.6; border-bottom:1px solid var(--gray-3); padding-bottom:6px;">
+        <div class="sig-eyebrow">Company</div>
+        <div style="font-size:13px; color:var(--gray-1); line-height:1.6;">
           [[CLIENT_NAME]]<br>
           [[CLIENT_ADDRESS]]<br>
           [[CLIENT_WEBSITE]]<br>
           [[CLIENT_PHONE]]
         </div>
+        <div class="sig-rule" id="sig-line-company"></div>
+        <div class="sig-caption">Company</div>
       </div>
-
-      <!-- RIGHT: Signature block — label+name top, sig lines bottom aligned with phone -->
-      <div style="display:flex; flex-direction:column; justify-content:space-between; min-height:90px;">
-        <div>
-          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--orange); margin-bottom:6px;">Signature</div>
-          <div style="font-size:13px; color:var(--gray-1); line-height:1.6;">[[CONTACT_NAME]]</div>
-        </div>
-        <div>
-          <div style="display:grid; grid-template-columns:1fr 0.5fr; gap:20px; margin-bottom:4px;">
-            <div style="border-bottom:1px solid #1D1D1F; height:20px; print-color-adjust:exact; -webkit-print-color-adjust:exact;"></div>
-            <div style="border-bottom:1px solid #1D1D1F; height:20px; print-color-adjust:exact; -webkit-print-color-adjust:exact;"></div>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 0.5fr; gap:20px;">
-            <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.10em; color:var(--gray-2);">Signature</div>
-            <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.10em; color:var(--gray-2);">Date</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div style="background:var(--black); border-radius:12px; padding:16px 24px; margin-top:27px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
       <div>
-        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:4px;">Program Summary</div>
-        <div style="font-size:13px; color:var(--white); font-weight:500;">[[PROGRAM_SUMMARY]]</div>
+        <div class="sig-eyebrow">Signature</div>
+        <div style="font-size:13px; color:var(--gray-1); line-height:1.6;">[[CONTACT_NAME]]</div>
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:0 24px;">
+          <div class="sig-rule" id="sig-line-signature"></div>
+          <div class="sig-rule" id="sig-line-date"></div>
+          <div class="sig-caption">Signature</div>
+          <div class="sig-caption">Date</div>
+        </div>
       </div>
+    </div>
+    <div id="sig-verification"></div>
+
+    <div style="background:var(--black); border-radius:12px; padding:16px 24px; margin-top:40px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+      [[PROGRAM_SUMMARY_BLOCK]]
       <div style="text-align:right;">
         <div style="font-size:11px; color:rgba(255,255,255,0.6); margin-bottom:2px;">Questions? Reach us at</div>
         <div style="font-size:13px; font-weight:700; color:var(--orange);">206.384.4909</div>
       </div>
+    </div>
     </div>
   </div>
 </div>

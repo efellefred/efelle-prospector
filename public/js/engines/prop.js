@@ -325,9 +325,12 @@ function selectPropType(type) {
   document.getElementById('price-website-label').textContent = isWO ? 'WO Price ($)' : 'Website Price ($)';
   document.getElementById('price-website').value = isWO ? 6600 : 7500;
   document.getElementById('price-rgs').value = (isWO || isRGS) ? 2800 : 2500;
-  // Field visibility: new site = website + hosting; WO = WO price + hours; RGS only = RGS monthly only
+  // Field visibility: new site = website + hosting; WO = WO price + hosting + hours
+  // (hosting on WOs covers migrating an existing site to efelle hosting — it only
+  // appears in the proposal when > $0); RGS only = RGS monthly only
   document.getElementById('price-website-field').style.display = isRGS ? 'none' : '';
-  document.getElementById('price-hosting-field').style.display = (isWO || isRGS) ? 'none' : '';
+  document.getElementById('price-hosting-field').style.display = isRGS ? 'none' : '';
+  document.getElementById('price-hosting').value = isWO ? 0 : 85;
   document.getElementById('price-hours-field').style.display = isWO ? '' : 'none';
   // RGS Mode (included vs optional) only applies when there's a website project to attach it to
   document.getElementById('rgs-mode-divider').style.display = isRGS ? 'none' : '';
@@ -354,6 +357,15 @@ window.restorePropState = function(report) {
   if (m.type) selectPropType(m.type);
   if (m.marketType) selectMarketType(m.marketType);
   if (m.rgs) selectRGS(m.rgs);
+  // Restore saved pricing AFTER selectPropType (which resets fields to defaults) —
+  // without this, custom values like WO hosting are silently lost on Library restore
+  if (m.prices) {
+    const setPrice = (id, v) => { if (v !== undefined && v !== null && v !== '') document.getElementById(id).value = v; };
+    setPrice('price-website', m.prices.website);
+    setPrice('price-hosting', m.prices.hosting);
+    setPrice('price-hours', m.prices.hours);
+    setPrice('price-rgs', m.prices.rgs);
+  }
 };
 
 function propGoStage1() {
@@ -559,7 +571,10 @@ function propBuildHTML(clientName) {
   const isRGS = propType === 'rgs_only';
   const optional = propType === 'new_website' && propRGS === 'optional';
   const wp = isRGS ? 0 : (parseInt(document.getElementById('price-website').value) || (isWO ? 6600 : 7500));
-  const hp = (isWO || isRGS) ? 0 : (parseInt(document.getElementById('price-hosting').value) || 85);
+  // Hosting applies to any proposal with a site (new build OR a WO where we migrate
+  // their existing site to efelle hosting). $0 = omit from the proposal entirely.
+  const hpRaw = parseInt(document.getElementById('price-hosting').value);
+  const hp = isRGS ? 0 : (Number.isFinite(hpRaw) ? Math.max(0, hpRaw) : (isWO ? 0 : 85));
   const rp = parseInt(document.getElementById('price-rgs').value) || ((isWO || isRGS) ? 2800 : 2500);
   const hours = isWO ? (parseInt(document.getElementById('price-hours').value) || 40) : 0;
   const d1 = Math.round(wp * 0.50);  // 50% deposit (both new site and WO)
@@ -751,10 +766,13 @@ function propBuildHTML(clientName) {
     ? ''
     : isWO
     ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(rp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Digital Marketing<br>Program</div></div>'
-    : '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(hp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Hosting, Support<br>&amp; CMS Maint</div></div>';
+    : (hp > 0
+      ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(hp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Hosting, Support<br>&amp; CMS Maint</div></div>'
+      : '');
 
   // Payment rows
   const payRow = (label, val, border, orange) => '<div style="display:flex; justify-content:space-between; align-items:center; padding:' + (orange ? '16px' : '10px') + ' 0;' + (border ? ' border-bottom:1px solid rgba(0,0,0,0.06);' : '') + '"><span style="font-size:13px; ' + (orange ? 'font-weight:700; color:var(--orange);' : 'color:var(--gray-1);') + ' display:flex; align-items:center;">' + label + '</span><span style="font-size:13px; font-weight:700; color:' + (orange ? 'var(--orange)' : 'var(--black)') + '; display:flex; align-items:center;">' + val + '</span></div>';
+  const hostingRow = hp > 0 ? payRow('Website Hosting, Support &amp; CMS Maintenance', fmt(hp) + '/mo', true, false) : '';
   const paymentRows = isRGS
     ? (payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', true, true)
       + payRow('Three-month minimum term, then month-to-month', '30 days\' notice to cancel', true, false)
@@ -762,10 +780,11 @@ function propBuildHTML(clientName) {
     : isWO
     ? (payRow('50% Deposit upon project approval', fmt(d1), true, false)
       + payRow('50% Milestone Payment @ 45 days', fmt(d2), true, false)
+      + hostingRow
       + payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', false, true))
     : (payRow('50% project deposit upon approval', fmt(d1), true, false)
       + payRow('50% project balance paid over 24 months, 0% interest', '$' + Math.round(m50).toLocaleString() + '/mo', true, false)
-      + payRow('Website Hosting, Support &amp; CMS Maintenance', fmt(hp) + '/mo', true, false)
+      + hostingRow
       + (optional ? '' : payRow('Monthly Digital Marketing Program (RGS)', fmt(rp) + '/mo', false, true)));
 
   // ── SITE ARCHITECTURE DIAGRAM ──────────────────────────────────────
@@ -924,13 +943,34 @@ function propBuildHTML(clientName) {
     ? adjustForMarketType('Your website content should evolve with your long term digital marketing program. We offer content enhancements to grow with the specific buyer journey of a homeowner evaluating contractors — and every element is built to convert that search into a booked estimate:')
     : v.built_lead;
 
-  const summary = isRGS
-    ? ('RGS program @ ' + fmt(rp) + '/mo &nbsp;·&nbsp; 3-month minimum, then month-to-month')
-    : isWO
-    ? (fmt(wp) + ' website updates &nbsp;+&nbsp; RGS program @ ' + fmt(rp) + '/mo')
-    : (optional
-        ? fmt(wp) + ' website (0% interest plan) &nbsp;+&nbsp; Optional RGS program @ ' + fmt(rp) + '/mo'
-        : fmt(wp) + ' website (0% interest plan) &nbsp;+&nbsp; RGS program @ ' + fmt(rp) + '/mo');
+  // Program summary block: single-program proposals keep a plain summary line;
+  // multi-program proposals become "Select Your Options" with client-checkable
+  // boxes (live on the hosted page and recorded with the acceptance; printable
+  // as tick-boxes on paper). Hosting rides with the website option.
+  const hostingNote = hp > 0 ? ' + ' + fmt(hp) + '/mo hosting' : '';
+  const progOptRow = (key, label, checked) =>
+    '<label class="prog-opt" title="You can select one or both programs" style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:8px;">'
+    + '<input type="checkbox" class="prog-opt-check" data-opt="' + key + '" data-label="' + label.replace(/"/g, '&quot;') + '"' + (checked ? ' checked' : '') + ' style="width:15px; height:15px; accent-color:#F56300; flex-shrink:0;">'
+    + '<span style="font-size:13px; color:var(--white); font-weight:500;">' + label + '</span>'
+    + '</label>';
+  let programSummaryBlock;
+  if (isRGS) {
+    programSummaryBlock = '<div>'
+      + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:4px;">Program Summary</div>'
+      + '<div style="font-size:13px; color:var(--white); font-weight:500;">RGS program @ ' + fmt(rp) + '/mo &nbsp;·&nbsp; 3-month minimum, then month-to-month</div>'
+      + '</div>';
+  } else {
+    const websiteLabel = isWO
+      ? fmt(wp) + ' — Website Updates (Work Order)' + hostingNote
+      : fmt(wp) + ' — New Website Project (0% interest plan)' + hostingNote;
+    const rgsLabel = fmt(rp) + '/mo — RGS Marketing Program' + (optional ? ' (optional)' : '');
+    programSummaryBlock = '<div>'
+      + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:2px;">Select Your Options</div>'
+      + '<div style="font-size:10px; color:rgba(255,255,255,0.45);">Check one or both — your signature authorizes the selected options.</div>'
+      + progOptRow('website', websiteLabel, true)
+      + progOptRow('rgs', rgsLabel, !optional)
+      + '</div>';
+  }
 
 
   const DOT = '<div class="include-dot"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
@@ -952,6 +992,7 @@ function propBuildHTML(clientName) {
     : isWO
     ? ('<p style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--black);">We\'re excited to partner with you on your website updates and marketing program!</p>'
       + '<p style="margin-bottom:8px;"><strong>The Website Updates (Work Order)</strong> engagement includes a focused, ' + hours + '-hour scope of targeted improvements — schema markup, location and service page content, metadata, and on-page SEO fixes. The total work order investment is <strong>[[WEBSITE_PRICE]]</strong>, with a <strong>[[DEP1]]</strong> deposit (50%) to get started and the remaining <strong>[[DEP2]]</strong> (50%) due at the 45-day milestone.</p>'
+      + (hp > 0 ? '<p style="margin-bottom:8px;">We\'ll also migrate your existing website to efelle\'s hosting platform — ongoing hosting, support &amp; CMS updates + mgt services are <strong>' + fmt(hp) + '/mo</strong>, starting upon migration.</p>' : '')
       + '<p style="margin-bottom:8px;">[[RGS_AGREEMENT_PARA]]</p>'
       + '<p style="margin-bottom:8px;">We\'ll deliver everything outlined in the approved scope and keep the work moving forward with clear milestones. You\'re responsible for providing access to your website and the info we need to complete the updates — including brand assets, photos, and key company information — and for having the rights to use any photos provided.</p>'
       + '<p style="margin-bottom:8px;">If you change the scope (like adding new work, shifting direction after approvals, or pausing the engagement) it will affect the timeline &amp; potentially the cost. It\'s rare, but if that happens, we\'ll talk it through with you and align on next steps before moving forward.</p>'
@@ -959,7 +1000,7 @@ function propBuildHTML(clientName) {
       + '<p>This agreement follows Washington State law and helps set clear expectations so everything stays on track, but you\'ll find us very easy to work with — we share a common goal, getting your website updates completed &amp; digital marketing program running ASAP to help you grow your business!</p>')
     : ('<p style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--black);">We\'re excited to partner with you on your new website and marketing program!</p>'
       + '<p style="margin-bottom:8px;"><strong>The Website Project</strong> component includes design, development, CMS setup &amp; integration, copywriting and site launch services + ongoing mgt, hosting &amp; support. The total website project investment is <strong>[[WEBSITE_PRICE]]</strong>, with a <strong>[[DEP1]]</strong> deposit to get started and the remaining balance spread over 24 months at <strong>[[MONTHLY_PAY]]/mo</strong>, interest-free.</p>'
-      + '<p style="margin-bottom:8px;">Ongoing hosting, support &amp; CMS updates + mgt services are <strong>[[HOSTING_PRICE_MO]]</strong>, starting upon site launch.</p>'
+      + (hp > 0 ? '<p style="margin-bottom:8px;">Ongoing hosting, support &amp; CMS updates + mgt services are <strong>[[HOSTING_PRICE_MO]]</strong>, starting upon site launch.</p>' : '')
       + '<p style="margin-bottom:8px;">[[RGS_AGREEMENT_PARA]]</p>'
       + '<p style="margin-bottom:8px;">We\'ll deliver everything outlined in the approved scope and keep the project moving forward with clear milestones and review rounds. We will create most of the website copywriting and imagery, but you\'re responsible for providing info we need to build your site — including your logo, brand assets, photos, and key company information — and for having the rights to use any photos provided.</p>'
       + '<p style="margin-bottom:8px;">If you change project scope (like adding new features, shifting direction after approvals, reorganizing content, requesting extra revisions, or pausing the project) it will affect the timeline &amp; potentially the cost. It\'s rare, but if that happens, we\'ll talk it through with you and align on next steps before moving forward.</p>'
@@ -1017,7 +1058,10 @@ function propBuildHTML(clientName) {
     '[[MONTHLY_PAY]]':          monthlyPay,
     '[[DEP2]]':                 fmt(d2),
     '[[MONTHLY40]]':            '$' + Math.round(m50).toLocaleString() + '/mo',
-    '[[PROGRAM_SUMMARY]]':      summary,
+    '[[PROGRAM_SUMMARY_BLOCK]]': programSummaryBlock,
+    '[[AUTH_LEAD]]':            isRGS
+      ? 'By signing below, you authorize efelle creative to begin work as outlined above. Our team will reach out ASAP to schedule your kickoff call and go to work for you!'
+      : 'By signing below, you authorize efelle creative to begin work on the program options selected below. Our team will reach out ASAP to schedule your kickoff call and go to work for you!',
     '[[WHY_LEAD]]':             adjustForMarketType(v.why_lead),
     '[[WHY_INTRO]]':            adjustForMarketType(v.why_intro),
     '[[STATS_LABEL]]':          adjustForMarketType(v.stats_label),
@@ -1187,6 +1231,12 @@ async function propGenerate() {
           type: propType,
           marketType: propMarketType,
           rgs: propRGS,
+          prices: {
+            website: document.getElementById('price-website').value,
+            hosting: document.getElementById('price-hosting').value,
+            hours: document.getElementById('price-hours').value,
+            rgs: document.getElementById('price-rgs').value,
+          },
         }, propClientData, propReportHtml);
       } catch (e) { console.warn('Auto-save failed:', e.message); }
 
@@ -1590,7 +1640,9 @@ function renderPublishPanel(token, status) {
     + '<span style="color:#4b5563;">·</span> ' + views + ' view' + (views === 1 ? '' : 's')
     + (last ? ' <span style="color:#4b5563;">·</span> last opened ' + last : '')
     + (accepted
-        ? ' <span style="color:#4b5563;">·</span> <span style="color:#34d399;font-weight:700;">✓ ACCEPTED by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString() + '</span>'
+        ? ' <span style="color:#4b5563;">·</span> <span style="color:#34d399;font-weight:700;">✓ ACCEPTED by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString()
+          + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + ')' : '')
+          + '</span>'
         : '')
     + ' <button onclick="refreshPublishStatus()" title="Refresh views/acceptance" style="padding:2px 8px;border-radius:5px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;cursor:pointer;">↻</button>'
     + (status && status.hubspot
