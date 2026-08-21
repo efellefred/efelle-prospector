@@ -4,6 +4,15 @@
 
 const CHANGELOG = [
   {
+    version: '4.17.1',
+    date: '2026-08-14',
+    title: 'Logo Background Control',
+    changes: [
+      'New Logo Background toggle (Auto / Light / Dark) next to the logo preview — pick Light for colorful logos with white accents (like Mt. Baker) that were auto-getting the dark backdrop',
+      'Auto still detects white-heavy logos that would vanish on the white page; your choice is saved with the proposal',
+    ]
+  },
+  {
     version: '4.17.0',
     date: '2026-08-14',
     title: 'Clickable Add-Ons, Live Totals & Signature Polish',

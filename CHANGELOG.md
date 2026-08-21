@@ -2,6 +2,11 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.17.1 — 2026-08-14 — Logo Background Control
+
+- New Logo Background toggle (Auto / Light / Dark) next to the logo preview — pick Light for colorful logos with white accents (like Mt. Baker) that were auto-getting the dark backdrop
+- Auto still detects white-heavy logos that would vanish on the white page; your choice is saved with the proposal
+
 ## 4.17.0 — 2026-08-14 — Clickable Add-Ons, Live Totals & Signature Polish
 
 - Add-on checkboxes are now clickable on the hosted proposal — checked add-ons join the client's recorded selection and are locked in after signing

@@ -87,6 +87,16 @@ function analyzeLogoWhiteness(dataUri) {
 // Set by propGenerate before each build: { src, dark } for the client logo
 let propLogoInfo = null;
 
+// Logo backdrop mode: 'auto' (white-pixel detection), 'light' (never), 'dark' (always)
+let propLogoBg = 'auto';
+window.selectLogoBg = function(mode) {
+  propLogoBg = mode;
+  ['auto', 'light', 'dark'].forEach(m => {
+    const btn = document.getElementById('logo-bg-' + m);
+    if (btn) btn.classList.toggle('selected', m === mode);
+  });
+};
+
 // Case studies for the current build: the server-managed list (Settings → RGS Case
 // Studies) when one exists, otherwise the bundled defaults from case-studies.js.
 let activeCaseStudies = RGS_CASE_STUDIES;
@@ -411,6 +421,7 @@ function propReset() {
   if (pubPanel) pubPanel.style.display = 'none';
   // Reset research mode to URL
   if (document.getElementById('research-mode-url')) window.selectResearchMode('url');
+  if (document.getElementById('logo-bg-auto')) window.selectLogoBg('auto');
   if (typeof updateLogoPreview === 'function') updateLogoPreview();
   const chatMessages = document.getElementById('prop-chat-messages');
   if (chatMessages) chatMessages.innerHTML = '';
@@ -1207,7 +1218,9 @@ async function propGenerate() {
           // Fallback order: our hosted copy > the client's original URL (never base64,
           // unless a data URI was pasted directly and hosting it failed)
           const src = hostedUrl || (logoFieldUrl.startsWith('data:') ? dataUri : null);
-          propLogoInfo = { src, dark: whiteRatio >= 0.25 };
+          // Manual Logo Background choice overrides the white-pixel auto-detection
+          const dark = propLogoBg === 'dark' ? true : propLogoBg === 'light' ? false : whiteRatio >= 0.25;
+          propLogoInfo = { src, dark };
         }
       }
       const html = propBuildHTML(clientName);
@@ -1236,6 +1249,7 @@ async function propGenerate() {
         founded: document.getElementById('prop-founded').value.trim(),
         differentiators: document.getElementById('prop-differentiators').value.trim(),
         logo: document.getElementById('prop-logo').value.trim(),
+        logo_bg: propLogoBg,
       };
       try {
         await saveReport('prop', clientName, {
@@ -1812,6 +1826,7 @@ async function loadPropClient(reportId) {
     setVal('prop-phone', d.phone || '');
     setVal('prop-founded', d.founded || d.year_founded || '');
     setVal('prop-logo', d.logo || d.logo_url || '');
+    if (d.logo_bg) window.selectLogoBg(d.logo_bg);
     if (typeof updateLogoPreview === 'function') updateLogoPreview();
     setVal('prop-differentiators', d.key_differentiators || d.differentiators || d.unique_selling_points || '');
 
