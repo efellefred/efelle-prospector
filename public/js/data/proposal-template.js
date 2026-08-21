@@ -47,6 +47,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
   .feature-card p { font-size:12px; color:var(--gray-2); line-height:1.65; }
   .rgs-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .rgs-card { background:var(--black); border-radius:12px; padding:20px 22px; display:flex; flex-direction:column; gap:6px; }
+  .addon-row:last-child { border-bottom:none !important; }
   .rgs-card-title { font-size:12px; font-weight:700; color:var(--white); }
   .rgs-card-desc { font-size:11px; color:#B0B0B5; line-height:1.6; }
   .rgs-price-band { background:var(--gray-5); border-radius:12px; padding:24px 28px; display:flex; align-items:center; justify-content:space-between; gap:20px; margin-top:20px; }
@@ -171,7 +172,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     #sec-rgs .lead  { margin-bottom:12px; }
     #rgs-addons     { margin-top:12px !important; }
     #rgs-addons > div:first-child { margin-bottom:8px !important; }
-    #rgs-addons .rgs-card div[style*="border-top"] { margin-top:8px !important; padding-top:6px !important; }
+    .addon-row      { padding:7px 0 !important; }
     #sec-rgs .roi-band { margin-top:12px !important; padding:12px 18px !important; }
 
     /* ── P5: Why efelle ── */
@@ -326,7 +327,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
 
   <div id="rgs-addons" style="margin-top:24px;">
     <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gray-2); margin-bottom:12px;">Optional Add-Ons</div>
-    <div class="rgs-grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div style="background:var(--black); border-radius:14px; padding:6px 22px;">
       [[RGS_ADDON_CARDS]]
     </div>
   </div>

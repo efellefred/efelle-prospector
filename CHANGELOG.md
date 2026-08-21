@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.15.0 — 2026-08-14 — Add-On Price List & Sturdier AI Editor
+
+- Optional Add-Ons now render as a compact price list (checkbox · name — description · price) instead of cards — everything fits cleanly even with all 5 add-ons on Work Order proposals
+- AI Editor auto-retries when the server is briefly busy (e.g. mid-redeploy) and shows the real error message instead of "API 502"
+- AI Editor matching is more forgiving: edits that copy large blocks now land even when spacing differs slightly
+
 ## 4.14.1 — 2026-08-14 — Multiple Contact Emails
 
 - The Contact Email field now accepts multiple addresses separated by commas — useful when two people at the company can sign

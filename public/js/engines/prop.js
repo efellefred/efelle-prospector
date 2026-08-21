@@ -714,7 +714,12 @@ function propBuildHTML(clientName) {
   const CHECK = '<div style="width:16px;height:16px;border-radius:3px;background:#32D74B;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:8px;vertical-align:middle;"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
   const EMPTY_BOX = '<div style="width:16px;height:16px;border-radius:3px;border:2px solid rgba(255,255,255,0.6);display:inline-flex;flex-shrink:0;margin-right:8px;vertical-align:middle;"></div>';
   const DESC_INDENT = 'padding-left:24px;';
-  const addonCard = (title, desc, price) => '<div class="rgs-card" style="border:1px solid rgba(255,255,255,0.08);"><div class="rgs-card-title">' + EMPTY_BOX + title + '</div><div class="rgs-card-desc" style="' + DESC_INDENT + '">' + desc + '</div><div style="font-size:15px;font-weight:700;color:var(--white);margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);' + DESC_INDENT + '">' + price + '</div></div>';
+  // Add-ons render as a compact price list (not cards) so any number of rows fits
+  const addonCard = (title, desc, price) => '<div class="addon-row" style="display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.08);">'
+    + EMPTY_BOX
+    + '<div style="flex:1; line-height:1.55;"><span style="font-size:12px; font-weight:700; color:var(--white);">' + title + '</span><span style="font-size:10.5px; color:rgba(255,255,255,0.65);"> — ' + desc + '</span></div>'
+    + '<div style="font-size:13px; font-weight:800; color:var(--white); white-space:nowrap; padding-top:1px;">' + price + '</div>'
+    + '</div>';
 
   // RGS-only: the program includes ongoing content updates to the existing site (no design/dev rebuild)
   const contentUpdatesCard = isRGS
@@ -1374,10 +1379,7 @@ document.getElementById('prop-chat-send').addEventListener('click', async () => 
     // everything after the About section out of the old 60K window (the model literally
     // couldn't see the agreement page). Finds never target image data, so this is safe.
     const modelView = propReportHtml.replace(/src="data:[^"]*"/g, 'src="[embedded-image]"').slice(0, 300000);
-    const res = await fetch('/api/messages', {
-      method: 'POST',
-      headers: getApiHeaders(),
-      body: JSON.stringify({
+    const editorPayload = JSON.stringify({
         model: API_MODEL,
         max_tokens: 8192,
         system: `You are a proposal editor. The user gives you HTML and an edit instruction.
@@ -1400,11 +1402,25 @@ Rules:
           role: 'user',
           content: `Here is the current proposal HTML:\n\n${modelView}\n\nEdit instruction: ${instruction}`
         }]
-      })
-    });
+      });
 
-    if (!res.ok) throw new Error('API ' + res.status);
-    const d = await res.json();
+    // Retry on 5xx/network (e.g. a brief server redeploy) and surface the real
+    // server error instead of a bare status code.
+    let d = null, lastErr = '';
+    for (let attempt = 1; attempt <= 3 && !d; attempt++) {
+      try {
+        const res = await fetch('/api/messages', { method: 'POST', headers: getApiHeaders(), body: editorPayload });
+        const body = await res.json().catch(() => null);
+        if (res.ok && body) { d = body; break; }
+        lastErr = (body && (typeof body.error === 'string' ? body.error : (body.error && body.error.message))) || ('API error ' + (res ? res.status : '?'));
+        if (res.status < 500) break; // not retryable
+      } catch (e) { lastErr = 'Connection issue'; }
+      if (attempt < 3) {
+        thinkMsg.textContent = '⟳ Server briefly busy — retrying (' + attempt + ' of 2)…';
+        await new Promise(r => setTimeout(r, 3000));
+      }
+    }
+    if (!d) throw new Error(lastErr + ' — if the app just redeployed this clears in about a minute.');
     let responseText = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
 
     // Clean up markdown fences and any preamble/postamble
@@ -1441,6 +1457,12 @@ Rules:
         find.replace(/"/g, '&quot;'),
       ];
       for (const v of variants) { if (v !== find && html.includes(v)) return v; }
+      // Whitespace-flexible fallback: models sometimes normalize spacing when
+      // copying long HTML blocks — match with any-whitespace-run equivalence.
+      try {
+        const re = new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+'), 'g');
+        if (re.test(html)) return re;
+      } catch (e) { /* pattern too large/invalid — give up */ }
       return null;
     };
 
@@ -1448,8 +1470,11 @@ Rules:
       if (!op.find || op.replace === undefined) continue;
       const match = findVariant(updatedHtml, op.find);
       if (match) {
-        // Replace EVERY occurrence — "change the price everywhere" must mean everywhere
-        updatedHtml = updatedHtml.split(match).join(op.replace);
+        // Replace EVERY occurrence — "change the price everywhere" must mean everywhere.
+        // (Function replacement avoids $-pattern interpretation in the new text.)
+        updatedHtml = (match instanceof RegExp)
+          ? updatedHtml.replace(match, () => op.replace)
+          : updatedHtml.split(match).join(op.replace);
         changeCount++;
       } else {
         failedCount++;

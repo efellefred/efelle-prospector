@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.15.0',
+    date: '2026-08-14',
+    title: 'Add-On Price List & Sturdier AI Editor',
+    changes: [
+      'Optional Add-Ons now render as a compact price list (checkbox · name — description · price) instead of cards — everything fits cleanly even with all 5 add-ons on Work Order proposals',
+      'AI Editor auto-retries when the server is briefly busy (e.g. mid-redeploy) and shows the real error message instead of "API 502"',
+      'AI Editor matching is more forgiving: edits that copy large blocks now land even when spacing differs slightly',
+    ]
+  },
+  {
     version: '4.14.1',
     date: '2026-08-14',
     title: 'Multiple Contact Emails',
