@@ -2,6 +2,13 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.14.0 — 2026-08-14 — HubSpot Sync for Proposal Activity
+
+- New Contact Email field on the proposal client form (auto-filled by Research Client when an email is found on the site or listings — never guessed)
+- When a proposal with a contact email is published, opens and acceptances log as notes on that HubSpot contact: first open, re-opens (max one note per 6 hours), and "✅ Proposal ACCEPTED by…" with the signed timestamp
+- The publish panel shows the HubSpot sync status; add a Contact Email and re-publish to enable it for an existing link
+- Sync is fail-safe: if HubSpot is unreachable or the contact doesn't exist, proposal viewing and signing are never affected
+
 ## 4.13.0 — 2026-08-13 — RGS Card Updates & Sales Notes Proposal Linking
 
 - Local SEO cards now include citation building for NAP consistency (all verticals)

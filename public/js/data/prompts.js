@@ -454,7 +454,8 @@ Schema:
   "service_area": "",
   "founded": "",
   "differentiators": "",
-  "logo_url": ""
+  "logo_url": "",
+  "contact_email": ""
 }
 
 Rules:
@@ -466,7 +467,8 @@ Rules:
 - service_area: a short list of the cities/regions served (e.g. "Seattle, Bellevue, and the Eastside" or "Washington, Oregon, and Idaho") — a place list only, NOT a sentence describing the business
 - founded: year founded if present, else ""
 - differentiators: 1-2 sentences on what makes them stand out (certifications, ratings, awards, team size, guarantees). Empty string if none found.
-- logo_url: the direct URL of the company logo image, ONLY if you actually observed that exact URL in fetched page content. NEVER construct, infer, or guess a URL from the site's platform or common patterns (e.g. /wp-content/uploads/...) — a guessed URL is worse than none. If you did not directly observe the logo file URL, return "".`;
+- logo_url: the direct URL of the company logo image, ONLY if you actually observed that exact URL in fetched page content. NEVER construct, infer, or guess a URL from the site's platform or common patterns (e.g. /wp-content/uploads/...) — a guessed URL is worse than none. If you did not directly observe the logo file URL, return "".
+- contact_email: a contact email address ONLY if directly observed in the material (contact page, mailto link, directory listing). Never construct one from a name and domain. Return "" if not observed.`;
 
 export const NOTES_SYSTEM = `You are a sales operations writer at efelle creative, a Seattle web design agency. You turn raw discovery material (uploaded documents, transcripts, screenshots, pasted notes) into a clean internal "Sales Notes" handoff document that the production team reads before kickoff.
 

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mt Baker Roofing — RGS Effort &amp; Hours Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#1D1D1F; --gray-1:#3A3A3C; --gray-2:#6E6E73; --gray-3:#AEAEB2;
+  --gray-4:#D2D2D7; --gray-5:#F5F5F7; --orange:#F56300;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray-1);background:#e8e8ea;font-size:13px;line-height:1.5}
+code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--gray-5);padding:1px 5px;border-radius:4px;color:var(--black)}
+.doc{max-width:780px;margin:0 auto;background:#fff;box-shadow:0 4px 40px rgba(0,0,0,.12)}
+@page{size:letter;margin:0 0 .5in 0;
+  @bottom-center{content:"Page " counter(page) " of " counter(pages);font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#6E6E73}}
+@page :first{@bottom-center{content:none}}
+@media print{body{background:#fff}.doc{box-shadow:none;max-width:none}}
+
+/* COVER */
+.cover{background:#000;color:#fff;padding:48px 56px 40px;min-height:380px;display:flex;flex-direction:column;justify-content:space-between;break-after:page}
+.cover .logo{height:32px;margin-bottom:36px}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:14px}
+.cover h1{font-size:34px;font-weight:800;line-height:1.15;letter-spacing:-.01em;max-width:560px}
+.cover .sub{font-size:14px;font-weight:400;color:#c8c8cc;margin-top:14px;max-width:540px;line-height:1.6}
+.cover-meta{border-top:1px solid rgba(255,255,255,.2);margin-top:36px;padding-top:16px;display:flex;gap:48px}
+.cover-meta div span{display:block}
+.cover-meta .k{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-3);margin-bottom:3px}
+.cover-meta .v{font-size:12px;font-weight:600;color:#fff}
+
+/* SECTIONS */
+.section{padding:44px 56px 36px;break-after:page}
+.section:last-child{break-after:auto}
+.sec-head{margin-bottom:22px}
+.sec-num{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
+.sec-head h2{font-size:21px;font-weight:800;color:var(--black);letter-spacing:-.01em}
+.lede{font-size:12.5px;color:var(--gray-2);margin-top:5px;max-width:600px}
+
+/* CARDS */
+.card{border:1px solid var(--gray-4);border-radius:12px;margin-bottom:18px;page-break-inside:avoid;overflow:hidden}
+.card.critical{border-color:var(--orange)}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--gray-4);background:#fff}
+.card.critical .card-head{background:#fff7f2}
+.card-title{font-size:13.5px;font-weight:700;color:var(--black)}
+.card-title .n{color:var(--orange);margin-right:8px;font-weight:800}
+.card-tag{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--orange);color:#fff;padding:4px 9px;border-radius:20px;white-space:nowrap}
+.card-tag.muted{background:var(--gray-5);color:var(--gray-2)}
+.card-body{padding:6px 18px 12px}
+
+/* HOURS ROWS */
+.row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--gray-5)}
+.row:last-child{border-bottom:none}
+.row-text{flex:1}
+.row-text .note{display:block;font-size:11px;color:var(--gray-2);font-style:italic;margin-top:2px}
+.hrs{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--black);white-space:nowrap}
+.row.total{border-top:2px solid var(--black);border-bottom:none;margin-top:2px;padding-top:11px}
+.row.total .row-text{font-weight:700;color:var(--black)}
+.row.total .hrs{font-weight:500;color:var(--orange)}
+
+/* STAT STRIP */
+.stats{display:flex;gap:14px;margin-bottom:20px}
+.stat{flex:1;background:var(--gray-5);border-radius:12px;padding:14px 16px}
+.stat .k{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-2);margin-bottom:4px}
+.stat .v{font-size:19px;font-weight:800;color:var(--black)}
+.stat .v small{font-size:11px;font-weight:600;color:var(--gray-2)}
+.stat.accent{background:#fff7f2}
+.stat.accent .v{color:var(--orange)}
+
+.callout{background:var(--gray-5);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:13px 16px;font-size:12px;color:var(--gray-1);margin-top:4px;page-break-inside:avoid}
+.callout b{color:var(--black)}
+
+.doc-footer{padding:18px 56px 26px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--gray-2);border-top:1px solid var(--gray-4);page-break-inside:avoid}
+.doc-footer .sep{color:var(--orange);padding:0 8px}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<!-- COVER -->
+<div class="cover">
+  <div>
+    <img class="logo" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle">
+    <div class="eyebrow">Internal · Capacity Plan</div>
+    <h1>Mt Baker Roofing<br>RGS Effort &amp; Hours Map</h1>
+    <p class="sub">Delivery-hour budget for the $2,500/mo Revenue Growth Service program (plus the $250 GBP add-on and optional Bing), split into one-time setup and steady-state monthly effort. For internal scoping and staffing — not client-facing.</p>
+  </div>
+  <div class="cover-meta">
+    <div><span class="k">Client</span><span class="v">Mt Baker Roofing</span></div>
+    <div><span class="k">Owner</span><span class="v">Fred / efelle</span></div>
+    <div><span class="k">Blended Rate</span><span class="v">$165/hr</span></div>
+    <div><span class="k">Version</span><span class="v">v4 · Aug 2026</span></div>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 01</div>
+    <h2>Program Economics</h2>
+    <p class="lede">What the retainer buys in delivery hours at the $165/hr blended rate. Every hour plan below is checked against these ceilings.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">Base RGS</div><div class="v">$2,500<small>/mo</small></div></div>
+    <div class="stat"><div class="k">Hour Ceiling</div><div class="v">15.2 <small>hrs/mo</small></div></div>
+    <div class="stat accent"><div class="k">+ GBP Add-on</div><div class="v">$2,750<small>/mo</small></div></div>
+    <div class="stat accent"><div class="k">Hour Ceiling</div><div class="v">16.7 <small>hrs/mo</small></div></div>
+  </div>
+
+  <div class="callout" style="margin-bottom:20px"><b>Pricing structure — state it this way, always:</b> $2,750 = $2,500 base RGS <b>+ $250 for added Google Business Profile effort</b> (not a price increase). Bing and social media are separate add-ons priced <b>on top of</b> the $2,750, never inside it. Month 1 bills the same $2,750 and buys the setup phase — there is no separate setup fee.</div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">1.1</span>Capacity Math</div><span class="card-tag muted">Reference</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Base RGS retainer ÷ blended rate <span class="note">$2,500 ÷ $165</span></div><div class="hrs">15.2 hrs/mo</div></div>
+      <div class="row"><div class="row-text">GBP Management add-on ÷ blended rate <span class="note">$250 ÷ $165</span></div><div class="hrs">+1.5 hrs/mo</div></div>
+      <div class="row"><div class="row-text">Planned steady-state delivery (base program) <span class="note">detail in Section 02</span></div><div class="hrs">15.0 hrs/mo</div></div>
+      <div class="row total"><div class="row-text">Effective realized rate at plan</div><div class="hrs">≈ $167/hr</div></div>
+    </div>
+  </div>
+
+  <div class="callout"><b>Read:</b> the base plan runs at ~99% of the hour ceiling — margin holds only if scope holds. The three levers that break it are ad-spend/campaign growth, content mix creep (Section 04), and unbudgeted client comms. Budget PM/comms inside the reporting hour block, not on top of it.</div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">1.2</span>v2 Rebalance — Where Content Hours Came From</div><span class="card-tag muted">Change Log</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Citations / Local SEO core <span class="note">bucket was inflated; maintenance-level after setup cleanup</span></div><div class="hrs">2.0 → 1.0</div></div>
+      <div class="row"><div class="row-text">GEO content optimization <span class="note">folded into the content program — each piece is optimized as it's produced; tracking moves to reporting</span></div><div class="hrs">1.5 → 0</div></div>
+      <div class="row"><div class="row-text">META management <span class="note">lean cadence — PPC carries the paid-media load</span></div><div class="hrs">3.5 → 2.0</div></div>
+      <div class="row"><div class="row-text">Google PPC management <span class="note">bumped back up — primary lead driver</span></div><div class="hrs">5.5 → 6.0</div></div>
+      <div class="row total"><div class="row-text">Freed up for content program (2–3 pieces/mo)</div><div class="hrs">3.5 hrs/mo</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 02</div>
+    <h2>Ongoing Monthly Hours by Activity</h2>
+    <p class="lede">Steady-state effort once setup is complete (from month 2–3 onward). Assumes ~$7,500/mo ad spend across up to 3 Google campaigns.</p>
+  </div>
+
+  <div class="card critical">
+    <div class="card-head"><div class="card-title"><span class="n">2.1</span>Paid Media Management</div><span class="card-tag">Largest Block</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Google Ads (PPC) management <span class="note">weekly bid &amp; budget pacing, search-term mining, negatives, ad copy tests, landing feedback — covers ~$7,500/mo spend, up to 3 campaigns</span></div><div class="hrs">6.0 hrs</div></div>
+      <div class="row"><div class="row-text">META ads management <span class="note">creative refresh, audience testing, lead-form checks, frequency monitoring — lean cadence; PPC carries the paid-media load</span></div><div class="hrs">2.0 hrs</div></div>
+      <div class="row"><div class="row-text">Bing / Microsoft Ads — add-on OUTSIDE the $2,750 <span class="note">see add-on menu (4.3): 4.0 hrs/mo → $650/mo</span></div><div class="hrs">(+4.0 hrs)</div></div>
+      <div class="row"><div class="row-text">Google Local Services Ads (LSA) — add-on OUTSIDE the $2,750 <span class="note">see add-on menu (4.3): 2–4 hrs/mo, separate ad spend from $1,500/mo</span></div><div class="hrs">(+2–4 hrs)</div></div>
+      <div class="row total"><div class="row-text">Paid media subtotal (base)</div><div class="hrs">8.0 hrs/mo</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">2.2</span>Content Program, Local SEO &amp; AI Search</div><span class="card-tag muted">Tied Together</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Content program — 2–3 unique pieces/mo <span class="note">research, produce, edit, post: service-area pages, articles, portfolio items. Each piece optimized for map pack + AI answers (GEO) as it ships. ≈1.2–1.75 hrs/piece — assumes AI-assisted workflow and a mix of light (portfolio) and medium (service-area) pieces</span></div><div class="hrs">3.5 hrs</div></div>
+      <div class="row"><div class="row-text">Local SEO / citations <span class="note">citation &amp; NAP maintenance, structured data, local rank checks — deflated from v1; maintenance-level after setup cleanup</span></div><div class="hrs">1.0 hr</div></div>
+      <div class="row"><div class="row-text">GBP ownership &amp; content (the $250 add-on) <span class="note">profile ownership, posts/Q&amp;A/photos, sharing website content to the Google account</span></div><div class="hrs">+1.5 hrs</div></div>
+      <div class="row total"><div class="row-text">Subtotal (base 4.5 / with add-on 6.0)</div><div class="hrs">4.5–6.0 hrs/mo</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">2.3</span>Reputation, Reporting &amp; Optimization</div></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Reputation management <span class="note">monitor review software, tune email/text follow-up sequences, flag responses</span></div><div class="hrs">1.0 hr</div></div>
+      <div class="row"><div class="row-text">Monthly reporting &amp; optimization review <span class="note">leads, traffic, ad performance, rankings, ROI + client comms — now also carries map-pack grid + AI visibility tracking (moved from GEO bucket)</span></div><div class="hrs">1.5 hrs</div></div>
+      <div class="row total"><div class="row-text">Subtotal</div><div class="hrs">2.5 hrs/mo</div></div>
+    </div>
+  </div>
+
+  <div class="callout"><b>Monthly totals:</b> Base program <b>15.0 hrs</b> vs. 15.2 ceiling · With GBP add-on <b>16.5 hrs</b> vs. 16.7 ceiling ($2,750/mo) · Each add-on sold (Bing, LSA, social) brings its own hours and its own price — see the add-on menu in 4.3. Fully loaded (Bing + LSA high end): <b>~24.5 hrs / ~$4,700–5,000/mo</b>.</div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 03</div>
+    <h2>Setup Phase — Month 1 at the Standard Retainer</h2>
+    <p class="lede">No setup fee. Month 1 bills at the normal $2,750 and is dedicated entirely to build-out, capped at a round 17.5 hours. The program goes live in month 2.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">3.1</span>Setup Hours by Activity — Lean Launch</div><span class="card-tag muted">17.5 hr cap</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Google Ads build <span class="note">core architecture for 2–3 campaigns, lean keyword set, conversion + call tracking; expands through ongoing optimization hours</span></div><div class="hrs">6.0 hrs</div></div>
+      <div class="row"><div class="row-text">META ads build <span class="note">pixel/CAPI, core audiences, initial creative, campaign structure</span></div><div class="hrs">3.5 hrs</div></div>
+      <div class="row"><div class="row-text">Citation audit &amp; NAP cleanup <span class="note">data aggregators + priority directories only; long-tail directories absorbed into the monthly 1.0-hr maintenance bucket</span></div><div class="hrs">2.5 hrs</div></div>
+      <div class="row"><div class="row-text">Reputation software implementation <span class="note">install, job-completion trigger, email + SMS sequence build</span></div><div class="hrs">2.0 hrs</div></div>
+      <div class="row"><div class="row-text">GBP setup &amp; optimization <span class="note">photos, Q&amp;A, service areas, categories — included since GBP add-on is in the program</span></div><div class="hrs">1.5 hrs</div></div>
+      <div class="row"><div class="row-text">Content program setup <span class="note">editorial calendar + templates; first-batch research and first pieces ship in month 2</span></div><div class="hrs">1.0 hr</div></div>
+      <div class="row"><div class="row-text">Tracking, dashboard &amp; reporting setup</div><div class="hrs">1.0 hr</div></div>
+      <div class="row"><div class="row-text">Bing build <span class="note">only if Bing add-on is sold — billed with the add-on, outside the 17.5</span></div><div class="hrs">(+3.0 hrs)</div></div>
+      <div class="row"><div class="row-text">LSA setup <span class="note">only if LSA add-on is sold — Google screening: licensing, insurance &amp; background verification, profile + review sync; outside the 17.5</span></div><div class="hrs">(+3.0 hrs)</div></div>
+      <div class="row total"><div class="row-text">Setup total (month 1)</div><div class="hrs">17.5 hrs</div></div>
+    </div>
+  </div>
+
+  <div class="callout"><b>The math:</b> 17.5 hrs × $165 = $2,887.50 against $2,750 collected — an intentional ~$140 round-number discount (effective $157/hr for month 1 only). The trade-off vs. the ideal ~33-hr build: launches are lean, and the remaining build-out (campaign expansion, long-tail citations, first content batch) is absorbed into ongoing hours across months 2–3. Hold the 17.5 line — every hour past it is straight margin loss.</div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 04</div>
+    <h2>Scaling Triggers &amp; Guardrails</h2>
+    <p class="lede">The PPC hour budget is scoped to a spend level, not "unlimited management." These are the thresholds that trigger a retainer conversation.</p>
+  </div>
+
+  <div class="card critical">
+    <div class="card-head"><div class="card-title"><span class="n">4.1</span>When Hours Must Grow</div><span class="card-tag">Critical</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">PPC hours cover ~$7,500/mo ad spend, up to 3 Google campaigns <span class="note">baseline scope — state this in the agreement</span></div><div class="hrs">baseline</div></div>
+      <div class="row"><div class="row-text">Each additional Google campaign <span class="note">new service line, new geo, storm-damage surge campaign</span></div><div class="hrs">+1–1.5 hrs/mo</div></div>
+      <div class="row"><div class="row-text">Ad spend passes ~$10k/mo or 4+ campaigns <span class="note">re-scope retainer, don't absorb</span></div><div class="hrs">re-scope</div></div>
+      <div class="row"><div class="row-text">Content mix shifts heavy <span class="note">3.5 hrs assumes light/medium mix; 3+ long-form custom articles/mo or a 4th piece breaks it</span></div><div class="hrs">+1.5–2 hrs/mo</div></div>
+      <div class="row"><div class="row-text">Any add-on sold <span class="note">always its own hours + its own price on top of $2,750 — see the menu below; never absorbed into program hours</span></div><div class="hrs">per menu</div></div>
+    </div>
+  </div>
+
+  <div class="card critical">
+    <div class="card-head"><div class="card-title"><span class="n">4.2</span>Add-On Menu — Everything Outside the $2,750</div><span class="card-tag">Pricing Reference</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Google Business Profile Mgmt <span class="note">SOLD — already inside this program; listed for completeness</span></div><div class="hrs">1.5 hrs · $250/mo</div></div>
+      <div class="row"><div class="row-text">Bing / Microsoft Ads <span class="note">4.0 hrs/mo mgmt + 3.0 hrs one-time setup; at-rate $660 → round-number price $650</span></div><div class="hrs">4.0 hrs · $650/mo</div></div>
+      <div class="row"><div class="row-text">Google Local Services Ads (LSA) <span class="note">Google-guaranteed call-first listings — strongest during storm surges. 2 hrs/mo baseline (lead disputes, review sync, budget pacing), 4 hrs in storm season. Ad spend is a SEPARATE bucket from the $7,500 PPC spend: starts at $1,500/mo, paid directly to Google. +3.0 hrs one-time setup (screening/verification)</span></div><div class="hrs">2–4 hrs · $350–650/mo</div></div>
+      <div class="row"><div class="row-text">AI Phone &amp; Appointment Automation <span class="note">from the original proposal — software-led, nominal oversight hours</span></div><div class="hrs">$550/mo</div></div>
+      <div class="row"><div class="row-text">Social media management <span class="note">posting + reply mgmt, 3–4 hrs/mo. SENSITIVE: client has a bad history with social — client doc positions it as an eventual option with an understanding tone. Do not pitch until he raises it; lead with reply/reputation handling, not posting volume</span></div><div class="hrs">3–4 hrs · $500–650/mo</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">4.3</span>Scope Notes</div><span class="card-tag muted">Reference</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Ad spend is paid directly to Google &amp; META — never flows through the retainer</div><div class="hrs">—</div></div>
+      <div class="row"><div class="row-text">Map pack / AI search (GEO) is bundled into the content program <span class="note">each piece is optimized as it's produced; tracking lives in the reporting block — don't double-budget</span></div><div class="hrs">—</div></div>
+      <div class="row"><div class="row-text">GBP add-on requires Local SEO to be active <span class="note">$250 standalone doesn't cover citation infrastructure it depends on</span></div><div class="hrs">—</div></div>
+      <div class="row"><div class="row-text">Reputation mgmt is software-driven after setup <span class="note">1 hr/mo assumes sequences run automatically; manual review responses beyond ~4/mo is extra</span></div><div class="hrs">—</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="doc-footer">efelle creative<span class="sep">//</span>901 5th Ave., Suite 1950<span class="sep">//</span>Seattle, WA 98164 USA<span class="sep">//</span>206.384.4909<span class="sep">//</span>efelle.com</div>
+
+</div>
+</body>
+</html>

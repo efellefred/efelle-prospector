@@ -371,7 +371,7 @@ function propReset() {
   propVertical = '';
   propMarketType = 'residential';
   // Clear form fields
-  ['prop-client-url','prop-name','prop-contact','prop-address','prop-phone',
+  ['prop-client-url','prop-name','prop-contact','prop-contact-email','prop-address','prop-phone',
    'prop-location','prop-services','prop-area','prop-differentiators',
    'prop-founded','prop-logo'].forEach(id => {
     const el = document.getElementById(id);
@@ -473,6 +473,7 @@ async function propFetchClient() {
     const data = JSON.parse(clean);
 
     if (data.company_name) document.getElementById('prop-name').value = data.company_name;
+    if (data.contact_email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contact_email)) document.getElementById('prop-contact-email').value = data.contact_email.trim().toLowerCase();
     if (data.location)     document.getElementById('prop-location').value = data.location;
     if (data.address)      document.getElementById('prop-address').value = data.address;
     if (data.phone)        document.getElementById('prop-phone').value = data.phone;
@@ -1165,6 +1166,7 @@ async function propGenerate() {
         company_name: clientName,
         url: document.getElementById('prop-client-url').value.trim(),
         contact: document.getElementById('prop-contact').value.trim(),
+        contact_email: document.getElementById('prop-contact-email').value.trim().toLowerCase(),
         location: document.getElementById('prop-location').value.trim(),
         address: document.getElementById('prop-address').value.trim(),
         phone: document.getElementById('prop-phone').value.trim(),
@@ -1514,7 +1516,7 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: getApiHeaders(),
-      body: JSON.stringify({ html: propReportHtml, company, token: existingToken }),
+      body: JSON.stringify({ html: propReportHtml, company, contactEmail: document.getElementById('prop-contact-email').value.trim().toLowerCase(), token: existingToken }),
     });
     const d = await res.json();
     if (res.ok) {
@@ -1558,7 +1560,12 @@ function renderPublishPanel(token, status) {
         ? ' <span style="color:#4b5563;">·</span> <span style="color:#34d399;font-weight:700;">✓ ACCEPTED by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString() + '</span>'
         : '')
     + ' <button onclick="refreshPublishStatus()" title="Refresh views/acceptance" style="padding:2px 8px;border-radius:5px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;cursor:pointer;">↻</button>'
-    + '<div style="font-size:10px;color:#4b5563;">Views include your own opens of the link. Re-publish after edits to update the live copy at the same URL.</div>';
+    + (status && status.hubspot
+        ? ' <span style="color:#4b5563;">·</span> <span style="color:#f59e0b;" title="Opens and acceptance log as notes on this HubSpot contact">⬡ HubSpot: ' + String(status.hubspot).replace(/</g, '&lt;') + '</span>'
+        : '')
+    + '<div style="font-size:10px;color:#4b5563;">Views include your own opens of the link. Re-publish after edits to update the live copy at the same URL.'
+    + (status && status.hubspot ? '' : ' Add a Contact Email on the client form and re-publish to log activity to HubSpot.')
+    + '</div>';
 }
 
 window.refreshPublishStatus = async function() {
@@ -1585,6 +1592,7 @@ document.getElementById('prop-publish-btn').addEventListener('click', async () =
       body: JSON.stringify({
         html: propReportHtml,
         company: document.getElementById('prop-name').value.trim(),
+        contactEmail: document.getElementById('prop-contact-email').value.trim().toLowerCase(),
         token: existingToken,
       }),
     });
@@ -1701,6 +1709,7 @@ async function loadPropClient(reportId) {
     setVal('prop-name', d.company_name || d.name || report.clientName);
     setVal('prop-client-url', d.prospect_url || d.website || d.url || m.url || '');
     setVal('prop-contact', d.contact || d.prepared_for || m.contact || '');
+    setVal('prop-contact-email', d.contact_email || d.email || '');
     setVal('prop-location', d.geographic_market || d.location || d.headquarters || '');
     setVal('prop-address', d.address || d.headquarters || '');
     setVal('prop-phone', d.phone || '');

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mt Baker Roofing — Where Your RGS Hours Go</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#1D1D1F; --gray-1:#3A3A3C; --gray-2:#6E6E73; --gray-3:#AEAEB2;
+  --gray-4:#D2D2D7; --gray-5:#F5F5F7; --orange:#F56300;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray-1);background:#e8e8ea;font-size:13px;line-height:1.5}
+code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--gray-5);padding:1px 5px;border-radius:4px;color:var(--black)}
+.doc{max-width:780px;margin:0 auto;background:#fff;box-shadow:0 4px 40px rgba(0,0,0,.12)}
+@page{size:letter;margin:0 0 .5in 0;
+  @bottom-center{content:"Page " counter(page) " of " counter(pages);font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#6E6E73}}
+@page :first{@bottom-center{content:none}}
+@media print{body{background:#fff}.doc{box-shadow:none;max-width:none}}
+
+/* COVER */
+.cover{background:#000;color:#fff;padding:48px 56px 40px;min-height:380px;display:flex;flex-direction:column;justify-content:space-between;break-after:page}
+.cover .logo{height:32px;margin-bottom:36px}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:14px}
+.cover h1{font-size:34px;font-weight:800;line-height:1.15;letter-spacing:-.01em;max-width:560px}
+.cover .sub{font-size:14px;font-weight:400;color:#c8c8cc;margin-top:14px;max-width:540px;line-height:1.6}
+.cover-meta{border-top:1px solid rgba(255,255,255,.2);margin-top:36px;padding-top:16px;display:flex;gap:48px}
+.cover-meta div span{display:block}
+.cover-meta .k{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-3);margin-bottom:3px}
+.cover-meta .v{font-size:12px;font-weight:600;color:#fff}
+
+/* SECTIONS */
+.section{padding:44px 56px 36px;break-after:page}
+.section:last-child{break-after:auto}
+.sec-head{margin-bottom:22px}
+.sec-num{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
+.sec-head h2{font-size:21px;font-weight:800;color:var(--black);letter-spacing:-.01em}
+.lede{font-size:12.5px;color:var(--gray-2);margin-top:5px;max-width:600px}
+
+/* CARDS */
+.card{border:1px solid var(--gray-4);border-radius:12px;margin-bottom:18px;page-break-inside:avoid;overflow:hidden}
+.card.critical{border-color:var(--orange)}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--gray-4);background:#fff}
+.card.critical .card-head{background:#fff7f2}
+.card-title{font-size:13.5px;font-weight:700;color:var(--black)}
+.card-title .n{color:var(--orange);margin-right:8px;font-weight:800}
+.card-tag{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--orange);color:#fff;padding:4px 9px;border-radius:20px;white-space:nowrap}
+.card-tag.muted{background:var(--gray-5);color:var(--gray-2)}
+.card-body{padding:6px 18px 12px}
+
+/* HOURS ROWS */
+.row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--gray-5)}
+.row:last-child{border-bottom:none}
+.row-text{flex:1}
+.row-text .note{display:block;font-size:11px;color:var(--gray-2);font-style:italic;margin-top:2px}
+.hrs{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--black);white-space:nowrap}
+.row.total{border-top:2px solid var(--black);border-bottom:none;margin-top:2px;padding-top:11px}
+.row.total .row-text{font-weight:700;color:var(--black)}
+.row.total .hrs{font-weight:500;color:var(--orange)}
+
+/* STAT STRIP */
+.stats{display:flex;gap:14px;margin-bottom:20px}
+.stat{flex:1;background:var(--gray-5);border-radius:12px;padding:14px 16px}
+.stat .k{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gray-2);margin-bottom:4px}
+.stat .v{font-size:19px;font-weight:800;color:var(--black)}
+.stat .v small{font-size:11px;font-weight:600;color:var(--gray-2)}
+.stat.accent{background:#fff7f2}
+.stat.accent .v{color:var(--orange)}
+
+.callout{background:var(--gray-5);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:13px 16px;font-size:12px;color:var(--gray-1);margin-top:4px;page-break-inside:avoid}
+.callout b{color:var(--black)}
+
+.doc-footer{padding:18px 56px 26px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--gray-2);border-top:1px solid var(--gray-4);page-break-inside:avoid}
+.doc-footer .sep{color:var(--orange);padding:0 8px}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<!-- COVER -->
+<div class="cover">
+  <div>
+    <img class="logo" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle">
+    <div class="eyebrow">Revenue Growth Service · Program Detail</div>
+    <h1>Where Your RGS<br>Hours Go Every Month</h1>
+    <p class="sub">A transparent breakdown of the hands-on work behind your Revenue Growth Service program: what we build in your first month, and where our team's time goes each month after that to keep your phone ringing.</p>
+  </div>
+  <div class="cover-meta">
+    <div><span class="k">Prepared For</span><span class="v">Mt Baker Roofing</span></div>
+    <div><span class="k">Program</span><span class="v">RGS $2,500 + GBP $250</span></div>
+    <div><span class="k">Prepared By</span><span class="v">efelle creative</span></div>
+    <div><span class="k">Date</span><span class="v">August 2026</span></div>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 01</div>
+    <h2>Month One: Building Your Lead Engine</h2>
+    <p class="lede">Your first month is dedicated entirely to build-out, at your same monthly investment. No setup fee, no onboarding charge. The ongoing program goes live in month two.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">Setup Fee</div><div class="v">$0</div></div>
+    <div class="stat accent"><div class="k">Month 1 Hours</div><div class="v">17.5 <small>hours</small></div></div>
+    <div class="stat"><div class="k">Program Live</div><div class="v">Month 2</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">1.1</span>Setup &amp; Build-Out Hours</div><span class="card-tag muted">Month One</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Google Ads build <span class="note">roofing keyword research, campaign architecture, ad copy and extensions, Google Tag Manager and Google Analytics 4 verification with full conversion and call tracking setup, plus 2 hours of graphic design for your retargeting ads</span></div><div class="hrs">9.5 hrs</div></div>
+      <div class="row"><div class="row-text">Citation audit &amp; NAP cleanup <span class="note">correcting your business name, address and phone across the data aggregators and priority directories Google trusts most. The long tail is handled through monthly maintenance.</span></div><div class="hrs">2.5 hrs</div></div>
+      <div class="row"><div class="row-text">Review software implementation <span class="note">installed and connected to job completion, with automatic email and text follow-up sequences that ask happy customers for reviews</span></div><div class="hrs">2.0 hrs</div></div>
+      <div class="row"><div class="row-text">Google Business Profile setup &amp; optimization <span class="note">included with your GBP Management add-on: photos, Q&amp;A, service areas, categories</span></div><div class="hrs">1.5 hrs</div></div>
+      <div class="row"><div class="row-text">Content program setup <span class="note">editorial calendar and page and article templates. Your first pieces publish in month two.</span></div><div class="hrs">1.0 hr</div></div>
+      <div class="row"><div class="row-text">Dashboard &amp; reporting setup <span class="note">your monthly reporting dashboard, connected to the conversion tracking installed above, so every lead, call and dollar is measured from day one</span></div><div class="hrs">1.0 hr</div></div>
+      <div class="row total"><div class="row-text">Total month-one build-out</div><div class="hrs">17.5 hrs</div></div>
+    </div>
+  </div>
+
+  <div class="callout"><b>Why this approach:</b> the setup phase is where most lead programs fail. We front-load the foundation (tracking, campaign structure, and listing accuracy) at your standard monthly rate, so every month after is spent optimizing, not fixing. Month one is actually more hours than a typical ongoing month; we launch lean and keep expanding campaigns and listings through your ongoing optimization hours.</div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 02</div>
+    <h2>Your Monthly Hours: Paid Media</h2>
+    <p class="lede">The largest share of your program: active, hands-on management of the campaigns that drive service calls, week in and week out.</p>
+  </div>
+
+  <div class="card critical">
+    <div class="card-head"><div class="card-title"><span class="n">2.1</span>Google Ads (PPC) Management</div><span class="card-tag">8.0 hrs/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Weekly bid &amp; budget pacing <span class="note">making sure your budget is spent where the best leads are</span></div><div class="hrs">weekly</div></div>
+      <div class="row"><div class="row-text">Search-term mining &amp; negative keywords <span class="note">cutting wasted spend on searches that will never become jobs</span></div><div class="hrs">weekly</div></div>
+      <div class="row"><div class="row-text">Ad copy testing &amp; landing page feedback <span class="note">continuously improving your cost per lead</span></div><div class="hrs">monthly</div></div>
+      <div class="row"><div class="row-text">Deeper campaign coverage <span class="note">with paid search carrying the full load, these hours go further on campaign expansion and testing across your priority services</span></div><div class="hrs">monthly</div></div>
+      <div class="row total"><div class="row-text">Manages up to ~$7,500/mo in ad spend, up to 3 campaigns <span class="note">ad spend is paid directly to Google, so 100% of it goes to your ads</span></div><div class="hrs">8.0 hrs/mo</div></div>
+    </div>
+  </div>
+
+  <div class="callout"><b>Growing together:</b> your PPC hours are scoped to roughly $7,500/mo in ad spend across up to 3 campaigns. As we add campaigns for new services, new cities, or storm-response pushes, we'll review the program together so management hours keep pace with your growth.</div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 03</div>
+    <h2>Your Monthly Hours: Content, Local Visibility &amp; AI Search</h2>
+    <p class="lede">Paid ads make the phone ring today. This is the work that makes Mt Baker Roofing the answer when your market searches, on Google Maps and in AI tools alike.</p>
+  </div>
+
+  <div class="card critical">
+    <div class="card-head"><div class="card-title"><span class="n">3.1</span>Ongoing Content Program</div><span class="card-tag">3.5 hrs/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">2&ndash;3 unique pieces of content, every month <span class="note">service-area pages, articles, and portfolio items showcasing your completed projects</span></div><div class="hrs">2&ndash;3 pieces</div></div>
+      <div class="row"><div class="row-text">Researched, produced, edited &amp; posted for you <span class="note">topic research through publishing. No homework on your end beyond project photos.</span></div><div class="hrs">monthly</div></div>
+      <div class="row"><div class="row-text">Every piece optimized for the map pack &amp; AI answers <span class="note">built to surface in Google AI Overviews and ChatGPT recommendations before homeowners even see traditional results, and to rank for "[city] roofer" searches</span></div><div class="hrs">included</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">3.2</span>Local SEO &amp; Citations</div><span class="card-tag muted">1.0 hr/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Citation &amp; NAP maintenance <span class="note">keeping your business info consistent everywhere it appears online, after the deep cleanup in setup</span></div><div class="hrs">monthly</div></div>
+      <div class="row"><div class="row-text">Structured data &amp; local ranking checks across your service area</div><div class="hrs">monthly</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">3.3</span>Google Business Profile Management</div><span class="card-tag">Add-On · $250/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Full ownership &amp; management of your Google Business Profile <span class="note">posts, photos, Q&amp;A, service areas. Continuously maintained, not set once.</span></div><div class="hrs">1.5 hrs/mo</div></div>
+      <div class="row"><div class="row-text">Website content shared to your Google account <span class="note">every new project and page strengthens your map pack ranking</span></div><div class="hrs">included</div></div>
+      <div class="row"><div class="row-text">This is why your program is $2,750 instead of $2,500 <span class="note">the $250 covers this added Google Business Profile effort. It's more work on your behalf, not a price increase on the base program.</span></div><div class="hrs">&mdash;</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 04</div>
+    <h2>Your Monthly Hours: Reputation &amp; Reporting</h2>
+    <p class="lede">Social proof closes roofing jobs, and clear reporting keeps the whole program accountable to one number: real service calls.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">4.1</span>Reputation Management</div><span class="card-tag muted">1.0 hr/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Automated review requests at job completion <span class="note">the software we implement in setup runs every job automatically</span></div><div class="hrs">automated</div></div>
+      <div class="row"><div class="row-text">Email &amp; text follow-up sequence tuning <span class="note">so review requests land at the right moment, in the right words</span></div><div class="hrs">monthly</div></div>
+      <div class="row"><div class="row-text">Review monitoring &amp; response guidance across Google, Facebook &amp; directories</div><div class="hrs">monthly</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">4.2</span>Monthly Reporting &amp; Optimization</div><span class="card-tag muted">1.5 hrs/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Monthly performance report <span class="note">leads, traffic, ad performance, rankings, map pack and AI visibility, and ROI, in plain English</span></div><div class="hrs">monthly</div></div>
+      <div class="row"><div class="row-text">Optimization review <span class="note">what's working gets more budget; what isn't gets fixed or cut</span></div><div class="hrs">monthly</div></div>
+    </div>
+  </div>
+
+  <div class="card critical">
+    <div class="card-head"><div class="card-title"><span class="n">4.3</span>Your Monthly Program at a Glance</div><span class="card-tag">Summary</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Google Ads (PPC) management</div><div class="hrs">8.0 hrs</div></div>
+      <div class="row"><div class="row-text">Content program <span class="note">2&ndash;3 unique pieces each month, optimized for the map pack and AI search</span></div><div class="hrs">3.5 hrs</div></div>
+      <div class="row"><div class="row-text">Local SEO &amp; citations</div><div class="hrs">1.0 hr</div></div>
+      <div class="row"><div class="row-text">Reputation management</div><div class="hrs">1.0 hr</div></div>
+      <div class="row"><div class="row-text">Reporting &amp; optimization</div><div class="hrs">1.5 hrs</div></div>
+      <div class="row"><div class="row-text">Google Business Profile management <span class="note">the $250/mo add-on that brings the program to $2,750</span></div><div class="hrs">+1.5 hrs</div></div>
+      <div class="row total"><div class="row-text">Dedicated expert hours on your growth, every month</div><div class="hrs">16.5 hrs</div></div>
+    </div>
+  </div>
+
+  <div class="callout"><b>The bottom line:</b> a full lead-generation team covering paid media, fresh content every month, local SEO, AI search, and reputation, working 16+ focused hours on your business every month, at a fraction of the $85,000/yr plus benefits cost of a full-time marketing hire.</div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-num">Section 05</div>
+    <h2>Optional Add-Ons</h2>
+    <p class="lede">Everything on this page sits outside your $2,750/mo program and is priced separately, added only if we decide together it makes sense. One add-on, Google Business Profile Management, is already included in your program.</p>
+  </div>
+
+  <div class="card critical">
+    <div class="card-head"><div class="card-title"><span class="n">5.1</span>Google Local Services Ads (LSA)</div><span class="card-tag">$350&ndash;650/mo Mgmt</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Google-guaranteed listings that appear above regular search results <span class="note">homeowners call you directly from the listing, and you only pay per lead. Especially powerful for call traffic during storm season.</span></div><div class="hrs">2&ndash;4 hrs/mo</div></div>
+      <div class="row"><div class="row-text">Separate ad spend budget, starting at $1,500/mo <span class="note">paid directly to Google, in addition to your regular PPC budget</span></div><div class="hrs">from $1,500/mo</div></div>
+      <div class="row"><div class="row-text">One-time setup <span class="note">Google's screening process: license, insurance and background verification, plus profile and review sync</span></div><div class="hrs">+3.0 hrs setup</div></div>
+      <div class="row"><div class="row-text">Management scales with call volume <span class="note">lead dispute handling, review sync and budget pacing run about 2 hrs in a normal month and up to 4 during storm surges</span></div><div class="hrs">&mdash;</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">5.2</span>META Ads (Facebook &amp; Instagram)</div><span class="card-tag muted">Option · $325/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">About the Facebook account <span class="note">we know the account is currently disabled, and that's okay. When the time is right we can run Instagram-only campaigns, or simply circle back to this down the road. No pressure either way.</span></div><div class="hrs">on hold</div></div>
+      <div class="row"><div class="row-text">Why it's worth revisiting for a roofing company <span class="note">META reaches homeowners before they ever search. We can target by location, home age and home value, and put your before-and-after project photos in front of the exact neighborhoods you want to work in.</span></div><div class="hrs">2.0 hrs/mo</div></div>
+      <div class="row"><div class="row-text">Storm response <span class="note">after a weather event, ads can be in front of affected zip codes within hours, while homeowners are still deciding who to call</span></div><div class="hrs">included</div></div>
+      <div class="row"><div class="row-text">Retargeting <span class="note">stays in front of website visitors who looked but didn't call the first time, which is where many roofing jobs are actually won</span></div><div class="hrs">included</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">5.3</span>Bing / Microsoft Ads</div><span class="card-tag muted">$650/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">An expansion channel worth considering <span class="note">older, higher-income homeowners over-index on Bing, and clicks are often cheaper than Google</span></div><div class="hrs">4.0 hrs/mo</div></div>
+      <div class="row"><div class="row-text">One-time build via Google Ads import plus tracking verification</div><div class="hrs">+3.0 hrs setup</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">5.4</span>AI Phone &amp; Appointment Automation</div><span class="card-tag muted">$550/mo</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">Missed calls send your leads to your competitor <span class="note">our automated system answers 24/7, qualifies leads and books appointments directly onto your calendar, with reminders and follow-ups</span></div><div class="hrs">software</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title"><span class="n">5.5</span>Social Media Management</div><span class="card-tag muted">When You're Ready</span></div>
+    <div class="card-body">
+      <div class="row"><div class="row-text">An eventual option, with no pressure <span class="note">we know social media hasn't been a good experience for Mt Baker Roofing in the past, and we understand why. This is here only so you know it exists when and if you're ever ready.</span></div><div class="hrs">future</div></div>
+      <div class="row"><div class="row-text">What it would look like <span class="note">we handle everything, from posting your project work to replying to comments and messages, so you never have to touch the accounts yourself</span></div><div class="hrs">optional</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="doc-footer">efelle creative<span class="sep">//</span>901 5th Ave., Suite 1950<span class="sep">//</span>Seattle, WA 98164 USA<span class="sep">//</span>206.384.4909<span class="sep">//</span>efelle.com</div>
+
+</div>
+</body>
+</html>
