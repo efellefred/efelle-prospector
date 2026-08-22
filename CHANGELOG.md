@@ -2,6 +2,16 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.19.0 — 2026-08-21 — New Default Price Page: Core Program + Grouped Add-Ons
+
+- The RGS price page now leads with **YOUR PROGRAM INCLUDES** — four core services, each with a green pre-selected check the client can't uncheck: Google PPC Ads, Local SEO, AI Search Visibility (GEO), and Reporting, Analytics & Strategy (RGS-only proposals also keep Website Content Updates)
+- Optional add-ons split into two groups, same roster on every proposal type — **Additional Lead Generation**: Google Local Services Ads $600/mo, Bing PPC Ads $600/mo, Google Business Profile Management $400/mo · **Customer Engagement**: Reputation Management $350/mo, AI Phone & Appointment Automation $550/mo, Social Media Engagement $250/mo
+- All descriptions updated per the new package spec; PPC copy stays vertical-tailored ("urgent plumbing needs", etc.) with the new campaign-strategy/conversion-tracking sentence added across all 9 verticals
+- META Ads and the standalone Local SEO/Reputation main cards are out of the defaults — Bing PPC is its own add-on, PPC is Google-focused, and stale META references were cleaned from SOW/agreement/process-step copy (add anything back per-client with Edit with AI)
+- Add-on rows realigned: checkbox, service title, and price share one baseline, with tighter spacing on wrapped description lines
+- New closing line under the add-ons: "Need more leads? We can scale your program by adding additional advertising channels, service areas and lead-response tools as your business grows."
+- Print fit restored: the whole RGS section (price band, core cards, six add-ons, ROI band) shares one page — the ROI band no longer spills onto an orphan page
+
 ## 4.18.1 — 2026-08-15 — Pricing Stays In Sync After AI Edits
 
 - Fixed: AI-edited prices could show different amounts in different places (offer panel vs price band vs options card) because the live-total wiring kept the old numbers

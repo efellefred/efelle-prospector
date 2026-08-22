@@ -4,6 +4,20 @@
 
 const CHANGELOG = [
   {
+    version: '4.19.0',
+    date: '2026-08-21',
+    title: 'New Default Price Page: Core Program + Grouped Add-Ons',
+    changes: [
+      'The RGS price page now leads with YOUR PROGRAM INCLUDES — four core services, each with a green pre-selected check the client can\'t uncheck: Google PPC Ads, Local SEO, AI Search Visibility (GEO), and Reporting, Analytics & Strategy (RGS-only proposals also keep Website Content Updates)',
+      'Optional add-ons split into two groups — ADDITIONAL LEAD GENERATION: Google Local Services Ads $600, Bing PPC Ads $600, Google Business Profile Management $400 · CUSTOMER ENGAGEMENT: Reputation Management $350, AI Phone & Appointment Automation $550, Social Media Engagement $250 — same roster on every proposal type',
+      'All service descriptions updated per the new spec (Google PPC adds campaign strategy/conversion tracking; Local SEO focuses on Maps + citations; GEO covers AI answers; renamed Reporting, Analytics & Strategy, Google Business Profile Management, AI Phone & Appointment Automation)',
+      'META Ads and the standalone Local SEO/Reputation main cards are out of the defaults — Bing PPC is now its own add-on and PPC is Google-focused; add anything back per-client with Edit with AI',
+      'Add-on rows realigned: checkbox, service title, and price share one line, with tighter spacing on wrapped description lines',
+      'New closing line under the add-ons: "Need more leads? We can scale your program…"',
+      'Print fit restored: the whole RGS section — price band, core cards, six add-ons, ROI band — shares one page again',
+    ]
+  },
+  {
     version: '4.18.1',
     date: '2026-08-15',
     title: 'Pricing Stays In Sync After AI Edits',

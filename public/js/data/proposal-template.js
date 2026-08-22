@@ -175,20 +175,25 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     .include-grid   { gap:10px; margin-bottom:18px; }
     .include-item   { padding:10px 14px; font-size:11px; }
 
-    /* ── P4: RGS — tight enough that price band + 6 cards + 3 add-ons + ROI band share one page ── */
-    .rgs-grid       { gap:8px; }
-    .rgs-grid[style*="margin-top"] { margin-top:12px !important; }
-    .rgs-card       { padding:12px 14px; }
+    /* ── P4: RGS — tight enough that price band + core cards + 6 add-ons + ROI band share one page ── */
+    .rgs-grid       { gap:6px; }
+    #rgs-included-label { margin-top:8px !important; margin-bottom:6px !important; }
+    .rgs-card       { padding:10px 12px; }
     .rgs-card-title { font-size:11px; }
-    .rgs-card-desc  { font-size:9.5px; line-height:1.5; }
-    .rgs-price-band { padding:12px 18px; margin-top:8px; }
-    .rgs-price-val  { font-size:26px; }
-    #sec-rgs        { padding-top:20px; padding-bottom:16px; }
-    #sec-rgs .lead  { margin-bottom:12px; }
-    #rgs-addons     { margin-top:12px !important; }
-    #rgs-addons > div:first-child { margin-bottom:8px !important; }
-    .addon-row      { padding:7px 0 !important; }
-    #sec-rgs .roi-band { margin-top:12px !important; padding:12px 18px !important; }
+    .rgs-card-desc  { font-size:9.5px; line-height:1.4; }
+    .rgs-price-band { padding:10px 16px; margin-top:8px; }
+    .rgs-price-val  { font-size:24px; }
+    #sec-rgs h2     { font-size:26px; }
+    #sec-rgs        { padding-top:14px; padding-bottom:12px; }
+    #sec-rgs .lead  { margin-bottom:8px; }
+    #rgs-addons     { margin-top:8px !important; }
+    #rgs-addons > div:first-child { margin-bottom:6px !important; }
+    #rgs-addons > div[style*="background"] { padding:2px 20px !important; }
+    .addon-row      { padding:4px 0 !important; }
+    .addon-row > div[style*="flex:1"] { line-height:1.25 !important; }
+    .addon-group-label { padding:5px 0 1px !important; }
+    #rgs-scale-note { margin-top:6px !important; font-size:10px !important; }
+    #sec-rgs .roi-band { margin-top:10px !important; padding:10px 16px !important; }
 
     /* ── P5: Why efelle ── */
     .awards-row           { margin-bottom:16px; }
@@ -325,18 +330,19 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     <div>
       <div class="rgs-price-label">Monthly RGS Program</div>
       <div class="rgs-price-val" style="color:var(--orange);">[[RGS_FROM]][[RGS_PRICE]]<span style="font-size:16px; font-weight:400; color:var(--gray-2);">/month</span></div>
-      <div class="rgs-price-note" style="margin-top:6px; font-size:10px; color:rgba(58,58,60,0.7);">+ AdSpend paid to Google &amp; META</div>
+      <div class="rgs-price-note" style="margin-top:6px; font-size:10px; color:rgba(58,58,60,0.7);">+ AdSpend paid to Google</div>
       <div class="rgs-price-note" style="margin-top:8px;">Full lead-generation program team...</div>
     </div>
     <div style="text-align:right;">
       <div class="rgs-price-label" style="text-align:right;">Compare to a full-time hire:</div>
       <div class="rgs-price-val"><span style="position:relative; display:inline-block;">$150,000<span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.4em; font-weight:900; color:var(--orange); opacity:0.85; pointer-events:none; line-height:1;">\u2715</span></span><span style="font-size:16px; font-weight:400;">/year</span></div>
-      <div class="rgs-price-note" style="text-align:right; margin-top:6px; font-size:10px; color:rgba(58,58,60,0.7);">+ AdSpend paid to Google &amp; META</div>
+      <div class="rgs-price-note" style="text-align:right; margin-top:6px; font-size:10px; color:rgba(58,58,60,0.7);">+ AdSpend paid to Google</div>
       <div class="rgs-price-note" style="text-align:right; margin-top:8px;">...at a fraction of a single marketing hire</div>
     </div>
   </div>
 
-  <div class="rgs-grid" style="margin-top:20px;">
+  <div id="rgs-included-label" style="font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gray-2); margin-top:20px; margin-bottom:12px;">Your Program Includes</div>
+  <div class="rgs-grid">
     [[RGS_MAIN_CARDS]]
   </div>
 
@@ -345,6 +351,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     <div style="background:var(--black); border-radius:14px; padding:6px 22px;">
       [[RGS_ADDON_CARDS]]
     </div>
+    <div id="rgs-scale-note" style="margin-top:10px; font-size:11px; color:var(--gray-2); line-height:1.5;"><strong style="color:var(--black);">Need more leads?</strong> We can scale your program by adding additional advertising channels, service areas and lead-response tools as your business grows.</div>
   </div>
 
   <div class="roi-band" style="margin-top:24px;">
