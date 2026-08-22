@@ -773,6 +773,7 @@ function propBuildHTML(clientName) {
       addonGroupLabel('Additional Lead Generation')
     + addonCard('lsa', 'Google Local Services Ads', 'Campaign setup, optimization, lead management &amp; ongoing monitoring to help generate qualified local leads directly from Google. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to Google.</span>', 600)
     + addonCard('bing_ppc', 'Bing PPC Ads', 'Campaign setup, optimization, conversion tracking &amp; ongoing management across Microsoft Ads to generate qualified leads through Bing, Yahoo and Microsoft\'s search network. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to Microsoft.</span>', 600)
+    + addonCard('meta', 'META Ads (Facebook &amp; Instagram)', 'Campaign setup, audience targeting, creative rotation &amp; ongoing management across Facebook &amp; Instagram to build awareness and drive direct inquiries. <span style="color:rgba(255,255,255,0.5); font-style:italic;">Ad spend paid directly to META.</span>', 600)
     + addonCard('gbp', 'Google Business Profile Management', 'GBP optimization including photos, Q&amp;A, services, service areas &amp; ongoing updates to improve your visibility in Google Maps and local search.', 400)
     + addonGroupLabel('Customer Engagement')
     + addonCard('reputation', 'Reputation Management', 'Review requests, response management, and amplification across Google, Facebook &amp; industry directories.', 350)

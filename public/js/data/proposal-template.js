@@ -175,25 +175,26 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
     .include-grid   { gap:10px; margin-bottom:18px; }
     .include-item   { padding:10px 14px; font-size:11px; }
 
-    /* ── P4: RGS — tight enough that price band + core cards + 6 add-ons + ROI band share one page ── */
-    .rgs-grid       { gap:6px; }
-    #rgs-included-label { margin-top:8px !important; margin-bottom:6px !important; }
-    .rgs-card       { padding:10px 12px; }
+    /* ── P4: RGS — tight enough that price band + core cards + 7 add-ons + ROI band share one page ── */
+    .rgs-grid       { gap:5px; }
+    #rgs-included-label { margin-top:6px !important; margin-bottom:4px !important; }
+    .rgs-card       { padding:9px 11px; }
     .rgs-card-title { font-size:11px; }
-    .rgs-card-desc  { font-size:9.5px; line-height:1.4; }
-    .rgs-price-band { padding:10px 16px; margin-top:8px; }
-    .rgs-price-val  { font-size:24px; }
-    #sec-rgs h2     { font-size:26px; }
-    #sec-rgs        { padding-top:14px; padding-bottom:12px; }
-    #sec-rgs .lead  { margin-bottom:8px; }
-    #rgs-addons     { margin-top:8px !important; }
-    #rgs-addons > div:first-child { margin-bottom:6px !important; }
+    .rgs-card-desc  { font-size:9.5px; line-height:1.35; }
+    .rgs-price-band { padding:8px 14px; margin-top:8px; }
+    .rgs-price-val  { font-size:22px; }
+    #sec-rgs h2     { font-size:24px; }
+    #sec-rgs        { padding-top:12px; padding-bottom:12px; }
+    #sec-rgs .lead  { margin-bottom:6px; }
+    #rgs-addons     { margin-top:6px !important; }
+    #rgs-addons > div:first-child { margin-bottom:4px !important; }
     #rgs-addons > div[style*="background"] { padding:2px 20px !important; }
     .addon-row      { padding:4px 0 !important; }
-    .addon-row > div[style*="flex:1"] { line-height:1.25 !important; }
-    .addon-group-label { padding:5px 0 1px !important; }
-    #rgs-scale-note { margin-top:6px !important; font-size:10px !important; }
-    #sec-rgs .roi-band { margin-top:10px !important; padding:10px 16px !important; }
+    .addon-row > div[style*="flex:1"] { line-height:1.22 !important; }
+    .addon-row > div[style*="flex:1"] span:last-child { font-size:10px !important; }
+    .addon-group-label { padding:4px 0 1px !important; }
+    #rgs-scale-note { margin-top:4px !important; font-size:10px !important; }
+    #sec-rgs .roi-band { margin-top:8px !important; padding:8px 14px !important; }
 
     /* ── P5: Why efelle ── */
     .awards-row           { margin-bottom:16px; }

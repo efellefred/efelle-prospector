@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.19.1',
+    date: '2026-08-21',
+    title: 'META Ads Returns as an Add-On',
+    changes: [
+      'META Ads (Facebook & Instagram) is back — now a $600/mo option in the Additional Lead Generation add-on group (after Bing PPC Ads), on every proposal type',
+      'Campaign setup, audience targeting, creative rotation & ongoing management, with ad spend paid directly to META',
+      'Print compression tuned so the RGS page still fits on one page with seven add-ons',
+    ]
+  },
+  {
     version: '4.19.0',
     date: '2026-08-21',
     title: 'New Default Price Page: Core Program + Grouped Add-Ons',

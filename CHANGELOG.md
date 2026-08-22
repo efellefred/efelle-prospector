@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.19.1 — 2026-08-21 — META Ads Returns as an Add-On
+
+- META Ads (Facebook & Instagram) is back as a **$600/mo** option in the Additional Lead Generation add-on group (after Bing PPC Ads), on every proposal type
+- Description: campaign setup, audience targeting, creative rotation & ongoing management across Facebook & Instagram; ad spend paid directly to META
+- Print compression tuned so the RGS page still fits on one page with seven add-ons
+
 ## 4.19.0 — 2026-08-21 — New Default Price Page: Core Program + Grouped Add-Ons
 
 - The RGS price page now leads with **YOUR PROGRAM INCLUDES** — four core services, each with a green pre-selected check the client can't uncheck: Google PPC Ads, Local SEO, AI Search Visibility (GEO), and Reporting, Analytics & Strategy (RGS-only proposals also keep Website Content Updates)
