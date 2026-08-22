@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.18.1',
+    date: '2026-08-15',
+    title: 'Pricing Stays In Sync After AI Edits',
+    changes: [
+      'Fixed: AI-edited prices could show different amounts in different places (offer panel vs price band vs options card) because the live-total wiring kept the old numbers',
+      'After every AI edit, pricing is automatically re-synced from the visible Select Your Options labels and add-on rows — the single source of truth',
+      'Discount displays work: show a struck-through old price next to the new one and the NEW (last) price is what counts toward totals',
+      'Add-on rows added by the AI editor get proper identities automatically, so their checkboxes and prices behave like the built-in ones',
+    ]
+  },
+  {
     version: '4.18.0',
     date: '2026-08-14',
     title: 'Live Listed Prices & Auto-Updating Links',

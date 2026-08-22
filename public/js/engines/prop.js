@@ -1476,7 +1476,9 @@ Rules:
 - To ADD new content, use a short exact anchor: put an existing snippet in "find" and return it in "replace" with the new content appended before/after it
 - Copy "find" strings EXACTLY from the document above — including tags, attributes, entities like &amp;, and apostrophes — or they will not match
 - img src values shown as "[embedded-image]" are placeholders; never include them in a "find"
-- Keep all styling intact unless the user specifically asks to change it`,
+- Keep all styling intact unless the user specifically asks to change it
+
+PRICING (important): live totals are driven by data attributes (data-mprice/data-oprice/data-label on the checkbox inputs, data-base on .live-rgs-monthly spans). When the user changes a price, update it in EVERY visible location it appears — the offer panel, the payment breakdown, the RGS price band, the "Select Your Options" row labels near the signature, and the add-on rows. The app re-derives the data attributes from the visible "Select Your Options" labels and add-on row prices after your edit, so those two places are the source of truth — never leave them showing an old price. When adding a new add-on, copy an existing complete addon-row <label> element and change its title, description, price, data-opt (new unique addon_* key), data-label, and data-mprice together. A discounted display (struck-through old price next to the new price) is fine — the LAST dollar amount in the row's price cell is treated as the real price.`,
         messages: [{
           role: 'user',
           content: `Here is the current proposal HTML:\n\n${modelView}\n\nEdit instruction: ${instruction}`
@@ -1562,8 +1564,9 @@ Rules:
 
     if (changeCount === 0) throw new Error('No matching text found to replace — try quoting the exact text you see in the proposal');
 
-    // Update the proposal (and the live published link, if one exists)
-    propReportHtml = updatedHtml;
+    // Re-sync machine pricing attributes from the (possibly edited) visible
+    // prices, then update the proposal and the live published link
+    propReportHtml = syncPricingData(updatedHtml);
     await writeToFrame(document.getElementById('prop-report-frame'), propReportHtml);
     autoRepublish();
 
@@ -1584,6 +1587,85 @@ Rules:
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 });
+
+// ─── Pricing sync: visible prices are the source of truth ────────────
+// The AI editor changes visible text but not the machine attributes that drive
+// live totals (data-mprice / data-oprice / data-label / data-base). This pass
+// re-derives every attribute from the rendered rows so all three displays —
+// offer panel, payment breakdown, price band — plus the sticky bar and the
+// recorded acceptance always agree. The LAST dollar amount in a price cell wins,
+// so discount displays (struck-through old price next to the new one) work.
+function syncPricingData(html) {
+  try {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const money = (s) => {
+      const m = String(s).replace(/,/g, '').match(/\$\s*(\d+)(?!(.|\n)*\$)/);
+      return m ? parseInt(m[1], 10) : null;
+    };
+    // Add-on rows: displayed price → data-mprice; title → data-label; unique keys
+    const usedKeys = new Set();
+    doc.querySelectorAll('.addon-row').forEach(row => {
+      const cb = row.querySelector('.prog-opt-check');
+      if (!cb) return;
+      const priceCell = row.querySelector('div:last-child');
+      const titleEl = row.querySelector('div span');
+      const p = priceCell ? money(priceCell.textContent) : null;
+      if (p !== null) cb.setAttribute('data-mprice', String(p));
+      const title = titleEl ? titleEl.textContent.trim() : '';
+      let key = cb.getAttribute('data-opt') || '';
+      if (!/^addon_[a-z0-9_]+$/.test(key) || usedKeys.has(key)) {
+        key = ('addon_' + title.toLowerCase().replace(/[^a-z0-9]+/g, '_')).slice(0, 28) || 'addon_x';
+        let n = 2; const base = key;
+        while (usedKeys.has(key)) key = base + '_' + (n++);
+        cb.setAttribute('data-opt', key);
+      }
+      usedKeys.add(key);
+      if (title) cb.setAttribute('data-label', 'Add-on: ' + title + ' — $' + (p !== null ? p : (cb.getAttribute('data-mprice') || '0')) + '/mo');
+    });
+    // Program rows: label text → data-label; website $X → data-oprice and
+    // "+$Y/mo hosting" → data-mprice; rgs $X/mo → data-mprice
+    doc.querySelectorAll('.prog-opt').forEach(rowLabel => {
+      const cb = rowLabel.querySelector('.prog-opt-check');
+      if (!cb) return;
+      const span = rowLabel.querySelector('span:last-child');
+      const text = (span ? span.textContent : rowLabel.textContent).trim();
+      if (text) cb.setAttribute('data-label', text.slice(0, 150));
+      const clean = text.replace(/,/g, '');
+      if (cb.getAttribute('data-opt') === 'website') {
+        const first = clean.match(/\$\s*(\d+)/);
+        if (first) cb.setAttribute('data-oprice', first[1]);
+        const host = clean.match(/\+\s*\$\s*(\d+)\s*\/mo/);
+        cb.setAttribute('data-mprice', host ? host[1] : '0');
+      } else if (cb.getAttribute('data-opt') === 'rgs') {
+        const first = clean.match(/\$\s*(\d+)/);
+        if (first) cb.setAttribute('data-mprice', first[1]);
+      }
+    });
+    // RGS base for the listed-price spans: the Select Your Options row is the
+    // contract line and wins; RGS-only docs (no rgs row) follow the price band
+    const rgsCb = doc.querySelector('.prog-opt-check[data-opt="rgs"]');
+    const marker = doc.querySelector('#monthly-total');
+    let rgsBase = null;
+    if (rgsCb) rgsBase = parseInt(rgsCb.getAttribute('data-mprice') || '0', 10) || 0;
+    else {
+      const s0 = doc.querySelector('.live-rgs-monthly');
+      if (s0) rgsBase = money(s0.textContent);
+      if (rgsBase === null && marker) rgsBase = parseInt(marker.getAttribute('data-base') || '0', 10) || 0;
+      if (marker && rgsBase !== null) marker.setAttribute('data-base', String(rgsBase));
+    }
+    if (rgsBase !== null) {
+      doc.querySelectorAll('.live-rgs-monthly').forEach(s => {
+        s.setAttribute('data-base', String(rgsBase));
+        s.textContent = '$' + rgsBase.toLocaleString('en-US');
+      });
+    }
+    return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+  } catch (e) {
+    console.warn('Pricing sync skipped:', e.message);
+    return html;
+  }
+}
+window.syncPricingData = syncPricingData;
 
 // ─── Toolbar dropdown menus (Edit ▾ / Download ▾) ────────────────────
 function setupToolbarMenu(btnId, menuId) {

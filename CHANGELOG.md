@@ -2,6 +2,13 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.18.1 — 2026-08-15 — Pricing Stays In Sync After AI Edits
+
+- Fixed: AI-edited prices could show different amounts in different places (offer panel vs price band vs options card) because the live-total wiring kept the old numbers
+- After every AI edit, pricing is automatically re-synced from the visible Select Your Options labels and add-on rows — the single source of truth
+- Discount displays work: show a struck-through old price next to the new one and the NEW (last) price is what counts toward totals
+- Add-on rows added by the AI editor get proper identities automatically, so their checkboxes and prices behave like the built-in ones
+
 ## 4.18.0 — 2026-08-14 — Live Listed Prices & Auto-Updating Links
 
 - The listed RGS price itself now updates in real time as add-ons are checked — in the offer panel, the Payment Breakdown row, and the RGS price band (the separate "Selected monthly total" line is gone; the sticky bar still shows the full selection)
