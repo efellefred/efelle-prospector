@@ -313,6 +313,66 @@ function adjustForMarketType(text) {
   return text;
 }
 
+// ─── Address components (street / city / state / zip are separate fields so
+// they can feed the CRM and QuickBooks as atomic values) ─────────────────────
+function propAddrVal(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function propSetIf(id, val, overwrite) {
+  const el = document.getElementById(id);
+  if (!el || !val) return;
+  if (overwrite || !el.value.trim()) el.value = val;
+}
+// Parse "Everett, WA 98201" / "Everett, WA" / "Everett WA" → {city, state, zip}
+function propParseCityState(loc) {
+  const out = { city: '', state: '', zip: '' };
+  let s = (loc || '').trim().replace(/\s+/g, ' ');
+  if (!s) return out;
+  const zipM = s.match(/(\d{5}(?:-\d{4})?)\s*$/);
+  if (zipM) { out.zip = zipM[1]; s = s.slice(0, zipM.index).trim().replace(/,$/, ''); }
+  const stM = s.match(/(?:,|\s)\s*([A-Za-z]{2})\.?$/);
+  if (stM && stM[1] === stM[1].toUpperCase()) { out.state = stM[1]; s = s.slice(0, stM.index).trim().replace(/,$/, ''); }
+  out.city = s.replace(/,$/, '').trim();
+  return out;
+}
+// Parse a full mailing address ("1234 Main St, Everett, WA 98201") → components.
+// Without commas the city can't be split reliably; it stays in street and the
+// city/state usually arrive separately from research.
+function propParseFullAddress(raw) {
+  const out = { street: '', city: '', state: '', zip: '' };
+  let s = (raw || '').trim().replace(/\s+/g, ' ');
+  if (!s) return out;
+  const zipM = s.match(/(\d{5}(?:-\d{4})?)\s*$/);
+  if (zipM) { out.zip = zipM[1]; s = s.slice(0, zipM.index).trim().replace(/,$/, ''); }
+  const stM = s.match(/(?:,|\s)\s*([A-Za-z]{2})\.?$/);
+  if (stM && stM[1] === stM[1].toUpperCase()) { out.state = stM[1]; s = s.slice(0, stM.index).trim().replace(/,$/, ''); }
+  const parts = s.split(',').map(p => p.trim()).filter(Boolean);
+  if (parts.length >= 2) { out.city = parts.pop(); out.street = parts.join(', '); }
+  else out.street = s;
+  return out;
+}
+// Write parsed components into the form. overwrite=true replaces existing values.
+function propApplyAddress(a, overwrite) {
+  if (!a) return;
+  propSetIf('prop-address', a.street, overwrite);
+  propSetIf('prop-city', a.city, overwrite);
+  propSetIf('prop-state', (a.state || '').toUpperCase(), overwrite);
+  propSetIf('prop-zip', a.zip, overwrite);
+}
+// "City, ST" for generation and research prompts
+function propCityState() {
+  const city = propAddrVal('prop-city'), st = propAddrVal('prop-state').toUpperCase();
+  return city && st ? city + ', ' + st : (city || st);
+}
+// Full mailing address composed from the four fields
+function propFullAddress() {
+  const street = propAddrVal('prop-address');
+  const cs = propCityState();
+  const zip = propAddrVal('prop-zip');
+  let out = street;
+  if (cs) out = out ? out + ', ' + cs : cs;
+  if (zip) out = out ? out + ' ' + zip : zip;
+  return out;
+}
+
 function selectVertical(el) {
   document.querySelectorAll('.vertical-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
@@ -394,7 +454,7 @@ function propReset() {
   propMarketType = 'residential';
   // Clear form fields
   ['prop-client-url','prop-name','prop-contact','prop-contact-email','prop-address','prop-phone',
-   'prop-location','prop-services','prop-area','prop-differentiators',
+   'prop-city','prop-state','prop-zip','prop-war-search','prop-services','prop-area','prop-differentiators',
    'prop-founded','prop-logo'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
@@ -503,7 +563,7 @@ async function propFetchClient() {
   const url = document.getElementById('prop-client-url').value.trim();
   const isNameMode = propResearchMode === 'name';
   const bizName = document.getElementById('prop-name').value.trim();
-  const bizLoc = document.getElementById('prop-location').value.trim();
+  const bizLoc = propCityState();
   // Server mode: session token handles auth, no API key needed in browser
   const btn = document.getElementById('prop-fetch-btn');
   const status = document.getElementById('prop-url-status');
@@ -541,8 +601,12 @@ async function propFetchClient() {
 
     if (data.company_name) document.getElementById('prop-name').value = data.company_name;
     if (data.contact_email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contact_email)) document.getElementById('prop-contact-email').value = data.contact_email.trim().toLowerCase();
-    if (data.location)     document.getElementById('prop-location').value = data.location;
-    if (data.address)      document.getElementById('prop-address').value = data.address;
+    if (data.location)     propApplyAddress(propParseCityState(data.location), true);
+    if (data.address) {
+      const a = propParseFullAddress(data.address);
+      document.getElementById('prop-address').value = a.street;
+      propApplyAddress({ city: a.city, state: a.state, zip: a.zip }, false);
+    }
     if (data.phone)        document.getElementById('prop-phone').value = data.phone;
     if (data.services && data.services.length) document.getElementById('prop-services').value = data.services.join('|');
     if (data.service_area) document.getElementById('prop-area').value = data.service_area;
@@ -575,7 +639,11 @@ async function propFetchClient() {
       }
     }
 
-    if (finalAddress) document.getElementById('prop-address').value = finalAddress;
+    if (finalAddress) {
+      const a = propParseFullAddress(finalAddress);
+      document.getElementById('prop-address').value = a.street;
+      propApplyAddress({ city: a.city, state: a.state, zip: a.zip }, true);
+    }
 
     // Logo: real homepage markup first, then the AI's URL only if it verifiably loads.
     // Never populate an unverified AI-guessed URL — they're frequently hallucinated.
@@ -640,11 +708,11 @@ function propBuildHTML(clientName) {
   const monthlyPay = fmt(Math.round((wp - d1) / 24));
   const m50 = isWO ? 0 : Math.round((wp * 0.50) / 24);  // new site: 50% balance / 24 mo
   const contact  = document.getElementById('prop-contact').value.trim() || '';
-  const location = document.getElementById('prop-location').value.trim() || '';
+  const location = propCityState() || '';
   const founded  = document.getElementById('prop-founded').value.trim() || '';
   const area     = document.getElementById('prop-area').value.trim() || 'the local area';
   const diffs    = document.getElementById('prop-differentiators').value.trim() || '';
-  const address  = document.getElementById('prop-address').value.trim() || '';
+  const address  = propFullAddress() || '';
   const phone    = document.getElementById('prop-phone').value.trim() || '';
   const website  = document.getElementById('prop-client-url').value.trim() || '';
   const logo     = document.getElementById('prop-logo').value.trim() || '';
@@ -1295,8 +1363,12 @@ async function propGenerate() {
         url: document.getElementById('prop-client-url').value.trim(),
         contact: document.getElementById('prop-contact').value.trim(),
         contact_email: document.getElementById('prop-contact-email').value.trim().toLowerCase(),
-        location: document.getElementById('prop-location').value.trim(),
-        address: document.getElementById('prop-address').value.trim(),
+        location: propCityState(),
+        address: propFullAddress(),
+        street: propAddrVal('prop-address'),
+        city: propAddrVal('prop-city'),
+        state: propAddrVal('prop-state').toUpperCase(),
+        zip: propAddrVal('prop-zip'),
         phone: document.getElementById('prop-phone').value.trim(),
         services: document.getElementById('prop-services').value.trim(),
         area: document.getElementById('prop-area').value.trim(),
@@ -2007,8 +2079,19 @@ async function loadPropClient(reportId) {
     setVal('prop-client-url', d.prospect_url || d.website || d.url || m.url || '');
     setVal('prop-contact', d.contact || d.prepared_for || m.contact || '');
     setVal('prop-contact-email', d.contact_email || d.email || '');
-    setVal('prop-location', d.geographic_market || d.location || d.headquarters || '');
-    setVal('prop-address', d.address || d.headquarters || '');
+    if (d.city || d.state || d.zip || d.street) {
+      setVal('prop-address', d.street || '');
+      setVal('prop-city', d.city || '');
+      setVal('prop-state', (d.state || '').toUpperCase());
+      setVal('prop-zip', d.zip || '');
+    } else {
+      const locParsed = propParseCityState(d.geographic_market || d.location || d.headquarters || '');
+      const addrParsed = propParseFullAddress(d.address || d.headquarters || '');
+      setVal('prop-address', addrParsed.street);
+      setVal('prop-city', addrParsed.city || locParsed.city);
+      setVal('prop-state', (addrParsed.state || locParsed.state || '').toUpperCase());
+      setVal('prop-zip', addrParsed.zip || locParsed.zip);
+    }
     setVal('prop-phone', d.phone || '');
     setVal('prop-founded', d.founded || d.year_founded || '');
     setVal('prop-logo', d.logo || d.logo_url || '');

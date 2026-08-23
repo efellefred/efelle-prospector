@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.23.0 — 2026-08-23 — Address Splits Into CRM-Ready Fields
+
+- Street address, City, State, and Zip are now separate fields on the Proposal Builder client form, matching how they feed into the CRM and QuickBooks
+- **Research client** fills all four automatically: full addresses are parsed into components, and the state is always uppercased
+- Saved proposals store the atomic values (`street`, `city`, `state`, `zip`) alongside the composed `address`/`location` strings for older tooling
+- Loading a previous client still works for old records: composed addresses are parsed into the new fields on the way in
+- Generated proposals compose the letterhead address from the four fields, so nothing changes in the document itself
+
 ## 4.22.0 — 2026-08-23 — Proposal Builder Design Refresh
 
 - Proposal Builder rebuilt on the efelle design system: each step gets its own hero header with breadcrumbs (Setup, Client details, Preview), light forms, segmented selectors, and selectable vertical cards

@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.23.0',
+    date: '2026-08-23',
+    title: 'Address Splits Into CRM-Ready Fields',
+    changes: [
+      'Street address, City, State, and Zip are now separate fields on the client form, matching how they feed into the CRM and QuickBooks',
+      'Research client fills all four automatically: full addresses are parsed into components, and the state is always uppercased',
+      'Saved proposals store the atomic values (street, city, state, zip) alongside the composed address for older tooling',
+      'Loading a previous client still works for old records: composed addresses are parsed into the new fields on the way in',
+      'Generated proposals compose the letterhead address from the four fields, so nothing changes in the document itself',
+    ]
+  },
+  {
     version: '4.22.0',
     date: '2026-08-23',
     title: 'Proposal Builder Design Refresh',

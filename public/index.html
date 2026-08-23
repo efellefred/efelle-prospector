@@ -117,7 +117,7 @@
         <img class="nav-logo-img" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative">
         <span class="nav-wordmark">prospector</span>
       </button>
-      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.22.0 // 2026-08-23</span>
+      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.23.0 // 2026-08-23</span>
     </div>
     <div class="header-right">
       <div class="header-btns">
@@ -987,8 +987,16 @@
                 <input type="text" id="prop-address" placeholder="1234 Main St" />
               </label>
               <label class="pbx-field">
-                <span class="pbx-label">City, State</span>
-                <input type="text" id="prop-location" placeholder="Everett, WA" />
+                <span class="pbx-label">City</span>
+                <input type="text" id="prop-city" placeholder="Everett" />
+              </label>
+              <label class="pbx-field">
+                <span class="pbx-label">State</span>
+                <input type="text" id="prop-state" placeholder="WA" maxlength="2" autocapitalize="characters" />
+              </label>
+              <label class="pbx-field">
+                <span class="pbx-label">Zip</span>
+                <input type="text" id="prop-zip" placeholder="98201" maxlength="10" />
               </label>
               <label class="pbx-field">
                 <span class="pbx-label">Phone</span>
