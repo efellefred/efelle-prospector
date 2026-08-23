@@ -4,6 +4,14 @@
 
 const CHANGELOG = [
   {
+    version: '4.23.1',
+    date: '2026-08-23',
+    title: 'Client Details Cleanup',
+    changes: [
+      'Removed the Select a previous client search from the Proposal Builder client details step \u2014 research the client or fill the fields directly',
+    ]
+  },
+  {
     version: '4.23.0',
     date: '2026-08-23',
     title: 'Address Splits Into CRM-Ready Fields',

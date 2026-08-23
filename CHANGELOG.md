@@ -2,6 +2,10 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.23.1 — 2026-08-23 — Client Details Cleanup
+
+- Removed the **Select a previous client** search from the Proposal Builder client details step — research the client or fill the fields directly
+
 ## 4.23.0 — 2026-08-23 — Address Splits Into CRM-Ready Fields
 
 - Street address, City, State, and Zip are now separate fields on the Proposal Builder client form, matching how they feed into the CRM and QuickBooks
