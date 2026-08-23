@@ -5,6 +5,7 @@ This mirrors the in-app Update Log (Updates button in the header).
 ## 4.23.1 — 2026-08-23 — Client Details Cleanup
 
 - Removed the **Select a previous client** search from the Proposal Builder client details step — research the client or fill the fields directly
+- Logo preview cleanup: the dashed placeholder box is gone; imported logos now show under Founded year on the left, with the confirmation line on a single line underneath
 
 ## 4.23.0 — 2026-08-23 — Address Splits Into CRM-Ready Fields
 

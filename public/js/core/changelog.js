@@ -9,6 +9,7 @@ const CHANGELOG = [
     title: 'Client Details Cleanup',
     changes: [
       'Removed the Select a previous client search from the Proposal Builder client details step \u2014 research the client or fill the fields directly',
+      'Logo preview cleanup: the dashed placeholder box is gone; imported logos now show under Founded year on the left, with the confirmation line on a single line underneath',
     ]
   },
   {
