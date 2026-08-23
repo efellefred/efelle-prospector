@@ -4,6 +4,15 @@
 
 const CHANGELOG = [
   {
+    version: '4.23.2',
+    date: '2026-08-23',
+    title: 'Setup Layout Polish',
+    changes: [
+      'Vertical cards on the Proposal Builder setup step are compact single-line rows, matching the approved design and cutting scrolling',
+      'New Misc vertical (other home services, neutral copy & verbiage) \u2014 placeholder that reuses the Other content until Misc-specific verbiage is written',
+    ]
+  },
+  {
     version: '4.23.1',
     date: '2026-08-23',
     title: 'Client Details Cleanup',

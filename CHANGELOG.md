@@ -2,6 +2,11 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.23.2 — 2026-08-23 — Setup Layout Polish
+
+- Vertical cards on the Proposal Builder setup step are compact single-line rows, matching the approved design and cutting scrolling
+- New **Misc** vertical (other home services, neutral copy & verbiage) — placeholder that reuses the Other content until Misc-specific verbiage is written
+
 ## 4.23.1 — 2026-08-23 — Client Details Cleanup
 
 - Removed the **Select a previous client** search from the Proposal Builder client details step — research the client or fill the fields directly
