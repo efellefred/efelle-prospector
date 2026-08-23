@@ -74,7 +74,7 @@ export function showScreen(id) {
   const isHome = id === 'home';
   const isLibrary = id === 'library';
   const isSettings = id === 'settings';
-  const hideEngineHeader = isHome || isLibrary || isSettings;
+  const hideEngineHeader = isHome || isLibrary || isSettings || id === 'prop';
   document.getElementById('back-btn').style.display = isHome ? 'none' : 'inline-block';
   document.getElementById('engine-header').style.display = hideEngineHeader ? 'none' : 'flex';
   if (!hideEngineHeader && ENGINES[id]) {

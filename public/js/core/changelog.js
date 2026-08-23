@@ -4,6 +4,19 @@
 
 const CHANGELOG = [
   {
+    version: '4.22.0',
+    date: '2026-08-23',
+    title: 'Proposal Builder Design Refresh',
+    changes: [
+      'Proposal Builder rebuilt on the efelle design system: each step gets its own hero header with breadcrumbs (Setup, Client details, Preview), light forms, segmented selectors, and selectable vertical cards',
+      'Preview screen: actions live in the header (Edit, Download, Print / save as PDF, Publish link, Email the proposal), a green one-line Published band with copy, views, and refresh, a framed scrolling preview window, and the proposal id',
+      'AI editor is now a docked panel at the bottom of the screen with one-click prompt suggestions',
+      'New research option on Client details: Pull WAR report \u2014 loads the company and website from the newest WAR report and researches the client automatically',
+      'Website updates WO pricing: hours \u00d7 rate now sets the WO price live; click the $150/hr hint to change the rate inline',
+      'Whole app renders at 59.5% scale with a taller nav; Debug moved out of the nav (click the version badge to toggle it); footer now appears on every screen',
+    ]
+  },
+  {
     version: '4.21.0',
     date: '2026-08-23',
     title: 'Every Tool Gets Its Own URL',

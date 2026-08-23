@@ -117,17 +117,16 @@
         <img class="nav-logo-img" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative">
         <span class="nav-wordmark">prospector</span>
       </button>
-      <span id="version-badge" title="efelle Prospector version">v4.21.0 // 2026-08-23</span>
+      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.22.0 // 2026-08-23</span>
     </div>
     <div class="header-right">
       <div class="header-btns">
-        <button class="nav-link" id="back-btn" style="display:none">&larr; Home</button>
+        <button class="nav-link" id="back-btn" style="display:none">Home</button>
         <button class="nav-link" onclick="showLibrary()">Library</button>
         <button class="nav-link" onclick="window.open('/user-guide.html','_blank')" title="User Guide">Guide</button>
         <button class="nav-link" onclick="showChangelog()" title="Update Log">Updates</button>
         <button class="nav-link" id="admin-settings-btn" style="display:none" onclick="showScreen('settings')" title="Admin Settings">Settings</button>
         <button class="nav-link" id="artifact-key-btn" style="display:none" title="Set API key">Key</button>
-        <button class="nav-link" id="debug-toggle-btn" onclick="toggleDebug()" title="Toggle debug panel">Debug</button>
         <button class="nav-link" onclick="doLogout()" title="Log out">Log out</button>
       </div>
     </div>
@@ -309,11 +308,6 @@
     </div>
   </div>
 
-  <div class="hp-footer">
-    <div class="hp-footer-inner">
-      <span class="hp-footer-left">efelle creative // prospector // internal sales tools</span>
-      <span class="hp-footer-model">claude-opus-4-6 // claude-sonnet-4-6</span>
-    </div>
   </div>
 
   <div id="hp-toast" aria-live="polite"></div>
@@ -802,284 +796,425 @@
 <div class="screen" id="screen-prop">
   <div id="prop-inner">
 
-    <!-- Stage 1: Proposal Type + Vertical + RGS + Pricing -->
+    <!-- Stage 1: Setup -->
     <div class="prop-stage active" id="prop-stage-1">
-      <div class="section-divider" style="margin-top:0">Proposal Type</div>
-      <div class="rgs-toggle">
-        <button class="rgs-opt selected" id="prop-type-new" onclick="selectPropType('new_website')">New Website</button>
-        <button class="rgs-opt" id="prop-type-wo" onclick="selectPropType('wo_rgs')">Website Updates WO</button>
-        <button class="rgs-opt" id="prop-type-rgs" onclick="selectPropType('rgs_only')">RGS Only</button>
-      </div>
-
-      <div class="section-divider">Select Vertical</div>
-      <div class="vertical-grid">
-        <button class="vertical-card" data-v="home_services" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-          <div class="vertical-name">Home Services</div>
-          <div class="vertical-sub">General contractor / multi-service</div>
-        </button>
-        <button class="vertical-card" data-v="plumbers" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
-          <div class="vertical-name">Plumbing</div>
-          <div class="vertical-sub">Plumbing, drain, water heater</div>
-        </button>
-        <button class="vertical-card" data-v="roofers" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 14 12 3 23 14"/><line x1="6" y1="9" x2="6" y2="6"/><line x1="4" y1="6" x2="8" y2="6"/></svg></div>
-          <div class="vertical-name">Roofing</div>
-          <div class="vertical-sub">Roofing, gutters, siding</div>
-        </button>
-        <button class="vertical-card" data-v="hvac" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg></div>
-          <div class="vertical-name">HVAC</div>
-          <div class="vertical-sub">Heating, cooling, air quality</div>
-        </button>
-        <button class="vertical-card" data-v="landscape" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 22"/><path d="M9.1 19C9.2 14.5 11 13.4 14.5 12"/><path d="M12 2C12 2 8.5 6 8.5 9c0 2 1.5 3.5 3.5 3.5S15.5 11 15.5 9C15.5 6 12 2 12 2z"/></svg></div>
-          <div class="vertical-name">Landscaping</div>
-          <div class="vertical-sub">Landscaping, lawn care, outdoor</div>
-        </button>
-        <button class="vertical-card" data-v="electrical" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-          <div class="vertical-name">Electrical</div>
-          <div class="vertical-sub">Electrician, wiring, panels</div>
-        </button>
-        <button class="vertical-card" data-v="construction" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 6V2"/><path d="M6 6V4"/><path d="M18 6V4"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
-          <div class="vertical-name">Construction</div>
-          <div class="vertical-sub">General contractor, builds, remodels</div>
-        </button>
-        <button class="vertical-card" data-v="ecommerce" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-          <div class="vertical-name">eCommerce</div>
-          <div class="vertical-sub">Online retail, DTC, product brands</div>
-        </button>
-        <button class="vertical-card" data-v="other" onclick="selectVertical(this)">
-          <div class="vertical-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
-          <div class="vertical-name">Other</div>
-          <div class="vertical-sub">Any other business or industry — neutral copy, no home-services verbiage</div>
-        </button>
-      </div>
-
-      <div class="section-divider">Market Type</div>
-      <div class="rgs-toggle" id="market-type-toggle">
-        <button class="rgs-opt selected" id="market-residential" onclick="selectMarketType('residential')">Residential</button>
-        <button class="rgs-opt" id="market-commercial" onclick="selectMarketType('commercial')">Commercial</button>
-        <button class="rgs-opt" id="market-both" onclick="selectMarketType('both')">Both</button>
-      </div>
-
-      <div class="section-divider" id="rgs-mode-divider">RGS Mode</div>
-      <div class="rgs-toggle" id="rgs-mode-toggle">
-        <button class="rgs-opt selected" id="rgs-included" onclick="selectRGS('included')">Included — shown early, after The Offer section</button>
-        <button class="rgs-opt" id="rgs-optional" onclick="selectRGS('optional')">Optional — shown near end, before signature</button>
-      </div>
-
-      <div class="section-divider">Pricing</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:14px;align-items:flex-end;margin-bottom:24px;">
-        <div class="price-field" id="price-website-field">
-          <label id="price-website-label">Website Price ($)</label>
-          <div style="position:relative;"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#6b7a94;font-size:13px;pointer-events:none;">$</span><input type="number" id="price-website" value="7500" min="0" step="500" style="text-align:center;padding-left:20px;" /></div>
+      <div class="pbx-hero">
+        <div class="pbx-bloom"></div>
+        <div class="pbx-hero-inner">
+          <div class="pbx-crumbrow">
+            <a class="pbx-crumb" href="/" onclick="showScreen('home');return false;">&larr; Home</a>
+            <span class="pbx-eyebrow">03 // Close &middot; Proposal Builder</span>
+          </div>
+          <h1 class="pbx-h1">Build the proposal.</h1>
+          <p class="pbx-sub">Pick the type, vertical, and pricing. Claude researches the client and writes the document.</p>
         </div>
-        <div class="price-field" id="price-hosting-field">
-          <label>Monthly Hosting ($)</label>
-          <div style="position:relative;"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#6b7a94;font-size:13px;pointer-events:none;">$</span><input type="number" id="price-hosting" value="85" min="0" step="5" style="text-align:center;padding-left:20px;" /></div>
-        </div>
-        <div class="price-field" id="price-hours-field" style="display:none;">
-          <label id="price-hours-label">HRS for WO</label>
-          <input type="number" id="price-hours" value="40" min="1" step="5" style="text-align:center;" />
-        </div>
-        <div class="price-field">
-          <label>RGS Monthly ($)</label>
-          <div style="position:relative;"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#6b7a94;font-size:13px;pointer-events:none;">$</span><input type="number" id="price-rgs" value="2500" min="0" step="100" style="text-align:center;padding-left:20px;" /></div>
-        </div>
-        <button class="generate-btn" id="prop-stage1-next" onclick="propGoStage2()" style="background:linear-gradient(135deg,#7a4a10,#fb923c);box-shadow:0 4px 20px rgba(251,146,60,0.25);white-space:nowrap;padding:10px 20px;font-size:13px;grid-column:5;justify-self:end;">
-          Next: Client Details →
-        </button>
       </div>
+      <div class="pbx-body"><div class="pbx-container">
+
+        <div class="pbx-section">
+          <div class="pbx-sechead"><span>Proposal type</span><i></i></div>
+          <div class="rgs-toggle pbx-seg3">
+            <button class="rgs-opt selected" id="prop-type-new" onclick="selectPropType('new_website')">New website</button>
+            <button class="rgs-opt" id="prop-type-wo" onclick="selectPropType('wo_rgs')">Website updates WO</button>
+            <button class="rgs-opt" id="prop-type-rgs" onclick="selectPropType('rgs_only')">RGS only</button>
+          </div>
+        </div>
+
+        <div class="pbx-section">
+          <div class="pbx-sechead"><span>Select vertical</span><i></i></div>
+          <div class="vertical-grid">
+            <button class="vertical-card" data-v="home_services" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5 M5 9.5V21h14V9.5"/></svg>
+              <span class="vertical-name">Home services</span>
+              <span class="vertical-sub">General contractor / multi-service</span>
+            </button>
+            <button class="vertical-card" data-v="plumbers" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-6.6 6.6L3 18v3h3l5.1-5.1a5 5 0 0 0 6.6-6.6L14 13l-3-3 3.7-3.7z"/></svg>
+              <span class="vertical-name">Plumbing</span>
+              <span class="vertical-sub">Plumbing, drain, water heater</span>
+            </button>
+            <button class="vertical-card" data-v="roofers" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14L12 4l10 10 M6 10v10h12V10"/></svg>
+              <span class="vertical-name">Roofing</span>
+              <span class="vertical-sub">Roofing, gutters, siding</span>
+            </button>
+            <button class="vertical-card" data-v="hvac" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20 M2 12h20 M4.9 4.9l14.2 14.2 M19.1 4.9L4.9 19.1"/></svg>
+              <span class="vertical-name">HVAC</span>
+              <span class="vertical-sub">Heating, cooling, air quality</span>
+            </button>
+            <button class="vertical-card" data-v="landscape" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V10 M12 10a6 6 0 0 0-6-6 6 6 0 0 0 6 6z M12 14a6 6 0 0 1 6-6 6 6 0 0 1-6 6z"/></svg>
+              <span class="vertical-name">Landscaping</span>
+              <span class="vertical-sub">Landscaping, lawn care, outdoor</span>
+            </button>
+            <button class="vertical-card" data-v="electrical" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span class="vertical-name">Electrical</span>
+              <span class="vertical-sub">Electrician, wiring, panels</span>
+            </button>
+            <button class="vertical-card" data-v="construction" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20 M4 20V8l8-5 8 5v12 M9 20v-6h6v6"/></svg>
+              <span class="vertical-name">Construction</span>
+              <span class="vertical-sub">General contractor, builds, remodels</span>
+            </button>
+            <button class="vertical-card" data-v="ecommerce" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.5 9h-12L5 3H2 M9 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2z M18 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>
+              <span class="vertical-name">eCommerce</span>
+              <span class="vertical-sub">Online retail, DTC, product brands</span>
+            </button>
+            <button class="vertical-card" data-v="other" onclick="selectVertical(this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v13H4z M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span class="vertical-name">Other</span>
+              <span class="vertical-sub">Any business, no home-services verbiage</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="pbx-section">
+          <div class="pbx-sechead"><span>Market type</span><i></i></div>
+          <div class="rgs-toggle pbx-seg3" id="market-type-toggle">
+            <button class="rgs-opt selected" id="market-residential" onclick="selectMarketType('residential')">Residential</button>
+            <button class="rgs-opt" id="market-commercial" onclick="selectMarketType('commercial')">Commercial</button>
+            <button class="rgs-opt" id="market-both" onclick="selectMarketType('both')">Both</button>
+          </div>
+        </div>
+
+        <div class="pbx-section">
+          <div class="pbx-sechead" id="rgs-mode-divider"><span>RGS mode</span><i></i></div>
+          <div class="rgs-toggle pbx-rgsmode" id="rgs-mode-toggle">
+            <button class="rgs-opt selected" id="rgs-included" onclick="selectRGS('included')"><span class="pbx-optt">Included</span><span class="pbx-optd">Shown early, after The Offer section</span></button>
+            <button class="rgs-opt" id="rgs-optional" onclick="selectRGS('optional')"><span class="pbx-optt">Optional</span><span class="pbx-optd">Shown near the end, before signature</span></button>
+          </div>
+        </div>
+
+        <div class="pbx-section">
+          <div class="pbx-sechead"><span>Pricing</span><i></i></div>
+          <div class="pbx-pricerow">
+            <div class="price-field" id="price-hours-field" style="display:none;">
+              <label id="price-hours-label">WO hours</label>
+              <span class="pbx-money"><span class="pbx-prefix">#</span><input type="number" id="price-hours" value="40" min="1" step="5" style="width:52px;" /></span>
+              <span class="pbx-hint" id="wo-rate-hint"></span>
+            </div>
+            <div class="price-field" id="price-website-field">
+              <label id="price-website-label">Website price ($)</label>
+              <span class="pbx-money"><span class="pbx-prefix">$</span><input type="number" id="price-website" value="7500" min="0" step="500" style="width:78px;" /></span>
+              <span class="pbx-hint"></span>
+            </div>
+            <div class="price-field" id="price-hosting-field">
+              <label>Monthly hosting ($)</label>
+              <span class="pbx-money"><span class="pbx-prefix">$</span><input type="number" id="price-hosting" value="85" min="0" step="5" style="width:56px;" /></span>
+              <span class="pbx-hint">$0 hides hosting</span>
+            </div>
+            <div class="price-field">
+              <label>RGS monthly ($)</label>
+              <span class="pbx-money"><span class="pbx-prefix">$</span><input type="number" id="price-rgs" value="2500" min="0" step="100" style="width:70px;" /></span>
+              <span class="pbx-hint"></span>
+            </div>
+            <div class="pbx-pricespacer"></div>
+            <div class="pbx-pricebtnwrap">
+              <button class="pbx-primary" id="prop-stage1-next" onclick="propGoStage2()">Next: client details &rarr;</button>
+            </div>
+          </div>
+        </div>
+
+      </div></div>
     </div>
 
-    <!-- Stage 2: Client URL + Info -->
+    <!-- Stage 2: Client details -->
     <div class="prop-stage" id="prop-stage-2">
-      <div style="margin-bottom:20px;">
-        <label style="font-family:monospace;font-size:10px;color:#f56300;letter-spacing:0.12em;text-transform:uppercase;">LOAD FROM PREVIOUS STRATEGY BUILDER OR ACTION PLAN</label>
-        <div style="position:relative;" id="prop-client-search-wrap">
-          <input type="text" id="prop-client-search" placeholder="Search by company name..." autocomplete="off"
-            style="width:100%;padding:10px 14px;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;color:#e2ddd4;font-size:14px;font-family:inherit;margin-top:4px;" />
-          <div id="prop-client-search-results" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:#0c0f16;border:1px solid #252d3d;border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;"></div>
+      <div class="pbx-hero">
+        <div class="pbx-bloom"></div>
+        <div class="pbx-hero-inner">
+          <div class="pbx-crumbrow">
+            <a class="pbx-crumb" href="#" onclick="propGoStage1();return false;">&larr; Setup</a>
+            <span class="pbx-eyebrow">03 // Close &middot; Proposal Builder &middot; Step 2 of 2</span>
+          </div>
+          <h1 class="pbx-h1">Client details.</h1>
+          <p class="pbx-sub">Research the client or fill the fields by hand. Everything here lands in the proposal.</p>
         </div>
       </div>
-      <div class="section-divider" style="margin-top:0">Client Website</div>
-      <div class="rgs-toggle" style="margin-bottom:12px;">
-        <button class="rgs-opt selected" id="research-mode-url" onclick="selectResearchMode('url')">Enter website URL</button>
-        <button class="rgs-opt" id="research-mode-name" onclick="selectResearchMode('name')">No website — research online</button>
-      </div>
-      <div class="url-row">
-        <input type="url" id="prop-client-url" placeholder="https://clientwebsite.com" />
-        <button class="url-fetch-btn" id="prop-fetch-btn" onclick="propFetchClient()">⟳ Research Client</button>
-      </div>
-      <div style="font-size:11px;font-family:monospace;color:#374151;margin:-8px 0 14px;line-height:1.6;" id="research-hint">↳ Company name, location, services, address, phone, and logo URL will be pulled automatically after clicking Research Client.</div>
-      <div class="url-status" id="prop-url-status"></div>
+      <div class="pbx-body"><div class="pbx-container">
 
-      <div class="client-fields" id="prop-client-fields">
-        <div class="form-grid-2">
-          <div class="field">
-            <label class="field-label">Company Name</label>
-            <input type="text" id="prop-name" placeholder="e.g. Valley Plumbing Co." />
-          </div>
-          <div class="field">
-            <label class="field-label">Contact Name</label>
-            <input type="text" id="prop-contact" placeholder="e.g. Mike Johnson" />
-          </div>
-          <div class="field col-span-2">
-            <label class="field-label">Contact Email(s) (for HubSpot tracking — separate multiple with commas)</label>
-            <input type="text" id="prop-contact-email" placeholder="e.g. mike@valleyplumbing.com, sarah@valleyplumbing.com — opens & acceptance log to each HubSpot contact" />
-          </div>
-          <div class="field col-span-2">
-            <label class="field-label">Street Address</label>
-            <input type="text" id="prop-address" placeholder="e.g. 1234 Main St, Everett WA 98201" />
-          </div>
-          <div class="field">
-            <label class="field-label">Phone</label>
-            <input type="text" id="prop-phone" placeholder="e.g. (425) 555-0100" />
-          </div>
-          <div class="field">
-            <label class="field-label">City, State</label>
-            <input type="text" id="prop-location" placeholder="e.g. Everett, WA" />
-          </div>
-          <div class="field col-span-2">
-            <label class="field-label">Services (pipe-separated)</label>
-            <input type="text" id="prop-services" placeholder="e.g. Drain cleaning|Water heater installation|Emergency plumbing" />
-          </div>
-          <div class="field col-span-2">
-            <label class="field-label">Service Area</label>
-            <input type="text" id="prop-area" placeholder="e.g. Greater Seattle and Eastside communities" />
-          </div>
-          <div class="field col-span-2">
-            <label class="field-label">Key Differentiators</label>
-            <textarea id="prop-differentiators" rows="2" placeholder="e.g. 4.9 stars on Google (340+ reviews), family-owned since 2008, same-day service guarantee…"></textarea>
-          </div>
-          <div class="field">
-            <label class="field-label">Founded Year</label>
-            <input type="text" id="prop-founded" placeholder="e.g. 2008" />
-          </div>
-          <div class="field">
-            <label class="field-label">Logo URL (optional)</label>
-            <input type="url" id="prop-logo" placeholder="https://example.com/logo.png — leave blank to use placeholder" />
-            <div id="prop-logo-preview" style="display:none;align-items:center;gap:12px;margin-top:8px;">
-              <div style="background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;">
-                <img id="prop-logo-preview-img" alt="Logo preview" style="max-height:44px;max-width:180px;display:block;" />
-              </div>
-              <div style="background:#1D1D1F;border-radius:6px;padding:8px 12px;display:inline-block;">
-                <img id="prop-logo-preview-img-dark" alt="" style="max-height:44px;max-width:180px;display:block;" />
-              </div>
-              <span id="prop-logo-preview-note" style="font-size:11px;font-family:monospace;color:#6b7a94;max-width:220px;line-height:1.5;"></span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
-              <span style="font-size:10px;font-family:monospace;color:#6b7a94;letter-spacing:0.08em;text-transform:uppercase;">Logo background:</span>
-              <div class="rgs-toggle" style="margin:0;max-width:320px;">
-                <button class="rgs-opt selected" id="logo-bg-auto" onclick="selectLogoBg('auto')" title="Detect automatically — dark backdrop only when the logo has a lot of white">Auto</button>
-                <button class="rgs-opt" id="logo-bg-light" onclick="selectLogoBg('light')" title="No backdrop — logo sits directly on the white page">Light</button>
-                <button class="rgs-opt" id="logo-bg-dark" onclick="selectLogoBg('dark')" title="Dark rounded backdrop behind the logo">Dark</button>
-              </div>
-            </div>
+        <div class="pbx-section">
+          <div class="pbx-sechead"><span>Select a previous client</span><i></i></div>
+          <div style="position:relative;" id="prop-client-search-wrap">
+            <input type="text" id="prop-client-search" placeholder="Search by company name..." autocomplete="off" />
+            <div id="prop-client-search-results" class="pbx-search-results" style="display:none;"></div>
           </div>
         </div>
-      </div>
 
-      <p class="error-msg" id="error-msg-prop" style="display:none"></p>
-      <div class="prop-gen-progress" id="prop-gen-progress">
-        <div class="prop-gen-progress-label"><span id="prop-gen-msg">Building proposal…</span><span id="prop-gen-pct">0%</span></div>
-        <div class="prop-gen-track"><div class="prop-gen-fill" id="prop-gen-fill"></div></div>
-      </div>
-      <div style="display:flex;gap:12px;margin-top:4px">
-        <button class="header-btn" onclick="propGoStage1()" style="padding:10px 20px;font-size:12px">← Back</button>
-        <button class="generate-btn" id="prop-generate-btn" onclick="propGenerate()" style="flex:1;background:linear-gradient(135deg,#7a4a10,#fb923c);box-shadow:0 4px 20px rgba(251,146,60,0.25)">Build Proposal →</button>
-      </div>
+        <div class="pbx-section">
+          <div class="pbx-sechead"><span>Research client</span><i></i></div>
+          <div class="rgs-toggle pbx-seg3" style="margin-bottom:16px;">
+            <button class="rgs-opt selected" id="research-mode-url" onclick="selectResearchMode('url')">Enter website URL</button>
+            <button class="rgs-opt" id="research-mode-war" onclick="selectResearchMode('war')">Pull WAR report</button>
+            <button class="rgs-opt" id="research-mode-name" onclick="selectResearchMode('name')">No website, research online</button>
+          </div>
+          <div class="url-row" id="prop-url-row">
+            <input type="url" id="prop-client-url" placeholder="https://clientwebsite.com" />
+            <button class="pbx-primary" id="prop-fetch-btn" onclick="propFetchClient()">Research client</button>
+          </div>
+          <div class="url-row" id="prop-war-row" style="display:none;">
+            <input type="text" id="prop-war-search" placeholder="Search WAR reports by company name" />
+            <button class="pbx-primary" id="prop-war-pull-btn" onclick="propPullWar()">Pull the report</button>
+          </div>
+          <p class="pbx-note" id="research-hint">Company name, location, services, address, phone, and logo URL are pulled automatically after Research client runs.</p>
+          <div class="url-status" id="prop-url-status"></div>
+        </div>
+
+        <div class="pbx-section">
+          <div class="pbx-sechead"><span>Company</span><i></i></div>
+          <div class="client-fields" id="prop-client-fields">
+            <div class="pbx-grid pbx-grid-company">
+              <label class="pbx-field">
+                <span class="pbx-label">Company name</span>
+                <input type="text" id="prop-name" placeholder="Valley Plumbing Co." />
+              </label>
+              <label class="pbx-field">
+                <span class="pbx-label">Contact name</span>
+                <input type="text" id="prop-contact" placeholder="Mike Johnson" />
+              </label>
+              <label class="pbx-field">
+                <span class="pbx-label">Contact email(s)</span>
+                <input type="text" id="prop-contact-email" placeholder="mike@valleyplumbing.com, sarah@&hellip;" />
+                <span class="pbx-hint">Commas separate. Opens &amp; acceptance log to HubSpot.</span>
+              </label>
+            </div>
+            <div class="pbx-grid pbx-grid-address">
+              <label class="pbx-field">
+                <span class="pbx-label">Street address</span>
+                <input type="text" id="prop-address" placeholder="1234 Main St" />
+              </label>
+              <label class="pbx-field">
+                <span class="pbx-label">City, State</span>
+                <input type="text" id="prop-location" placeholder="Everett, WA" />
+              </label>
+              <label class="pbx-field">
+                <span class="pbx-label">Phone</span>
+                <input type="text" id="prop-phone" placeholder="(425) 555-0100" />
+              </label>
+            </div>
+
+            <div class="pbx-sechead" style="margin-top:40px;"><span>Positioning</span><i></i></div>
+            <div class="pbx-grid pbx-grid-pos">
+              <label class="pbx-field pbx-span2">
+                <span class="pbx-label">Services</span>
+                <input type="text" id="prop-services" placeholder="Drain cleaning | Water heater installation | Emergency plumbing" />
+                <span class="pbx-hint">Pipe-separated.</span>
+              </label>
+              <label class="pbx-field pbx-span2">
+                <span class="pbx-label">Service area</span>
+                <input type="text" id="prop-area" placeholder="Greater Seattle and Eastside communities" />
+              </label>
+              <label class="pbx-field pbx-span2">
+                <span class="pbx-label">Key differentiators</span>
+                <textarea id="prop-differentiators" rows="2" placeholder="4.9 stars on Google (340+ reviews), family-owned since 2008, same-day service guarantee"></textarea>
+              </label>
+              <label class="pbx-field">
+                <span class="pbx-label">Founded year</span>
+                <input type="text" id="prop-founded" placeholder="2008" />
+              </label>
+              <div class="pbx-field">
+                <label class="pbx-field">
+                  <span class="pbx-label">Logo URL (optional)</span>
+                  <input type="url" id="prop-logo" placeholder="https://example.com/logo.png" />
+                </label>
+                <div class="pbx-logorow">
+                  <span class="pbx-label" style="margin:0;white-space:nowrap;">Logo background</span>
+                  <div class="rgs-toggle pbx-seg-small">
+                    <button class="rgs-opt selected" id="logo-bg-auto" onclick="selectLogoBg('auto')" title="Detect automatically — dark backdrop only when the logo has a lot of white">Auto</button>
+                    <button class="rgs-opt" id="logo-bg-light" onclick="selectLogoBg('light')" title="No backdrop — logo sits directly on the white page">Light</button>
+                    <button class="rgs-opt" id="logo-bg-dark" onclick="selectLogoBg('dark')" title="Dark rounded backdrop behind the logo">Dark</button>
+                  </div>
+                  <span style="flex:1;"></span>
+                  <span class="pbx-logobox" id="pbx-logobox">logo</span>
+                </div>
+                <div id="prop-logo-preview" style="display:none;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+                  <span style="background:#fff;border:1px solid var(--gray-4);border-radius:8px;padding:8px 12px;display:inline-block;">
+                    <img id="prop-logo-preview-img" alt="Logo preview" style="max-height:44px;max-width:180px;display:block;" />
+                  </span>
+                  <span style="background:#1D1D1F;border-radius:8px;padding:8px 12px;display:inline-block;">
+                    <img id="prop-logo-preview-img-dark" alt="" style="max-height:44px;max-width:180px;display:block;" />
+                  </span>
+                  <span id="prop-logo-preview-note" class="pbx-hint" style="max-width:220px;white-space:normal;"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="error-msg" id="error-msg-prop" style="display:none"></p>
+          <div class="prop-gen-progress" id="prop-gen-progress">
+            <div class="prop-gen-progress-label"><span id="prop-gen-msg">Building proposal&hellip;</span><span id="prop-gen-pct">0%</span></div>
+            <div class="prop-gen-track"><div class="prop-gen-fill" id="prop-gen-fill"></div></div>
+          </div>
+
+          <div class="pbx-formfooter">
+            <button class="pbx-secondary" onclick="propGoStage1()">&larr; Back to setup</button>
+            <span style="flex:1;"></span>
+            <button class="pbx-primary" id="prop-generate-btn" onclick="propGenerate()">Build the proposal &rarr;</button>
+          </div>
+        </div>
+
+      </div></div>
     </div>
 
-    <!-- Stage 3: Output -->
+    <!-- Stage 3: Preview -->
     <div class="prop-stage" id="prop-stage-3">
-      <div class="prop-output-toolbar" style="flex-direction:column;align-items:stretch;gap:6px;">
-        <span style="font-size:10px;font-family:monospace;color:#fb923c;letter-spacing:0.12em;text-transform:uppercase">// Proposal Ready</span>
-        <style>
-          .dl-menu-item { display:block; width:100%; text-align:left; background:transparent; border:none; color:#e2ddd4; font-size:12px; font-family:inherit; padding:8px 10px; border-radius:6px; cursor:pointer; white-space:nowrap; }
-          .dl-menu-item:hover { background:#252d3d; }
-          .dl-menu { display:none; position:absolute; top:calc(100% + 4px); left:0; z-index:200; background:#141820; border:1px solid #252d3d; border-radius:8px; padding:6px; min-width:215px; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
-        </style>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div style="position:relative;">
-            <button class="dl-btn" id="prop-edit-menu-btn">✏️ Edit ▾</button>
-            <div class="dl-menu" id="prop-edit-menu">
-              <button class="dl-menu-item" id="prop-logo-btn">➕ Add Logo</button>
-              <button class="dl-menu-item" id="prop-chat-toggle-btn" title="Edit proposal with AI chat">💬 Edit with AI</button>
-              <button class="dl-menu-item" onclick="propGoStage2()">📝 Update Address / Details</button>
+      <div class="pbx-hero pbx-hero-slim">
+        <div class="pbx-bloom"></div>
+        <div class="pbx-hero-inner pbx-hero-row">
+          <div>
+            <div class="pbx-crumbrow">
+              <a class="pbx-crumb" href="#" onclick="propGoStage2();return false;">&larr; Client details</a>
+              <span class="pbx-eyebrow">03 // Close &middot; Proposal Builder &middot; Proposal ready</span>
             </div>
+            <h1 class="pbx-h1 pbx-h1-sm" id="prop-hero-client">Proposal ready.</h1>
           </div>
-          <div style="position:relative;">
-            <button class="dl-btn primary" id="prop-download-menu-btn">⬇ Download ▾</button>
-            <div class="dl-menu" id="prop-download-menu">
-              <button class="dl-menu-item" id="prop-pdf-btn" title="Rendered on the server — identical pagination every time">📄 Download PDF</button>
-              <button class="dl-menu-item" id="prop-download-btn">🗎 Download HTML</button>
-            </div>
+          <div class="pbx-actions">
+            <span class="pbx-menuwrap">
+              <button class="pbx-darkbtn" id="prop-edit-menu-btn">Edit &#9662;</button>
+              <div class="dl-menu" id="prop-edit-menu">
+                <button class="dl-menu-item" id="prop-logo-btn">Add logo</button>
+                <button class="dl-menu-item" id="prop-chat-toggle-btn" title="Edit proposal with AI chat">Edit with AI</button>
+                <button class="dl-menu-item" onclick="propGoStage2()">Update address &amp; details</button>
+              </div>
+            </span>
+            <span class="pbx-menuwrap">
+              <button class="pbx-darkbtn" id="prop-download-menu-btn">Download &#9662;</button>
+              <div class="dl-menu" id="prop-download-menu">
+                <button class="dl-menu-item" id="prop-pdf-btn" title="Rendered on the server — identical pagination every time">Download PDF</button>
+                <button class="dl-menu-item" id="prop-download-btn">Download HTML</button>
+              </div>
+            </span>
+            <button class="pbx-darkbtn" id="prop-save-pdf-btn" title="Browser print dialog">Print / save as PDF</button>
+            <button class="pbx-darkbtn" id="prop-publish-btn" title="Host this proposal at a shareable client link with open tracking and click-to-sign">Publish link</button>
+            <button class="pbx-primary pbx-primary-sm" id="prop-email-btn" title="Compose an intro email with the proposal link and signing instructions">Email the proposal</button>
           </div>
-          <button class="dl-btn" id="prop-save-pdf-btn" title="Browser print dialog">🖨 Print / Save as PDF</button>
-          <button class="dl-btn" id="prop-publish-btn" title="Host this proposal at a shareable client link with open tracking and click-to-sign">🔗 Publish Link</button>
-          <button class="dl-btn" id="prop-email-btn" title="Compose an intro email with the proposal link and signing instructions — fully editable before sending">✉️ Email</button>
         </div>
-        <!-- Logo Panel (inline, no rebuild) -->
-        <div id="prop-logo-panel" style="display:none;background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;margin-top:8px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <div style="font-size:10px;font-family:monospace;color:#fb923c;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;">Add Logo to Proposal</div>
-            <button onclick="document.getElementById('prop-logo-panel').style.display='none'" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:16px;">✕</button>
+      </div>
+      <div class="pbx-body"><div class="pbx-container pbx-wide">
+
+        <!-- Logo panel (inline, no rebuild) -->
+        <div id="prop-logo-panel" class="pbx-panel" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <span class="pbx-sechead-label">Add logo to proposal</span>
+            <button class="pbx-iconbtn" onclick="document.getElementById('prop-logo-panel').style.display='none'" title="Close">&#215;</button>
           </div>
-          <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <button class="rgs-opt selected" id="logo-mode-url" onclick="toggleLogoMode('url')" style="flex:1;padding:8px;font-size:11px;">Paste URL</button>
-            <button class="rgs-opt" id="logo-mode-upload" onclick="toggleLogoMode('upload')" style="flex:1;padding:8px;font-size:11px;">Upload File</button>
+          <div class="rgs-toggle pbx-seg-small" style="margin-bottom:14px;">
+            <button class="rgs-opt selected" id="logo-mode-url" onclick="toggleLogoMode('url')">Paste URL</button>
+            <button class="rgs-opt" id="logo-mode-upload" onclick="toggleLogoMode('upload')">Upload file</button>
           </div>
           <div id="logo-url-input-wrap">
-            <input type="url" id="prop-logo-url-input" placeholder="https://example.com/logo.png" style="width:100%;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:10px 14px;color:#e2ddd4;font-family:monospace;font-size:13px;box-sizing:border-box;" />
+            <input type="url" id="prop-logo-url-input" placeholder="https://example.com/logo.png" style="font-family:'JetBrains Mono',monospace;font-size:14px;" />
           </div>
           <div id="logo-upload-input-wrap" style="display:none;">
-            <label style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;border:2px dashed #252d3d;border-radius:8px;cursor:pointer;color:#6b7a94;font-size:12px;font-family:monospace;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#fb923c'" onmouseout="this.style.borderColor='#252d3d'">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Choose image file…
+            <label class="pbx-dropzone">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Choose image file&hellip;
               <input type="file" id="prop-logo-file-input" accept="image/*" style="display:none;" />
             </label>
-            <div id="prop-logo-file-name" style="font-size:11px;font-family:monospace;color:#6b7a94;margin-top:6px;min-height:16px;"></div>
+            <div id="prop-logo-file-name" class="pbx-hint" style="margin-top:6px;min-height:16px;"></div>
           </div>
-          <div style="display:flex;gap:10px;margin-top:12px;">
-            <button onclick="applyLogoToProposal()" style="flex:1;padding:10px;background:linear-gradient(135deg,#7a4a10,#fb923c);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Apply Logo</button>
+          <div style="display:flex;gap:10px;margin-top:14px;">
+            <button class="pbx-primary" onclick="applyLogoToProposal()" style="flex:1;">Apply logo</button>
           </div>
-          <div id="prop-logo-status" style="font-size:11px;font-family:monospace;margin-top:8px;min-height:16px;text-align:center;"></div>
+          <div id="prop-logo-status" class="pbx-hint" style="margin-top:10px;min-height:16px;text-align:center;white-space:normal;"></div>
         </div>
-      </div>
-      <div id="prop-publish-panel" style="display:none;margin:0 0 10px;background:#0c1a14;border:1px solid #10B98155;border-radius:8px;padding:10px 16px;font-size:12px;color:#9ca3af;line-height:1.7;"></div>
-      <div style="display:flex;flex-direction:column;height:calc(100vh - 150px);">
-        <iframe id="prop-report-frame" frameborder="0" style="flex:3;border:none;background:#fff;display:block;width:100%;"></iframe>
-        <!-- AI Chat Panel (hidden by default, horizontal below proposal) -->
-        <div id="prop-chat-panel" style="display:none;border-top:2px solid #fb923c;background:#1a1f2e;flex-direction:column;">
-          <!-- Chat header -->
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #252d3d;">
-            <span style="font-size:12px;font-weight:700;color:#fb923c;letter-spacing:0.1em;text-transform:uppercase;">AI Editor</span>
-            <button onclick="document.getElementById('prop-chat-panel').style.display='none'" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:18px;padding:4px 8px;">✕</button>
+
+        <div id="prop-publish-panel" style="display:none;"></div>
+
+        <div class="pbx-sechead"><span>Preview</span><i></i><span class="pbx-monolabel" id="prop-preview-label"></span></div>
+        <div class="pbx-frame-wrap">
+          <iframe id="prop-report-frame" frameborder="0" title="Proposal preview"></iframe>
+        </div>
+
+      </div></div>
+
+      <!-- AI editor (docked) -->
+      <div id="prop-chat-panel" style="display:none;">
+        <div class="pbx-chat-inner">
+          <div class="pbx-chat-head">
+            <span class="pbx-eyebrow">AI editor</span>
+            <span class="pbx-chat-model">claude-sonnet-4-6</span>
+            <span style="flex:1;"></span>
+            <button class="pbx-chat-close" onclick="document.getElementById('prop-chat-panel').style.display='none'" title="Close">&#215;</button>
           </div>
-          <!-- Chat messages (scrollable history) -->
-          <div id="prop-chat-messages" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;min-height:60px;max-height:200px;">
+          <div id="prop-chat-messages"></div>
+          <div class="pbx-chat-inputrow">
+            <textarea id="prop-chat-input" rows="1" placeholder="Tell the AI what to change in the proposal" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();document.getElementById('prop-chat-send').click();}"></textarea>
+            <button class="pbx-primary" id="prop-chat-send">Send the edit</button>
           </div>
-          <!-- Chat input area -->
-          <div style="padding:12px 20px;border-top:1px solid #252d3d;">
-            <div style="display:flex;gap:10px;align-items:flex-end;">
-              <textarea id="prop-chat-input" placeholder="Tell the AI what to change in your proposal…" rows="3" style="flex:1;background:#0c0f16;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#e2ddd4;font-size:14px;font-family:inherit;line-height:1.5;resize:none;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();document.getElementById('prop-chat-send').click();}"></textarea>
-              <button id="prop-chat-send" style="background:linear-gradient(135deg,#7a4a10,#fb923c);border:none;border-radius:10px;padding:12px 20px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">Send</button>
-            </div>
-            <div style="margin-top:8px;font-size:11px;color:#555;line-height:1.5;">
-              Examples: "Change the price to $8,000" · "Remove the SEO section" · "Make the intro more personal" · "Add a testimonials section"
-            </div>
+          <div class="pbx-chat-try">
+            <span class="pbx-chat-trylabel">Try:</span>
+            <button class="pbx-chip" onclick="pbxChip(this)">Change the price to $8,000</button>
+            <button class="pbx-chip" onclick="pbxChip(this)">Remove the SEO section</button>
+            <button class="pbx-chip" onclick="pbxChip(this)">Make the intro more personal</button>
+            <button class="pbx-chip" onclick="pbxChip(this)">Add a testimonials section</button>
           </div>
         </div>
       </div>
     </div>
 
   </div>
+  <script>
+    (function() {
+      // Chip fills the AI editor prompt
+      window.pbxChip = function(el) {
+        var input = document.getElementById('prop-chat-input');
+        input.value = el.textContent;
+        input.focus();
+      };
+      // WO hourly rate: hint under WO hours; click to edit inline; hours x rate sets WO price
+      var woRate = 150;
+      function woActive() {
+        var b = document.getElementById('prop-type-wo');
+        return b && b.classList.contains('selected');
+      }
+      function recalcWo() {
+        if (!woActive()) return;
+        var hours = parseFloat(document.getElementById('price-hours').value) || 0;
+        document.getElementById('price-website').value = Math.round(hours * woRate);
+      }
+      function renderRateHint() {
+        var span = document.getElementById('wo-rate-hint');
+        if (!span) return;
+        span.innerHTML = '';
+        var a = document.createElement('span');
+        a.className = 'pbx-ratelink';
+        a.textContent = '$' + woRate + '/hr';
+        a.title = 'Click to change the hourly rate';
+        a.onclick = function() {
+          span.innerHTML = '$';
+          var inp = document.createElement('input');
+          inp.type = 'number';
+          inp.value = woRate;
+          inp.className = 'pbx-rateinput';
+          inp.oninput = function() { woRate = parseFloat(inp.value) || 0; recalcWo(); };
+          inp.onblur = function() { renderRateHint(); };
+          span.appendChild(inp);
+          span.appendChild(document.createTextNode('/hr'));
+          inp.focus();
+          inp.select();
+        };
+        span.appendChild(a);
+      }
+      renderRateHint();
+      document.getElementById('price-hours').addEventListener('input', recalcWo);
+      // Stage 3 hero: client name headline + preview label
+      var stage3 = document.getElementById('prop-stage-3');
+      function syncStage3() {
+        if (!stage3.classList.contains('active')) return;
+        var name = (document.getElementById('prop-name').value || '').trim();
+        document.getElementById('prop-hero-client').textContent = name ? name + '.' : 'Proposal ready.';
+        var d = new Date();
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        document.getElementById('prop-preview-label').textContent = 'Proposal // ' + d.getFullYear() + '-' + mm + dd;
+      }
+      new MutationObserver(syncStage3).observe(stage3, { attributes: true, attributeFilter: ['class'] });
+    })();
+  </script>
 </div>
 
 <!-- COMPETITIVE ANALYSIS -->
@@ -1321,6 +1456,12 @@
     </div>
   </div>
 </div>
+
+  <div class="hp-footer">
+    <div class="hp-footer-inner">
+      <span class="hp-footer-left">efelle creative // prospector // internal sales tools</span>
+      <span class="hp-footer-model">claude-sonnet-4-6 // api</span>
+    </div>
 
 <!-- API MODEL SETTINGS FOOTER -->
 <div id="settings-footer">

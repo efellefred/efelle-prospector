@@ -332,7 +332,7 @@ function selectPropType(type) {
   document.getElementById('prop-type-rgs').classList.toggle('selected', type === 'rgs_only');
   const isWO = type === 'wo_rgs';
   const isRGS = type === 'rgs_only';
-  document.getElementById('price-website-label').textContent = isWO ? 'WO Price ($)' : 'Website Price ($)';
+  document.getElementById('price-website-label').textContent = isWO ? 'WO price ($)' : 'Website price ($)';
   document.getElementById('price-website').value = isWO ? 6600 : 7500;
   document.getElementById('price-rgs').value = (isWO || isRGS) ? 2800 : 2500;
   // Field visibility: new site = website + hosting; WO = WO price + hosting + hours
@@ -446,13 +446,57 @@ function propGoStage2() {
 // with no website via their Google Business Profile / Facebook / directory listings.
 let propResearchMode = 'url';
 window.selectResearchMode = function(mode) {
-  propResearchMode = mode;
+  const isWar = mode === 'war';
+  propResearchMode = isWar ? 'url' : mode;
   document.getElementById('research-mode-url').classList.toggle('selected', mode === 'url');
+  const warBtn = document.getElementById('research-mode-war');
+  if (warBtn) warBtn.classList.toggle('selected', isWar);
   document.getElementById('research-mode-name').classList.toggle('selected', mode === 'name');
-  document.getElementById('prop-client-url').style.display = mode === 'url' ? '' : 'none';
+  const urlRow = document.getElementById('prop-url-row');
+  const warRow = document.getElementById('prop-war-row');
+  if (urlRow) urlRow.style.display = isWar ? 'none' : 'flex';
+  if (warRow) warRow.style.display = isWar ? 'flex' : 'none';
+  document.getElementById('prop-client-url').style.display = mode === 'name' ? 'none' : '';
   document.getElementById('research-hint').textContent = mode === 'url'
-    ? '↳ Company name, location, services, address, phone, and logo URL will be pulled automatically after clicking Research Client.'
-    : '↳ Fill in Company Name (and City, State if you know it) below, then click Research Client — we\'ll research their Google Business Profile, Facebook, and directory listings.';
+    ? 'Company name, location, services, address, phone, and logo URL are pulled automatically after Research client runs.'
+    : isWar
+      ? 'Client details load from the most recent WAR report for the company.'
+      : 'Claude researches the business online from the company name and city below. Fill in Company name (and City, State if you know it), then run Research client.';
+};
+
+// Pull WAR report: prefill client name + URL from the newest matching WAR report,
+// then run the normal research flow against that URL.
+window.propPullWar = async function() {
+  const q = (document.getElementById('prop-war-search').value || '').trim().toLowerCase();
+  const btn = document.getElementById('prop-war-pull-btn');
+  const status = document.getElementById('prop-url-status');
+  if (!q) { status.innerHTML = '<span style="color:#D65600">Type the company name to find its WAR report.</span>'; return; }
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Searching\u2026';
+  try {
+    const reports = await listReports('wsr');
+    const matches = (reports || []).filter(r => (r.clientName || '').toLowerCase().includes(q))
+      .sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0));
+    if (!matches.length) {
+      status.innerHTML = '<span style="color:#D65600">No WAR report found for that name. Run one from the home screen first, or research by URL instead.</span>';
+      return;
+    }
+    const rec = matches[0];
+    if (rec.clientName) document.getElementById('prop-name').value = rec.clientName;
+    const recUrl = (rec.metadata && rec.metadata.url) || rec.url || '';
+    if (recUrl) document.getElementById('prop-client-url').value = recUrl;
+    window.selectResearchMode('url');
+    if (recUrl) {
+      status.innerHTML = '<span style="color:#1d9a34">Loaded "' + (rec.clientName || 'report') + '" from the WAR library, researching the client now\u2026</span>';
+      propFetchClient();
+    } else {
+      status.innerHTML = '<span style="color:#1d9a34">Loaded "' + (rec.clientName || 'report') + '". Add the website URL and run Research client.</span>';
+    }
+  } catch (e) {
+    status.innerHTML = '<span style="color:#dc2626">Could not load WAR reports: ' + String(e.message || e).replace(/</g, '&lt;') + '</span>';
+  } finally {
+    btn.disabled = false; btn.textContent = orig;
+  }
 };
 
 async function propFetchClient() {
@@ -471,7 +515,7 @@ async function propFetchClient() {
     status.innerHTML = '<span style="color:#fb923c">Paste the client\'s website URL first — or switch to "No website — research online".</span>';
     return;
   }
-  btn.disabled = true; btn.textContent = '⟳ Fetching…';
+  btn.disabled = true; btn.textContent = 'Researching…';
   function setStatus(msg, state) {
     const color = state === 'searching' ? '#a78bfa' : state === 'building' ? '#2dd4bf' : state === 'done' ? '#2dd4bf' : state === 'warn' ? '#fb923c' : state === 'error' ? '#f87171' : '#9ca3af';
     status.innerHTML = '<span class="status-dot"></span><span class="status-dot"></span><span class="status-dot"></span><span style="margin-left:4px;color:' + color + '">' + msg + '</span>';
@@ -573,7 +617,7 @@ async function propFetchClient() {
     console.error('propFetchClient error:', e);
     status.innerHTML = '<span style="color:#f87171">⚠ ' + (e.message || 'Could not auto-fetch') + '. Fill in the fields manually below.</span>';
   }
-  btn.disabled = false; btn.textContent = '⟳ Research Client';
+  btn.disabled = false; btn.textContent = 'Research client';
 }
 
 function propBuildHTML(clientName) {
@@ -1780,29 +1824,39 @@ function renderPublishPanel(token, status, flash) {
   const panel = document.getElementById('prop-publish-panel');
   const fullUrl = window.location.origin + '/p/' + token;
   const views = (status && typeof status.views === 'number') ? status.views : 0;
-  const last = status && status.lastViewedAt ? new Date(status.lastViewedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : null;
+  let last = null;
+  if (status && status.lastViewedAt) {
+    const ago = Date.now() - new Date(status.lastViewedAt).getTime();
+    const mins = Math.max(1, Math.round(ago / 60000));
+    last = mins < 60 ? mins + ' min ago'
+      : mins < 1440 ? Math.round(mins / 60) + ' h ago'
+      : new Date(status.lastViewedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
   const accepted = status && status.accepted;
-  panel.style.display = '';
+  const pubAt = status && (status.publishedAt || status.createdAt || status.updatedAt);
+  const dateStr = new Date(pubAt || Date.now()).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit', hour: 'numeric', minute: '2-digit' }).replace(',', '').replace(' AM', ' am').replace(' PM', ' pm');
+  const tip = 'Views include your own opens. Edits update the live link until the client signs.';
+  panel.style.display = 'flex';
   panel.innerHTML =
-    '<span style="color:#10B981;font-weight:700;">🔗 Published</span> — '
-    + '<a href="' + fullUrl + '" target="_blank" style="color:#34d399;">' + fullUrl + '</a> '
-    + '<button onclick="navigator.clipboard.writeText(\'' + fullUrl + '\').then(() => { this.textContent = \'✓ Copied\'; setTimeout(() => this.textContent = \'Copy\', 2000); })" style="margin:0 8px;padding:2px 10px;border-radius:5px;border:1px solid #10B98155;background:transparent;color:#34d399;font-size:11px;cursor:pointer;">Copy</button>'
-    + '<span style="color:#4b5563;">·</span> ' + views + ' view' + (views === 1 ? '' : 's')
-    + (last ? ' <span style="color:#4b5563;">·</span> last opened ' + last : '')
+    '<span class="pbx-pub-check">\u2713</span>'
+    + '<span class="pbx-pub-row">'
+    + '<span class="pbx-pub-title">Published</span>'
+    + '<span class="pbx-pub-date">' + dateStr + '</span>'
+    + '<a class="pbx-pub-id" href="' + fullUrl + '" target="_blank" title="' + fullUrl + '">' + token + '</a>'
+    + '<button class="pbx-iconbtn" title="Copy link" onclick="navigator.clipboard.writeText(\'' + fullUrl + '\');this.style.borderColor=\'#32D74B\';setTimeout(() => { this.style.borderColor = \'\'; }, 1200);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h11v11H9z M5 15H4V4h11v1"/></svg></button>'
+    + '<span class="pbx-pub-stat" title="' + tip + '">' + views + ' view' + (views === 1 ? '' : 's') + '</span>'
+    + (last ? '<span class="pbx-pub-stat" title="' + tip + '">Last opened ' + last + '</span>' : '')
+    + '<button class="pbx-iconbtn" title="Refresh views and acceptance" onclick="refreshPublishStatus()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36 M21 3v6h-6"/></svg></button>'
     + (accepted
-        ? ' <span style="color:#4b5563;">·</span> <span style="color:#34d399;font-weight:700;">✓ ACCEPTED by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString()
-          + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + (accepted.monthlyTotal > 0 ? ' — $' + Number(accepted.monthlyTotal).toLocaleString('en-US') + '/mo' : '') + ')' : '')
+        ? '<span class="pbx-pub-accept">\u2713 Accepted by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString()
+          + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + (accepted.monthlyTotal > 0 ? ', $' + Number(accepted.monthlyTotal).toLocaleString('en-US') + '/mo' : '') + ')' : '')
           + '</span>'
         : '')
-    + ' <button onclick="refreshPublishStatus()" title="Refresh views/acceptance" style="padding:2px 8px;border-radius:5px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;cursor:pointer;">↻</button>'
-    + (status && status.locked ? ' <span style="color:#fb923c;font-weight:700;">🔒 Signed — published version locked (edits no longer update the link)</span>' : '')
-    + (flash ? ' <span style="color:#34d399;font-size:10px;">↻ ' + flash + '</span>' : '')
-    + (status && status.hubspot
-        ? ' <span style="color:#4b5563;">·</span> <span style="color:#f59e0b;" title="Opens and acceptance log as notes on this HubSpot contact">⬡ HubSpot: ' + String(status.hubspot).replace(/</g, '&lt;') + '</span>'
-        : '')
-    + '<div style="font-size:10px;color:#4b5563;">Views include your own opens of the link. Edits update the live link automatically until the client signs.'
-    + (status && status.hubspot ? '' : ' Add a Contact Email on the client form and re-publish to log activity to HubSpot.')
-    + '</div>';
+    + (status && status.locked ? '<span class="pbx-pub-lock">Signed: published version locked, edits no longer update the link</span>' : '')
+    + (status && status.hubspot ? '<span class="pbx-pub-plain" title="Opens and acceptance log as notes on this HubSpot contact">HubSpot: ' + String(status.hubspot).replace(/</g, '&lt;') + '</span>' : '')
+    + ((status && status.hubspot) ? '' : '<span class="pbx-pub-plain" title="Add a Contact email on the client form and re-publish to log activity to HubSpot">HubSpot: not linked</span>')
+    + (flash ? '<span class="pbx-pub-plain" style="color:#1d9a34">' + flash + '</span>' : '')
+    + '</span>';
 }
 
 window.refreshPublishStatus = async function() {
