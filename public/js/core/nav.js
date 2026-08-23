@@ -38,6 +38,34 @@ export const ENGINES = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// URL routing — every screen has its own path so browser Back/Forward move
+// within the app (server has a catch-all that serves index.html for these).
+// ---------------------------------------------------------------------------
+const SCREEN_PATHS = {
+  home: '/',
+  wsr: '/war-report',
+  competitor: '/competitor-analysis',
+  csp: '/growth-strategy',
+  cap: '/action-plan',
+  prop: '/proposal',
+  notes: '/sales-handoff',
+  library: '/library',
+  settings: '/settings',
+};
+const PATH_SCREENS = {};
+for (const [id, p] of Object.entries(SCREEN_PATHS)) PATH_SCREENS[p] = id;
+
+function syncUrl(id) {
+  const path = SCREEN_PATHS[id];
+  if (!path) return; // screens without a route keep the current URL
+  if (window.location.pathname !== path) {
+    history.pushState({ screen: id }, '', path);
+  } else if (!history.state || history.state.screen !== id) {
+    history.replaceState({ screen: id }, '', path);
+  }
+}
+
 export function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
   const s = document.getElementById('screen-' + id);
@@ -58,6 +86,7 @@ export function showScreen(id) {
     eyebrowEl.innerHTML = e.eyebrow;
     eyebrowEl.style.color = e.eyebrowColor;
   }
+  syncUrl(id);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -66,6 +95,17 @@ export function showEngine(id) {
   showScreen(id);
   // Reset proposal form when navigating to it fresh (so old proposals don't linger)
   if (id === 'prop' && typeof window.propReset === 'function') window.propReset();
+}
+
+// Show a screen from the URL (initial load or Back/Forward) WITHOUT resetting
+// engine state — Back into a half-finished engine must not wipe its form.
+function showScreenFromUrl(id) {
+  if (ENGINES[id]) setCurrentEngine(id);
+  if (id === 'library' && typeof window.showLibrary === 'function') {
+    window.showLibrary(); // renders library content, calls showScreen internally
+    return;
+  }
+  showScreen(id);
 }
 
 // Reset the current engine to its first step
@@ -95,8 +135,26 @@ window.showScreen = showScreen;
 window.showEngine = showEngine;
 window.resetCurrentEngine = resetCurrentEngine;
 
-// Initialize: ensure home screen is active on load
-showScreen('home');
+// Browser Back/Forward: route to the screen the URL (or history entry) names.
+window.addEventListener('popstate', (e) => {
+  const id = (e.state && e.state.screen) || PATH_SCREENS[window.location.pathname] || 'home';
+  showScreenFromUrl(id);
+});
+
+// Initialize: route from the current URL (deep links work; unknown paths → home).
+// Library renders after all modules load, so defer its first paint one tick.
+const initialScreen = PATH_SCREENS[window.location.pathname] || 'home';
+if (initialScreen === 'library') {
+  showScreen('library');
+  setTimeout(() => { if (typeof window.showLibrary === 'function') window.showLibrary(); }, 0);
+} else {
+  showScreenFromUrl(initialScreen);
+}
+if (!SCREEN_PATHS[initialScreen] || window.location.pathname !== SCREEN_PATHS[initialScreen]) {
+  history.replaceState({ screen: initialScreen }, '', SCREEN_PATHS[initialScreen] || '/');
+} else {
+  history.replaceState({ screen: initialScreen }, '', window.location.pathname);
+}
 
 // Navigation event listeners
 document.getElementById('logo-btn').addEventListener('click', () => showScreen('home'));

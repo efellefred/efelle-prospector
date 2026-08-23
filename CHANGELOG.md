@@ -2,6 +2,23 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.21.0 — 2026-08-23 — Every Tool Gets Its Own URL
+
+- Each screen now has its own address: `/war-report`, `/competitor-analysis`, `/growth-strategy`, `/action-plan`, `/proposal`, `/sales-handoff`, `/library`, `/settings`
+- Browser **Back** and **Forward** now move between Prospector screens instead of leaving the site
+- Deep links work — bookmark or share a tool URL and it opens straight to that tool (after login)
+- Back into a half-finished tool never resets its form — only opening it fresh from the home screen does
+- No server changes needed: the existing catch-all already serves the app for these paths
+
+## 4.20.0 — 2026-08-23 — Home Screen Design Refresh
+
+- Home screen rebuilt on the efelle design system: dark gradient hero ("Let's sell something **today.**"), light body, Plus Jakarta Sans + JetBrains Mono, whole interface rendered at 70% scale
+- Nine services organized into six numbered workflow stages: 00 Prospect → 01 Audit → 02 Pitch → 03 Close → 04 Handoff → 05 Build
+- New **Table / Cards** view toggle (Table default; choice remembered per browser)
+- Tools renamed to match the workflow: WAR Report, Competitor Analysis, Growth Strategy, Client Action Plan, Proposal Builder, Sales Handoff
+- Three upcoming tools on the board — Prospect Finder, Client Onboarding, Site Blueprint — show a coming-soon notice until their engines ship
+- New slim nav (white e-logo, prospector wordmark, version pill, plain text links) and a home footer with the active model string
+
 ## 4.19.1 — 2026-08-21 — META Ads Returns as an Add-On
 
 - META Ads (Facebook & Instagram) is back as a **$600/mo** option in the Additional Lead Generation add-on group (after Bing PPC Ads), on every proposal type

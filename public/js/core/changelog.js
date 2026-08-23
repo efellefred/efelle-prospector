@@ -4,6 +4,30 @@
 
 const CHANGELOG = [
   {
+    version: '4.21.0',
+    date: '2026-08-23',
+    title: 'Every Tool Gets Its Own URL',
+    changes: [
+      'Each screen now has its own address: /war-report, /competitor-analysis, /growth-strategy, /action-plan, /proposal, /sales-handoff, /library, /settings',
+      'Browser Back and Forward now move between Prospector screens instead of leaving the site',
+      'Deep links work \u2014 bookmark or share a tool URL and it opens straight to that tool (after login)',
+      'Back into a half-finished tool never resets its form \u2014 only opening it fresh from the home screen does',
+    ]
+  },
+  {
+    version: '4.20.0',
+    date: '2026-08-23',
+    title: 'Home Screen Design Refresh',
+    changes: [
+      'Home screen rebuilt on the efelle design system: dark gradient hero, light body, Plus Jakarta Sans + JetBrains Mono, whole interface scaled to 70%',
+      'Nine services organized into six numbered workflow stages: 00 Prospect \u2192 01 Audit \u2192 02 Pitch \u2192 03 Close \u2192 04 Handoff \u2192 05 Build',
+      'New Table / Cards view toggle (Table is the default; your choice is remembered)',
+      'Tools renamed to match the workflow: WAR Report, Competitor Analysis, Growth Strategy, Client Action Plan, Proposal Builder, Sales Handoff',
+      'Three upcoming tools on the board \u2014 Prospect Finder, Client Onboarding, Site Blueprint \u2014 show a coming-soon notice until their engines ship',
+      'New slim nav (white e-logo, prospector wordmark, version pill, text links) and a footer with the active model string',
+    ]
+  },
+  {
     version: '4.19.1',
     date: '2026-08-21',
     title: 'META Ads Returns as an Add-On',
