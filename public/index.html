@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <div id="login-overlay" style="position:fixed;inset:0;z-index:9999;">
   <style>
     .login-bg-wrap{position:fixed;inset:0;z-index:0}
@@ -111,112 +111,237 @@
 
 <!-- HEADER -->
 <div id="header">
-<button id="logo-btn" style="background:none;border:none;padding:0;cursor:pointer;">
-    <svg version="1.1" id="efelle_creative" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 551 275" style="width:110px;height:auto;display:block;" xml:space="preserve"><style type="text/css">.st0{fill:#F05128;}.st1{fill:#5A5F63;}</style><g><path class="st0" d="M103.6,88.8c-8.8-5.5-18.7-8.2-29.2-8.2c-9.8,0-19,2.4-27.5,7.2c-8.5,4.8-15.3,11.3-20.2,19.6c-4.9,8.2-7.4,17.2-7.4,26.7s2.5,18.5,7.5,26.8c4.9,8.3,11.7,14.9,20.2,19.6c8.4,4.7,17.6,7.1,27.3,7.1c11.9,0,22.8-3.4,32.4-10.2c4.2-3,6.1-4.8,6.1-7.3c0-3.1-2.3-5.4-5.4-5.4c-2.2,0-3.7,1.4-4.3,1.9c-3.6,3.1-8,5.5-13.3,7.4s-10.6,2.8-15.5,2.8c-7.7,0-15-1.9-21.9-5.8c-6.8-3.8-12.3-9.2-16.3-15.8s-6-13.7-6-21.1c0-7.6,2-14.7,6-21.3c4-6.6,9.5-11.9,16.2-15.7c6.7-3.8,14.1-5.7,22-5.7c9.2,0,17.7,2.6,25.3,7.7c6.7,4.5,11.7,10.3,15,17.5c1.3,2.7,2.2,5.3,2.9,7.9c0.3,1.2,0.5,2.4,0.7,3.7H42.5c-3.7,0-5.7,2.7-5.7,5.4c0,3.2,2.4,5.5,5.7,5.5h80.2c3.9,0,6.6-2.6,6.6-6.3c0-7.3-1.8-14.6-5.3-21.6C119.3,101.8,112.5,94.3,103.6,88.8z"/><path class="st0" d="M293.6,88.8c-8.8-5.5-18.7-8.2-29.2-8.2c-9.8,0-19,2.4-27.5,7.2c-8.5,4.8-15.3,11.3-20.2,19.6c-4.9,8.2-7.4,17.2-7.4,26.7s2.5,18.5,7.5,26.8c4.9,8.3,11.7,14.9,20.2,19.6c8.4,4.7,17.6,7.1,27.3,7.1c11.9,0,22.8-3.4,32.4-10.2c4.2-3,6.1-4.8,6.1-7.3c0-3.1-2.3-5.4-5.4-5.4c-2.2,0-3.7,1.4-4.3,1.9c-3.6,3.1-8,5.5-13.3,7.4s-10.6,2.8-15.5,2.8c-7.7,0-15-1.9-21.9-5.8c-6.8-3.8-12.3-9.2-16.3-15.8s-6-13.7-6-21.1c0-7.6,2-14.7,6-21.3c4-6.6,9.5-11.9,16.2-15.7c6.7-3.8,14.1-5.7,22-5.7c9.2,0,17.7,2.6,25.3,7.7c6.7,4.5,11.7,10.3,15,17.5c1.3,2.7,2.2,5.3,2.9,7.9c0.3,1.2,0.5,2.4,0.7,3.7h-75.7c-3.7,0-5.7,2.7-5.7,5.4c0,3.2,2.4,5.5,5.7,5.5h80.2c3.9,0,6.6-2.6,6.6-6.3c0-7.3-1.8-14.6-5.3-21.6C309.3,101.8,302.5,94.3,293.6,88.8z"/><path class="st0" d="M489,111.2c-4.7-9.4-11.5-16.9-20.4-22.3c-8.8-5.5-18.7-8.2-29.2-8.2c-9.8,0-19,2.4-27.5,7.2c-8.5,4.8-15.3,11.3-20.2,19.6c-4.9,8.2-7.4,17.2-7.4,26.7s2.5,18.5,7.5,26.8c4.9,8.3,11.7,14.9,20.2,19.6c8.4,4.7,17.6,7.1,27.3,7.1c11.9,0,22.8-3.4,32.4-10.2c4.2-3,6.1-4.8,6.1-7.3c0-3.1-2.3-5.4-5.4-5.4c-2.2,0-3.7,1.4-4.3,1.9c-3.6,3.1-8,5.5-13.3,7.4s-10.6,2.8-15.5,2.8c-7.7,0-15-1.9-21.9-5.8c-6.8-3.8-12.3-9.2-16.3-15.8s-6-13.7-6-21.1c0-7.6,2-14.7,6-21.3c4-6.6,9.5-11.9,16.2-15.7c6.7-3.8,14.1-5.7,22-5.7c9.2,0,17.7,2.6,25.3,7.7c6.7,4.5,11.7,10.3,15,17.5c1.3,2.7,2.2,5.3,2.9,7.9c0.3,1.2,0.5,2.4,0.7,3.7h-75.7c-3.7,0-5.7,2.7-5.7,5.4c0,3.2,2.4,5.5,5.7,5.5h80.2c3.9,0,6.6-2.6,6.6-6.3C494.3,125.5,492.5,118.2,489,111.2z"/><path class="st0" d="M154.6,86.6c2.1-5.7,5.7-10.8,10.7-15.3c4-3.6,8.5-6.3,13.1-8.2c5.2-2.1,10.8-3.1,16.8-3.1c3.9,0,5.9-2.8,5.9-5.5c0-3.1-2.3-5.4-5.4-5.4h-1.3c-7.5,0-14.8,1.5-21.4,4.4c-5.9,2.6-11.5,6.3-16.4,11.2c-5.7,5.5-9.9,11.8-12.4,18.6c-2.4,6.7-3.7,14.9-3.7,24.4V252c0,3.3,2.3,5.7,5.4,5.7s5.4-2.4,5.4-5.7V139.6h44.1c3.3,0,5.7-2.3,5.7-5.4s-2.4-5.4-5.7-5.4h-44.1V110C151.4,100.3,152.5,92.4,154.6,86.6z"/><path class="st0" d="M337.5,11.9c-3.2,0-5.5,2.4-5.5,5.7v37.1v7.5V182v0.6c0.5,3.6,3.1,5.2,5.5,5.2c2.7,0,5.4-2,5.4-5.7V62.2v-7.5V17.6C343,13.9,340.2,11.9,337.5,11.9z"/><path class="st0" d="M365.5,11.9c-3.2,0-5.5,2.4-5.5,5.7v37.1v7.5V182v0.6c0.5,3.6,3.1,5.2,5.5,5.2c2.7,0,5.4-2,5.4-5.7V62.2v-7.5V17.6C371,13.9,368.2,11.9,365.5,11.9z"/></g><g><path class="st1" d="M355.5,238.7l-2.3,1.4c-2-2.7-4.8-4-8.2-4c-2.8,0-5.1,0.9-6.9,2.7s-2.8,4-2.8,6.5c0,1.7,0.4,3.2,1.3,4.7c0.8,1.5,2,2.6,3.5,3.4c1.5,0.8,3.1,1.2,5,1.2c3.4,0,6.1-1.3,8.2-4l2.3,1.5c-1.1,1.6-2.6,2.9-4.4,3.8s-3.9,1.4-6.3,1.4c-3.6,0-6.6-1.1-9-3.4c-2.4-2.3-3.6-5.1-3.6-8.4c0-2.2,0.6-4.3,1.7-6.2s2.6-3.4,4.6-4.4c1.9-1.1,4.1-1.6,6.5-1.6c1.5,0,3,0.2,4.4,0.7s2.6,1.1,3.6,1.8C354,236.6,354.8,237.6,355.5,238.7z"/></g><g><path class="st1" d="M365.4,234h3v3.3c0.9-1.3,1.8-2.3,2.8-2.9c1-0.7,2-1,3.1-1c0.8,0,1.7,0.3,2.6,0.8l-1.5,2.5c-0.6-0.3-1.1-0.4-1.6-0.4c-1,0-1.9,0.4-2.8,1.2s-1.6,2.1-2.1,3.7c-0.4,1.3-0.5,3.9-0.5,7.9v7.7h-3V234z"/></g><g><path class="st1" d="M441,234v22.8h-2.9v-3.9c-1.2,1.5-2.6,2.6-4.1,3.4s-3.2,1.1-5,1.1c-3.2,0-6-1.2-8.3-3.5c-2.3-2.3-3.4-5.2-3.4-8.6c0-3.3,1.2-6.1,3.5-8.4c2.3-2.3,5.1-3.5,8.3-3.5c1.9,0,3.6,0.4,5.1,1.2s2.9,2,4,3.6V234H441z M429.3,236.2c-1.6,0-3.1,0.4-4.5,1.2s-2.5,1.9-3.3,3.4s-1.2,3-1.2,4.6s0.4,3.1,1.2,4.6c0.8,1.5,1.9,2.6,3.3,3.4c1.4,0.8,2.9,1.2,4.5,1.2s3.1-0.4,4.6-1.2c1.4-0.8,2.5-1.9,3.3-3.3c0.8-1.4,1.2-2.9,1.2-4.7c0-2.6-0.9-4.9-2.6-6.6C434,237.1,431.8,236.2,429.3,236.2z"/></g><g><path class="st1" d="M455.6,225.5h2.9v8.5h4.7v2.5h-4.7v20.3h-2.9v-20.3h-4V234h4V225.5z"/></g><g><path class="st1" d="M474.1,224.6c0.7,0,1.2,0.2,1.7,0.7s0.7,1,0.7,1.7s-0.2,1.2-0.7,1.7s-1,0.7-1.7,0.7s-1.2-0.2-1.7-0.7s-0.7-1-0.7-1.7s0.2-1.2,0.7-1.7S473.4,224.6,474.1,224.6z M472.6,234h2.9v22.8h-2.9V234z"/></g><g><path class="st1" d="M484.9,234h3.1l7.7,16.7l7.6-16.7h3.1L496,256.8h-0.5L484.9,234z"/></g><path class="st1" d="M536.7,240.1c-1-2.1-2.5-3.8-4.5-5c-1.9-1.2-4.1-1.9-6.4-1.9c-2.2,0-4.2,0.5-6,1.6c-1.9,1.1-3.3,2.6-4.4,4.4c-1.1,1.9-1.6,3.9-1.6,6s0.5,4.2,1.6,6c1.1,1.9,2.6,3.4,4.4,4.4c1.9,1.1,3.9,1.6,6,1.6c2.6,0,5-0.8,7.1-2.3c0.8-0.6,1.4-1.1,1.4-1.8c0-0.8-0.6-1.4-1.4-1.4c-0.4,0-0.8,0.2-1.1,0.5c-0.8,0.7-1.7,1.2-2.8,1.6c-2.9,1-5.5,0.7-7.9-0.6c-1.5-0.8-2.6-2-3.4-3.4c-0.8-1.4-1.3-3-1.3-4.6c0-1.7,0.4-3.2,1.3-4.7c0.8-1.4,2-2.6,3.4-3.4c1.4-0.8,3-1.2,4.6-1.2c2,0,3.7,0.5,5.3,1.7c1.4,1,2.5,2.3,3.2,3.8c0.3,0.6,0.5,1.2,0.6,1.7c0,0.2,0.1,0.4,0.1,0.6h-16.1c-0.8,0-1.4,0.6-1.4,1.4c0,0.8,0.6,1.4,1.4,1.4h17.3c1,0,1.6-0.6,1.6-1.6C537.8,243.3,537.4,241.7,536.7,240.1z"/><path class="st1" d="M407.7,240.1c-1-2.1-2.5-3.8-4.5-5c-1.9-1.2-4.1-1.9-6.4-1.9c-2.2,0-4.2,0.5-6,1.6c-1.9,1.1-3.3,2.6-4.4,4.4c-1.1,1.9-1.6,3.9-1.6,6s0.5,4.2,1.6,6c1.1,1.9,2.6,3.4,4.4,4.4c1.9,1.1,3.9,1.6,6,1.6c2.6,0,5-0.8,7.1-2.3c0.8-0.6,1.4-1.1,1.4-1.8c0-0.8-0.6-1.4-1.4-1.4c-0.4,0-0.8,0.2-1.1,0.5c-0.8,0.7-1.7,1.2-2.8,1.6c-2.9,1-5.5,0.7-7.9-0.6c-1.5-0.8-2.6-2-3.4-3.4s-1.3-3-1.3-4.6c0-1.7,0.4-3.2,1.3-4.7c0.8-1.4,2-2.6,3.4-3.4c1.4-0.8,3-1.2,4.6-1.2c2,0,3.7,0.5,5.3,1.7c1.4,1,2.5,2.3,3.2,3.8c0.3,0.6,0.5,1.2,0.6,1.7c0,0.2,0.1,0.4,0.1,0.6h-16.1c-0.8,0-1.4,0.6-1.4,1.4c0,0.8,0.6,1.4,1.4,1.4h17.3c1,0,1.6-0.6,1.6-1.6C408.8,243.3,408.4,241.7,407.7,240.1z"/></svg>
-  </button>
-  <div class="header-right">
-    <span id="version-badge" title="efelle Prospector version">v4.19.1 &middot; 2026-08-21</span>
-    <div class="header-btns">
-      <button class="header-btn" id="back-btn" style="display:none">← Home</button>
-      <button class="header-btn" onclick="showLibrary()">📁 Library</button>
-      <button class="header-btn" onclick="window.open('/user-guide.html','_blank')" title="User Guide">📖 Guide</button>
-      <button class="header-btn" onclick="showChangelog()" title="Update Log">📋 Updates</button>
-      <button class="header-btn" id="admin-settings-btn" style="display:none" onclick="showScreen('settings')" title="Admin Settings">⚙ Settings</button>
-      <button class="header-btn" id="artifact-key-btn" style="display:none" title="Set API key">⚙ Key</button>
-      <button class="header-btn" id="debug-toggle-btn" onclick="toggleDebug()" title="Toggle debug panel">⬡ Debug</button>
-      <button class="header-btn" onclick="doLogout()" title="Log out">↪ Logout</button>
+  <div class="nav-inner">
+    <div class="nav-left">
+      <button id="logo-btn" title="Home">
+        <img class="nav-logo-img" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative">
+        <span class="nav-wordmark">prospector</span>
+      </button>
+      <span id="version-badge" title="efelle Prospector version">v4.20.0 // 2026-08-23</span>
+    </div>
+    <div class="header-right">
+      <div class="header-btns">
+        <button class="nav-link" id="back-btn" style="display:none">&larr; Home</button>
+        <button class="nav-link" onclick="showLibrary()">Library</button>
+        <button class="nav-link" onclick="window.open('/user-guide.html','_blank')" title="User Guide">Guide</button>
+        <button class="nav-link" onclick="showChangelog()" title="Update Log">Updates</button>
+        <button class="nav-link" id="admin-settings-btn" style="display:none" onclick="showScreen('settings')" title="Admin Settings">Settings</button>
+        <button class="nav-link" id="artifact-key-btn" style="display:none" title="Set API key">Key</button>
+        <button class="nav-link" id="debug-toggle-btn" onclick="toggleDebug()" title="Toggle debug panel">Debug</button>
+        <button class="nav-link" onclick="doLogout()" title="Log out">Log out</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- HOME -->
 <div class="screen visible" id="screen-home">
-  <div id="home-inner">
-    <div class="home-eyebrow">efelle creative &middot; Prospector</div>
-    <h1 class="home-title">Let's sell something today!</h1>
-    <p class="home-sub">Sales tools for prospecting, pitching, and closing.</p>
-    <div class="engine-grid">
 
-      <button class="engine-card" id="card-wsr" style="--eng-accent:#6b7a94" onclick="showEngine('wsr')">
-        <div class="engine-card-left">
-          <div class="engine-icon-wrap" style="background:#1e2535">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-          </div>
-          <div>
-            <div class="engine-label">Website Audit & Recommendations</div>
-            <div class="engine-desc">Analyze any client website and generate a branded report of issues and recommendations across SEO, UX, performance, and AI readiness.</div>
-          </div>
-        </div>
-        <div class="engine-arrow">Analyze →</div>
-      </button>
+  <div class="hp-hero">
+    <div class="hp-hero-bloom"></div>
+    <div class="hp-hero-inner">
+      <div class="hp-eyebrow">Efelle Creative // Prospector</div>
+      <h1 class="hp-title">Let's sell something<br><span class="hp-title-accent">today.</span></h1>
+      <p class="hp-sub">Prospect, pitch, close &amp; build. Repeat.</p>
+    </div>
+  </div>
 
-      <button class="engine-card" id="card-csp" style="--eng-accent:#6b7a94" onclick="showEngine('csp')">
-        <div class="engine-card-left">
-          <div class="engine-icon-wrap" style="background:#1e2535">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          </div>
-          <div>
-            <div class="engine-label">Client Strategy Builder</div>
-            <div class="engine-desc">Full branded strategy report for prospective client pitches. Research, competitive analysis, and growth strategy in one document.</div>
-          </div>
-        </div>
-        <div class="engine-arrow">Generate →</div>
-      </button>
+  <div class="hp-body">
+    <div class="hp-container">
 
-      <button class="engine-card" id="card-cap" style="--eng-accent:#6b7a94" onclick="showEngine('cap')">
-        <div class="engine-card-left">
-          <div class="engine-icon-wrap" style="background:#1e2535">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          </div>
-          <div>
-            <div class="engine-label">Client Action Plan</div>
-            <div class="engine-desc">Standalone supplement report: 12-month roadmap, top 10 quick wins, and homepage messaging rewrite. Run after the Strategy Plan or independently.</div>
-          </div>
+      <div class="hp-toolbar">
+        <div class="hp-view-toggle" role="tablist" aria-label="View">
+          <button class="hp-view-btn active" id="hp-view-table-btn" onclick="hpSetView('table')">Table</button>
+          <button class="hp-view-btn" id="hp-view-cards-btn" onclick="hpSetView('cards')">Cards</button>
         </div>
-        <div class="engine-arrow">Generate →</div>
-      </button>
+      </div>
 
-      <button class="engine-card" id="card-prop" style="--eng-accent:#fb923c" onclick="showEngine('prop')">
-        <div class="engine-card-left">
-          <div class="engine-icon-wrap" style="background:#F56300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          </div>
-          <div>
-            <div class="engine-label">Build a Proposal</div>
-            <div class="engine-desc">Generate a fully customized, client-specific website proposal. Select vertical, pricing, and RGS mode — Claude researches the client and builds the doc.</div>
-          </div>
-        </div>
-        <div class="engine-arrow">Build →</div>
-      </button>
+      <div id="hp-view-table" class="hp-view">
+      <div class="hp-stage">
+        <div class="hp-stage-header"><span class="hp-stage-num">00</span><span class="hp-stage-name">Prospect</span><span class="hp-stage-rule"></span></div>
+        <a class="hp-row" href="#" onclick="hpSoon('Prospect Finder');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></span>
+          <span class="hp-row-name">Prospect Finder</span>
+          <span class="hp-row-desc">Find potential clients using Google Business data & RB2B visitor intelligence; surface strong opportunities based on location, industry, website quality & buying signals.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Prospect &rarr;</span></span>
+        </a>
+      </div>
+      <div class="hp-stage">
+        <div class="hp-stage-header"><span class="hp-stage-num">01</span><span class="hp-stage-name">Audit</span><span class="hp-stage-rule"></span></div>
+        <a class="hp-row" href="#" onclick="showEngine('wsr');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg></span>
+          <span class="hp-row-name">WAR Report</span>
+          <span class="hp-row-desc">Complete website audit and recommendations covering SEO, UX, performance, conversion opportunities, and AI search readiness.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Analyze &rarr;</span></span>
+        </a>
+        <a class="hp-row" href="#" onclick="showEngine('competitor');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="18" y1="20" x2="18" y2="4"/></svg></span>
+          <span class="hp-row-name">Competitor Analysis</span>
+          <span class="hp-row-desc">Analyze three suggested local competitors side by side, including keyword gaps, positioning, visibility, and opportunities to outperform them.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Compare &rarr;</span></span>
+        </a>
+      </div>
+      <div class="hp-stage">
+        <div class="hp-stage-header"><span class="hp-stage-num">02</span><span class="hp-stage-name">Pitch</span><span class="hp-stage-rule"></span></div>
+        <a class="hp-row" href="#" onclick="showEngine('csp');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>
+          <span class="hp-row-name">Growth Strategy</span>
+          <span class="hp-row-desc">Build a pitch-ready growth strategy combining client research, competitive analysis, opportunities, recommendations, and supporting data in one branded document.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Generate &rarr;</span></span>
+        </a>
+        <a class="hp-row" href="#" onclick="showEngine('cap');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+          <span class="hp-row-name">Client Action Plan</span>
+          <span class="hp-row-desc">Create a standalone 12-month roadmap with prioritized recommendations, the top 10 quick wins, and an updated homepage messaging direction.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Plan &rarr;</span></span>
+        </a>
+      </div>
+      <div class="hp-stage">
+        <div class="hp-stage-header"><span class="hp-stage-num">03</span><span class="hp-stage-name">Close</span><span class="hp-stage-rule"></span></div>
+        <a class="hp-row" href="#" onclick="showEngine('prop');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+          <span class="hp-row-name">Proposal Builder</span>
+          <span class="hp-row-desc">Create a client-specific website proposal using their industry, recommended scope, pricing, RGS options, research, and supporting sales strategy.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Build &rarr;</span></span>
+        </a>
+      </div>
+      <div class="hp-stage">
+        <div class="hp-stage-header"><span class="hp-stage-num">04</span><span class="hp-stage-name">Handoff</span><span class="hp-stage-rule"></span></div>
+        <a class="hp-row" href="#" onclick="showEngine('notes');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span>
+          <span class="hp-row-name">Sales Handoff</span>
+          <span class="hp-row-desc">Turn discovery files and sales notes into a clean internal handoff covering client goals, priorities, requirements, opportunities, and key context.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Generate &rarr;</span></span>
+        </a>
+        <a class="hp-row" href="#" onclick="hpSoon('Client Onboarding');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <span class="hp-row-name">Client Onboarding</span>
+          <span class="hp-row-desc">Build the kickoff plan from the signed proposal, including scope, timeline, staging schedule, responsibilities, required assets, and first-week action items.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Onboard &rarr;</span></span>
+        </a>
+      </div>
+      <div class="hp-stage">
+        <div class="hp-stage-header"><span class="hp-stage-num">05</span><span class="hp-stage-name">Build</span><span class="hp-stage-rule"></span></div>
+        <a class="hp-row" href="#" onclick="hpSoon('Site Blueprint');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
+          <span class="hp-row-name">Site Blueprint</span>
+          <span class="hp-row-desc">Build the complete site structure, sitemap, page plan, and content binder directly from the approved scope and project strategy.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Build &rarr;</span></span>
+        </a>
+      </div>
+      </div>
 
-      <button class="engine-card" id="card-competitor" style="--eng-accent:#ec4899" onclick="showEngine('competitor')">
-        <div class="engine-card-left">
-          <div class="engine-icon-wrap" style="background:#ec4899">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          </div>
-          <div>
-            <div class="engine-label">Competitive Analysis</div>
-            <div class="engine-desc">Auto-suggest 3 local competitors, run parallel audits, and generate a branded side-by-side comparison report with keyword gap analysis.</div>
-          </div>
+      <div id="hp-view-cards" class="hp-view" style="display:none">
+      <div class="hp-cards-row">
+        <div class="hp-cards-rule">
+          <div class="hp-cards-label"><span class="hp-stage-num">00</span><span class="hp-stage-name">Prospect</span><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-num">01</span><span class="hp-stage-name">Audit</span><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-rule"></span></div>
         </div>
-        <div class="engine-arrow">Analyze →</div>
-      </button>
-
-      <button class="engine-card" id="card-notes" style="--eng-accent:#10B981" onclick="showEngine('notes')">
-        <div class="engine-card-left">
-          <div class="engine-icon-wrap" style="background:#10B981">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          </div>
-          <div>
-            <div class="engine-label">Generate Sales Notes</div>
-            <div class="engine-desc">Upload discovery files and paste notes — generates a formatted sales handoff doc from only what you provide. HTML + PDF download, ready for Basecamp.</div>
-          </div>
+        <div class="hp-cards-grid">
+          <a class="hp-card" href="#" onclick="hpSoon('Prospect Finder');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg><span class="hp-card-name">Prospect Finder</span></span>
+            <span class="hp-card-desc">Find potential clients using Google Business data & RB2B visitor intelligence; surface strong opportunities based on location, industry, website quality & buying signals.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Prospect &rarr;</span></span>
+          </a>
+          <a class="hp-card" href="#" onclick="showEngine('wsr');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg><span class="hp-card-name">WAR Report</span></span>
+            <span class="hp-card-desc">Complete website audit and recommendations covering SEO, UX, performance, conversion opportunities, and AI search readiness.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Analyze &rarr;</span></span>
+          </a>
+          <a class="hp-card" href="#" onclick="showEngine('competitor');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="18" y1="20" x2="18" y2="4"/></svg><span class="hp-card-name">Competitor Analysis</span></span>
+            <span class="hp-card-desc">Analyze three suggested local competitors side by side, including keyword gaps, positioning, visibility, and opportunities to outperform them.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Compare &rarr;</span></span>
+          </a>
         </div>
-        <div class="engine-arrow">Generate →</div>
-      </button>
+      </div>
+      <div class="hp-cards-row">
+        <div class="hp-cards-rule">
+          <div class="hp-cards-label"><span class="hp-stage-num">02</span><span class="hp-stage-name">Pitch</span><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-num">03</span><span class="hp-stage-name">Close</span><span class="hp-stage-rule"></span></div>
+        </div>
+        <div class="hp-cards-grid">
+          <a class="hp-card" href="#" onclick="showEngine('csp');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span class="hp-card-name">Growth Strategy</span></span>
+            <span class="hp-card-desc">Build a pitch-ready growth strategy combining client research, competitive analysis, opportunities, recommendations, and supporting data in one branded document.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Generate &rarr;</span></span>
+          </a>
+          <a class="hp-card" href="#" onclick="showEngine('cap');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="hp-card-name">Client Action Plan</span></span>
+            <span class="hp-card-desc">Create a standalone 12-month roadmap with prioritized recommendations, the top 10 quick wins, and an updated homepage messaging direction.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Plan &rarr;</span></span>
+          </a>
+          <a class="hp-card" href="#" onclick="showEngine('prop');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="hp-card-name">Proposal Builder</span></span>
+            <span class="hp-card-desc">Create a client-specific website proposal using their industry, recommended scope, pricing, RGS options, research, and supporting sales strategy.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Build &rarr;</span></span>
+          </a>
+        </div>
+      </div>
+      <div class="hp-cards-row">
+        <div class="hp-cards-rule">
+          <div class="hp-cards-label"><span class="hp-stage-num">04</span><span class="hp-stage-name">Handoff</span><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-num">05</span><span class="hp-stage-name">Build</span><span class="hp-stage-rule"></span></div>
+        </div>
+        <div class="hp-cards-grid">
+          <a class="hp-card" href="#" onclick="showEngine('notes');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg><span class="hp-card-name">Sales Handoff</span></span>
+            <span class="hp-card-desc">Turn discovery files and sales notes into a clean internal handoff covering client goals, priorities, requirements, opportunities, and key context.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Generate &rarr;</span></span>
+          </a>
+          <a class="hp-card" href="#" onclick="hpSoon('Client Onboarding');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="hp-card-name">Client Onboarding</span></span>
+            <span class="hp-card-desc">Build the kickoff plan from the signed proposal, including scope, timeline, staging schedule, responsibilities, required assets, and first-week action items.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Onboard &rarr;</span></span>
+          </a>
+          <a class="hp-card" href="#" onclick="hpSoon('Site Blueprint');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg><span class="hp-card-name">Site Blueprint</span></span>
+            <span class="hp-card-desc">Build the complete site structure, sitemap, page plan, and content binder directly from the approved scope and project strategy.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Build &rarr;</span></span>
+          </a>
+        </div>
+      </div>
+      </div>
 
     </div>
   </div>
+
+  <div class="hp-footer">
+    <div class="hp-footer-inner">
+      <span class="hp-footer-left">efelle creative // prospector // internal sales tools</span>
+      <span class="hp-footer-model">claude-opus-4-6 // claude-sonnet-4-6</span>
+    </div>
+  </div>
+
+  <div id="hp-toast" aria-live="polite"></div>
+  <script>
+    (function() {
+      window.hpSetView = function(v) {
+        var t = document.getElementById('hp-view-table'), c = document.getElementById('hp-view-cards');
+        var tb = document.getElementById('hp-view-table-btn'), cb = document.getElementById('hp-view-cards-btn');
+        var cards = v === 'cards';
+        t.style.display = cards ? 'none' : 'block';
+        c.style.display = cards ? 'block' : 'none';
+        tb.classList.toggle('active', !cards);
+        cb.classList.toggle('active', cards);
+        try { localStorage.setItem('prospectorHomeView', v); } catch (e) {}
+      };
+      window.hpSoon = function(name) {
+        var el = document.getElementById('hp-toast');
+        el.textContent = name + " isn't built yet \u2014 coming soon.";
+        el.classList.add('show');
+        clearTimeout(window.__hpToastTimer);
+        window.__hpToastTimer = setTimeout(function() { el.classList.remove('show'); }, 3000);
+      };
+      try {
+        var saved = localStorage.getItem('prospectorHomeView');
+        if (saved === 'cards') window.hpSetView('cards');
+      } catch (e) {}
+    })();
+  </script>
 </div>
 
 <!-- ENGINE HEADER (shared) -->
