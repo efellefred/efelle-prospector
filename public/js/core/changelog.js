@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.24.0',
+    date: '2026-08-23',
+    title: 'Library and Settings Design Refresh',
+    changes: [
+      'Library rebuilt on the efelle design system: dark hero, live company search, type and created-by filter chips, sortable Name and Created columns, color-coded type pills, and per-row Actions and gear menus (View, Download, Edit, Delete)',
+      'Settings rebuilt for admins: Railway persistence status band, Portfolios and RGS case studies accordions, and API key cards with Test the key and one Save the keys button',
+      'New Portfolios manager: image URL + industry rows persist to the server, and newly generated proposals pull the portfolio matching the selected vertical (falls back to the built-in set)',
+      'Library and Settings nav links highlight orange while you are on those screens',
+    ]
+  },
+  {
     version: '4.23.2',
     date: '2026-08-23',
     title: 'Setup Layout Polish',

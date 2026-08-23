@@ -24,9 +24,16 @@ async function loadCurrentKeys() {
     if (ac) ac.textContent = data.anthropic || '(not set)';
     if (gc) gc.textContent = data.gemini || '(not set)';
     if (rs) {
-      rs.innerHTML = data.railwayConfigured
-        ? '<span style="color:#34d399;">✓ Connected</span> — key updates will persist across deploys.'
-        : '<span style="color:#fb923c;">⚠ Not configured</span> — keys update in-memory only (reset on deploy). Add RAILWAY_API_TOKEN, RAILWAY_SERVICE_ID, and RAILWAY_ENVIRONMENT_ID to your Railway env vars.';
+      const band = document.getElementById('admin-railway-band');
+      if (data.railwayConfigured) {
+        if (band) band.classList.remove('warn');
+        rs.innerHTML = '<span class="stx-band-title">Railway persistence connected</span>'
+          + '<span class="stx-band-sub">Key updates persist across deploys.</span>';
+      } else {
+        if (band) band.classList.add('warn');
+        rs.innerHTML = '<span class="stx-band-title">Railway persistence not configured</span>'
+          + '<span class="stx-band-sub">Keys update in-memory only and reset on deploy. Add RAILWAY_API_TOKEN, RAILWAY_SERVICE_ID, and RAILWAY_ENVIRONMENT_ID to your Railway env vars.</span>';
+      }
     }
   } catch (e) {
     console.error('Failed to load admin keys:', e);
@@ -56,7 +63,7 @@ window.adminTestKey = async function(type) {
     statusEl.innerHTML = `<span style="color:#f87171;">✗ ${e.message}</span>`;
   }
   btn.disabled = false;
-  btn.textContent = 'Test';
+  btn.textContent = 'Test the key';
 };
 
 window.adminSaveKeys = async function() {
@@ -89,7 +96,7 @@ window.adminSaveKeys = async function() {
     if (!res.ok) {
       statusEl.innerHTML = `<span style="color:#f87171;">✗ Server error: ${data.error || res.status}</span>`;
       btn.disabled = false;
-      btn.textContent = 'Save Keys';
+      btn.textContent = 'Save the keys';
       return;
     }
 
@@ -114,7 +121,7 @@ window.adminSaveKeys = async function() {
     statusEl.innerHTML = `<span style="color:#f87171;">✗ ${e.message}</span>`;
   }
   btn.disabled = false;
-  btn.textContent = 'Save Keys';
+  btn.textContent = 'Save the keys';
 };
 
 // Show admin button after login
@@ -152,26 +159,31 @@ if (!checkAndShowAdmin()) {
 // ─── RGS Case Study manager ─────────────────────────────────────────
 let csList = null; // working copy shown in the settings panel
 
+function stRowHtml(prefix, i, url, nameVal, namePlaceholder) {
+  const eu = (v) => (v || '').replace(/"/g, '&quot;');
+  return '<div class="stx-row">'
+    + '<span class="stx-thumb">' + (url ? '<img src="' + eu(url) + '" alt="" onerror="this.remove()">' : 'img') + '</span>'
+    + '<input class="st-input" type="text" data-' + prefix + '-field="img" data-' + prefix + '-i="' + i + '" value="' + eu(url) + '" placeholder="https://…/image.png">'
+    + '<input class="st-input stx-nameinput" type="text" data-' + prefix + '-field="name" data-' + prefix + '-i="' + i + '" value="' + eu(nameVal) + '" placeholder="' + namePlaceholder + '">'
+    + '<span class="stx-rowbtns">'
+    + '<button class="stx-iconbtn" title="Move up" onclick="' + prefix + 'Move(' + i + ',-1)">↑</button>'
+    + '<button class="stx-iconbtn" title="Move down" onclick="' + prefix + 'Move(' + i + ',1)">↓</button>'
+    + '<button class="stx-iconbtn stx-x" title="Remove" onclick="' + prefix + 'Remove(' + i + ')">×</button>'
+    + '</span>'
+    + '</div>';
+}
+
 function csRender() {
   const wrap = document.getElementById('cs-manager-rows');
   if (!wrap || !csList) return;
-  wrap.innerHTML = '';
-  csList.forEach((cs, i) => {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:8px;align-items:center;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:8px 10px;';
-    row.innerHTML =
-      '<img src="' + (cs.img || '') + '" alt="" style="width:56px;height:32px;object-fit:cover;border-radius:4px;background:#1a1f2e;flex-shrink:0;" onerror="this.style.opacity=0.2">'
-      + '<input type="text" data-cs-field="img" data-cs-i="' + i + '" value="' + (cs.img || '').replace(/"/g, '&quot;') + '" placeholder="https://…/case-study.jpg" style="flex:1;min-width:0;background:transparent;border:1px solid #252d3d;border-radius:6px;padding:7px 10px;color:#e2ddd4;font-family:monospace;font-size:11px;" />'
-      + '<input type="text" data-cs-field="client" data-cs-i="' + i + '" value="' + (cs.client || '').replace(/"/g, '&quot;') + '" placeholder="Client" style="width:110px;background:transparent;border:1px solid #252d3d;border-radius:6px;padding:7px 10px;color:#e2ddd4;font-size:11px;" />'
-      + '<button onclick="csMove(' + i + ',-1)" title="Move up" style="border:none;background:transparent;color:#6b7a94;cursor:pointer;font-size:13px;padding:2px 4px;">↑</button>'
-      + '<button onclick="csMove(' + i + ',1)" title="Move down" style="border:none;background:transparent;color:#6b7a94;cursor:pointer;font-size:13px;padding:2px 4px;">↓</button>'
-      + '<button onclick="csRemove(' + i + ')" title="Remove" style="border:none;background:transparent;color:#f87171;cursor:pointer;font-size:13px;padding:2px 4px;">✕</button>';
-    wrap.appendChild(row);
-  });
+  wrap.innerHTML = csList.map((cs, i) => stRowHtml('cs', i, cs.img, cs.client, 'Client')).join('');
+  const count = document.getElementById('st-cs-count');
+  if (count) count.textContent = csList.length + ' item' + (csList.length === 1 ? '' : 's');
   wrap.querySelectorAll('input[data-cs-field]').forEach(inp => {
     inp.addEventListener('change', () => {
-      csList[parseInt(inp.dataset.csI)][inp.dataset.csField] = inp.value.trim();
-      if (inp.dataset.csField === 'img') csRender();
+      const key = inp.dataset.csField === 'name' ? 'client' : 'img';
+      csList[parseInt(inp.dataset.csI)][key] = inp.value.trim();
+      if (key === 'img') csRender();
     });
   });
 }
@@ -221,7 +233,7 @@ window.csSave = async function() {
     if (!res.ok) throw new Error(d.error || 'Save failed');
     csList = toSave;
     csRender();
-    statusEl.textContent = '✓ Saved ' + d.count + ' case stud' + (d.count === 1 ? 'y' : 'ies') + ' — applies to newly generated proposals.';
+    statusEl.textContent = '✓ Saved ' + d.count + ' case stud' + (d.count === 1 ? 'y' : 'ies') + ', applies to newly generated proposals.';
     statusEl.style.color = '#34d399';
   } catch (e) {
     statusEl.textContent = '⚠ ' + e.message;
@@ -229,11 +241,80 @@ window.csSave = async function() {
   }
 };
 
+
+// ─── Portfolio manager (server-managed portfolio graphics per industry) ───
+let pfList = null;
+
+function pfRender() {
+  const wrap = document.getElementById('pf-manager-rows');
+  if (!wrap || !pfList) return;
+  wrap.innerHTML = pfList.map((p, i) => stRowHtml('pf', i, p.img, p.industry, 'Industry')).join('');
+  const count = document.getElementById('st-pf-count');
+  if (count) count.textContent = pfList.length + ' item' + (pfList.length === 1 ? '' : 's');
+  wrap.querySelectorAll('input[data-pf-field]').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const key = inp.dataset.pfField === 'name' ? 'industry' : 'img';
+      pfList[parseInt(inp.dataset.pfI)][key] = inp.value.trim();
+      if (key === 'img') pfRender();
+    });
+  });
+}
+
+async function loadPortfoliosAdmin() {
+  if (!isAdmin()) return;
+  try {
+    const res = await fetch('/api/portfolios', { headers: getApiHeaders() });
+    const d = res.ok ? await res.json() : {};
+    pfList = Array.isArray(d.portfolios) ? d.portfolios.map(p => ({ img: p.img || '', industry: p.industry || '' })) : [];
+  } catch (e) {
+    pfList = [];
+  }
+  pfRender();
+}
+
+window.pfAddRow = function() {
+  if (!pfList) pfList = [];
+  pfList.push({ img: '', industry: '' });
+  pfRender();
+};
+window.pfMove = function(i, dir) {
+  const j = i + dir;
+  if (!pfList || j < 0 || j >= pfList.length) return;
+  [pfList[i], pfList[j]] = [pfList[j], pfList[i]];
+  pfRender();
+};
+window.pfRemove = function(i) {
+  if (!pfList) return;
+  pfList.splice(i, 1);
+  pfRender();
+};
+window.pfSave = async function() {
+  const statusEl = document.getElementById('pf-save-status');
+  const toSave = (pfList || []).filter(p => p.img);
+  statusEl.textContent = 'Saving…'; statusEl.style.color = 'var(--gray-2)';
+  try {
+    const res = await fetch('/api/portfolios', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({ portfolios: toSave }),
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Save failed');
+    pfList = toSave;
+    pfRender();
+    statusEl.textContent = '✓ Saved ' + d.count + ' portfolio' + (d.count === 1 ? '' : 's') + ', applies to newly generated proposals.';
+    statusEl.style.color = '#1D8A38';
+  } catch (e) {
+    statusEl.textContent = '⚠ ' + e.message;
+    statusEl.style.color = '#D93025';
+  }
+};
+
 // Load keys + case studies when settings screen becomes visible
 const settingsScreen = document.getElementById('screen-settings');
 if (settingsScreen) {
   const screenObserver = new MutationObserver(() => {
-    if (settingsScreen.classList.contains('visible')) { loadCurrentKeys(); loadCaseStudiesAdmin(); }
+    if (settingsScreen.classList.contains('visible')) { loadCurrentKeys(); loadCaseStudiesAdmin(); loadPortfoliosAdmin(); }
   });
   screenObserver.observe(settingsScreen, { attributes: true, attributeFilter: ['class'] });
 }

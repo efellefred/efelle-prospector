@@ -3,22 +3,34 @@ import { showScreen } from './core/nav.js';
 import { writeToFrame } from './core/utils.js';
 
 // ---------------------------------------------------------------------------
-// Library – browse & manage saved reports
+// Library – browse & manage saved reports (v4.24 design)
 // ---------------------------------------------------------------------------
 
-const TYPE_LABELS = {
-  cca:  { label: 'Strategy Plan',  color: '#a78bfa' },
-  cap:  { label: 'Action Plan',    color: '#2dd4bf' },
-  prop: { label: 'Proposal',       color: '#F56300' },
-  notes: { label: 'Sales Notes',   color: '#10B981' },
-  wsr:  { label: 'W.A.R. Report', color: '#34d399' },
-  competitor: { label: 'Competitor Report', color: '#ec4899' },
+const TYPE_PILLS = {
+  prop:       { label: 'Proposal',    bg: 'rgba(245,99,0,0.12)',  color: '#D65600' },
+  wsr:        { label: 'WAR',         bg: 'rgba(50,215,75,0.14)', color: '#1D8A38' },
+  cca:        { label: 'Strategy',    bg: 'rgba(50,138,146,0.12)',color: '#328A92' },
+  cap:        { label: 'Action plan', bg: 'rgba(46,86,101,0.10)', color: '#2E5665' },
+  competitor: { label: 'Competitor',  bg: 'rgba(217,48,37,0.08)', color: '#D93025' },
+  notes:      { label: 'Handoff',     bg: 'rgba(110,110,115,0.12)', color: '#6E6E73' },
 };
 
 const PROP_TYPE_LABELS = {
-  new_website: 'New Website',
-  wo_rgs: 'Website Updates WO',
-  rgs_only: 'RGS Only',
+  new_website: 'new website',
+  wo_rgs: 'website updates WO',
+  rgs_only: 'RGS only',
+};
+
+const VERTICAL_LABELS = {
+  home_services: 'Home services', plumbers: 'Plumbing', roofers: 'Roofing', hvac: 'HVAC',
+  landscape: 'Landscaping', electrical: 'Electrical', construction: 'Construction',
+  ecommerce: 'eCommerce', misc: 'Misc', other: 'Other',
+};
+
+const USER_NAMES = {
+  'fred@efelle.com': 'Fred',
+  'doug@efelle.com': 'Doug',
+  'christian@efelle.com': 'Christian',
 };
 
 /**
@@ -30,91 +42,132 @@ export async function showLibrary() {
 }
 window.showLibrary = showLibrary;
 
-// Track current filters
+// Filters + sort state
 let currentTypeFilter = '';
 let currentUserFilter = '';
+let currentSearchQuery = '';
+let sortKey = 'created';   // 'name' | 'created'
+let sortDir = -1;          // 1 asc, -1 desc
+let libraryRows = [];      // last fetched rows (for re-sort without refetch)
 
-const USER_NAMES = {
-  'fred@efelle.com': 'Fred',
-  'doug@efelle.com': 'Doug',
-  'christian@efelle.com': 'Christian',
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  const p = (n) => String(n).padStart(2, '0');
+  return p(d.getMonth() + 1) + '/' + p(d.getDate()) + '/' + String(d.getFullYear()).slice(-2);
+}
+
+window.librarySort = function(key) {
+  if (sortKey === key) sortDir = -sortDir;
+  else { sortKey = key; sortDir = key === 'name' ? 1 : -1; }
+  renderRows();
 };
 
+window.libMenuToggle = function(ev, id) {
+  ev.stopPropagation();
+  const menu = document.getElementById(id);
+  const wasOpen = menu && menu.style.display === 'block';
+  document.querySelectorAll('.lbx-menu').forEach(m => { m.style.display = 'none'; });
+  if (menu && !wasOpen) menu.style.display = 'block';
+};
+document.addEventListener('click', () => {
+  document.querySelectorAll('.lbx-menu').forEach(m => { m.style.display = 'none'; });
+});
+
+window.libraryDeleteReport = async function(id, name) {
+  if (!confirm('Delete the ' + (name || 'report') + ' report? This cannot be undone.')) return;
+  try {
+    await deleteReport(id);
+    libraryRows = libraryRows.filter(r => r.id !== id);
+    renderRows();
+  } catch (e) {
+    alert('Delete failed: ' + e.message);
+  }
+};
+
+function headHtml() {
+  const arrow = (k) => sortKey === k ? (sortDir === 1 ? ' \u2191' : ' \u2193') : '';
+  const cls = (k) => 'lbx-th' + (sortKey === k ? ' active' : '');
+  return '<div class="lbx-head">'
+    + '<span class="lbx-thstatic">Type</span>'
+    + '<button class="' + cls('name') + '" onclick="librarySort(\'name\')">Name' + arrow('name') + '</button>'
+    + '<button class="' + cls('created') + '" onclick="librarySort(\'created\')">Created' + arrow('created') + '</button>'
+    + '<span></span>'
+    + '</div>';
+}
+
+function renderRows() {
+  const container = document.getElementById('library-list');
+  if (!container) return;
+  let rows = libraryRows.slice();
+  rows.sort((a, b) => {
+    const va = sortKey === 'name' ? (a.clientName || '').toLowerCase() : new Date(a.createdAt).getTime() || 0;
+    const vb = sortKey === 'name' ? (b.clientName || '').toLowerCase() : new Date(b.createdAt).getTime() || 0;
+    return (va < vb ? -1 : va > vb ? 1 : 0) * sortDir;
+  });
+
+  if (!rows.length) {
+    container.innerHTML = headHtml()
+      + '<div class="lbx-empty">No reports match. Clear a filter or run a new audit from the home screen.</div>';
+    return;
+  }
+
+  container.innerHTML = headHtml() + rows.map((r, i) => {
+    const pill = TYPE_PILLS[r.type] || { label: r.type, bg: 'var(--gray-5)', color: 'var(--gray-2)' };
+    const meta = [];
+    if (r.metadata) {
+      if (r.metadata.vertical) meta.push(VERTICAL_LABELS[r.metadata.vertical] || r.metadata.vertical);
+      if (r.metadata.type && PROP_TYPE_LABELS[r.metadata.type]) meta.push(PROP_TYPE_LABELS[r.metadata.type]);
+    }
+    const creator = r.createdBy ? (USER_NAMES[r.createdBy] || r.createdBy) : '';
+    if (creator) meta.push('by ' + creator);
+    const safeName = esc(r.clientName || 'Unknown').replace(/'/g, "\\'");
+    return '<div class="lbx-row">'
+      + '<span><span class="lbx-pill" style="background:' + pill.bg + ';color:' + pill.color + ';">' + esc(pill.label) + '</span></span>'
+      + '<div style="min-width:0;">'
+      +   '<div class="lbx-company">' + esc(r.clientName || 'Unknown') + '</div>'
+      +   '<div class="lbx-meta">' + esc(meta.join(' // ')) + '</div>'
+      + '</div>'
+      + '<span class="lbx-date">' + fmtDate(r.createdAt) + '</span>'
+      + '<div class="lbx-actions">'
+      +   '<span style="position:relative;display:inline-block;">'
+      +     '<button class="lbx-actbtn" onclick="libMenuToggle(event, \'lbx-am-' + i + '\')">Actions \u25BE</button>'
+      +     '<div class="lbx-menu" id="lbx-am-' + i + '">'
+      +       '<button onclick="libraryEditReport(\'' + r.id + '\',\'' + r.type + '\')">View</button>'
+      +       '<button onclick="downloadReport(\'' + r.id + '\',\'' + esc(r.htmlFile || '') + '\')">Download</button>'
+      +     '</div>'
+      +   '</span>'
+      +   '<span style="position:relative;display:inline-block;">'
+      +     '<button class="lbx-actbtn lbx-gear" title="More" onclick="libMenuToggle(event, \'lbx-gm-' + i + '\')">'
+      +       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+      +     '</button>'
+      +     '<div class="lbx-menu" id="lbx-gm-' + i + '">'
+      +       '<button onclick="libraryEditReport(\'' + r.id + '\',\'' + r.type + '\')">Edit</button>'
+      +       '<button class="lbx-danger" onclick="libraryDeleteReport(\'' + r.id + '\',\'' + safeName + '\')">Delete</button>'
+      +     '</div>'
+      +   '</span>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
 /**
- * Render the report list into #library-list.
- * @param {string} [filterType] – optional type key to filter by
+ * Fetch + render the report list into #library-list.
  */
 async function renderLibrary(filterType) {
   const container = document.getElementById('library-list');
   if (!container) return;
-
-  container.innerHTML =
-    '<p style="color:#666;text-align:center;padding:40px;">Loading\u2026</p>';
-
+  container.innerHTML = '<div class="lbx-empty">Loading\u2026</div>';
   try {
-    let reports = await listReports(filterType);
-
-    // Apply user filter client-side
-    if (currentUserFilter) {
-      reports = reports.filter(r => r.createdBy === currentUserFilter);
-    }
-
-    // Apply search filter
-    if (currentSearchQuery) {
-      reports = reports.filter(r => (r.clientName || '').toLowerCase().includes(currentSearchQuery));
-    }
-
-    if (!reports.length) {
-      container.innerHTML =
-        '<p style="color:#666;text-align:center;padding:40px;">No reports yet. Generate one from any engine to see it here.</p>';
-      return;
-    }
-
-    container.innerHTML = reports
-      .map((r) => {
-        const t = TYPE_LABELS[r.type] || { label: r.type, color: '#666' };
-        const date = new Date(r.createdAt).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        });
-
-        // Build detail line with metadata
-        const details = [];
-        if (r.metadata) {
-          if (r.metadata.vertical) details.push(r.metadata.vertical);
-          if (r.metadata.type && PROP_TYPE_LABELS[r.metadata.type]) {
-            details.push(PROP_TYPE_LABELS[r.metadata.type]);
-          }
-        }
-        // Add creator name
-        const creatorName = r.createdBy ? (USER_NAMES[r.createdBy] || r.createdBy) : '';
-        if (creatorName) details.push('by ' + creatorName);
-
-        const detailHtml = details.length
-          ? `<span style="color:#666;font-size:11px;font-style:italic;">${details.join(' · ')}</span>`
-          : '';
-
-        // Escape client name for use in onclick attributes
-        const safeName = (r.clientName || 'Unknown').replace(/'/g, "\\'");
-
-        return `<div class="library-row" style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:#1a1f2e;border-radius:10px;margin-bottom:8px;">
-        <span onclick="showEngine('${r.type}')" style="background:${t.color}22;color:${t.color};padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;cursor:pointer;" title="Open ${t.label} engine">${t.label}</span>
-        <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
-          <span style="color:#e2ddd4;font-size:14px;font-weight:600;">${r.clientName || 'Unknown'}</span>
-          ${detailHtml}
-        </div>
-        <span style="color:#666;font-size:12px;font-family:monospace;">${date}</span>
-        <button onclick="libraryEditReport('${r.id}','${r.type}')" style="background:none;border:1px solid #fb923c;color:#fb923c;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap;">✎ Edit</button>
-        <button onclick="downloadReport('${r.id}','${r.htmlFile}')" style="background:none;border:1px solid #333;color:#e2ddd4;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap;">\u2193 Download</button>
-      </div>`;
-      })
-      .join('');
+    let reports = await listReports(filterType || currentTypeFilter || undefined);
+    if (currentUserFilter) reports = reports.filter(r => r.createdBy === currentUserFilter);
+    if (currentSearchQuery) reports = reports.filter(r => (r.clientName || '').toLowerCase().includes(currentSearchQuery));
+    libraryRows = reports;
+    renderRows();
   } catch (err) {
-    container.innerHTML =
-      '<p style="color:#f87171;text-align:center;padding:40px;">Failed to load reports: ' +
-      err.message +
-      '</p>';
+    container.innerHTML = '<div class="lbx-empty" style="color:#D93025;">Failed to load reports: ' + esc(err.message) + '</div>';
   }
 }
 
@@ -187,8 +240,7 @@ async function libraryEditReport(id, type) {
 window.libraryEditReport = libraryEditReport;
 
 /**
- * Filter the library by report type and update active button state.
- * @param {string} [type] – type key, or falsy to clear filter
+ * Filter the library by report type and update active chip state.
  */
 export function filterLibrary(type) {
   currentTypeFilter = type || '';
@@ -208,27 +260,21 @@ export function filterLibraryUser(user) {
 }
 window.filterLibraryUser = filterLibraryUser;
 
-// Search by client name
-let currentSearchQuery = '';
-
-export function openLibrarySearch() {
-  const modal = document.getElementById('library-search-modal');
-  modal.style.display = 'block';
-  const input = document.getElementById('library-search-input');
-  input.value = '';
-  input.focus();
-}
-window.openLibrarySearch = openLibrarySearch;
-
-export function closeLibrarySearch() {
-  document.getElementById('library-search-modal').style.display = 'none';
-  currentSearchQuery = '';
-  renderLibrary(currentTypeFilter || undefined);
-}
-window.closeLibrarySearch = closeLibrarySearch;
-
+// Live search by client name (input in the filter row)
 export function searchLibrary(query) {
   currentSearchQuery = (query || '').toLowerCase().trim();
   renderLibrary(currentTypeFilter || undefined);
 }
 window.searchLibrary = searchLibrary;
+
+// Legacy modal search entry points (modal removed; keep the names callable)
+export function openLibrarySearch() {
+  const el = document.getElementById('library-search-input');
+  if (el) el.focus();
+}
+window.openLibrarySearch = openLibrarySearch;
+export function closeLibrarySearch() {
+  currentSearchQuery = '';
+  renderLibrary(currentTypeFilter || undefined);
+}
+window.closeLibrarySearch = closeLibrarySearch;

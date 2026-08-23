@@ -77,6 +77,10 @@ export function showScreen(id) {
   const hideEngineHeader = isHome || isLibrary || isSettings || id === 'prop';
   document.getElementById('back-btn').style.display = isHome ? 'none' : 'inline-block';
   document.getElementById('engine-header').style.display = hideEngineHeader ? 'none' : 'flex';
+  const navLib = document.getElementById('nav-library-btn');
+  if (navLib) navLib.classList.toggle('active', isLibrary);
+  const navSet = document.getElementById('admin-settings-btn');
+  if (navSet) navSet.classList.toggle('active', isSettings);
   if (!hideEngineHeader && ENGINES[id]) {
     const e = ENGINES[id];
     const iconEl = document.getElementById('eng-header-icon');

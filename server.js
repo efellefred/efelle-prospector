@@ -976,6 +976,38 @@ app.post('/api/case-studies', requireAdmin, (req, res) => {
   }
 });
 
+const PORTFOLIOS_FILE = path.join(__dirname, 'data', 'portfolios.json');
+app.get('/api/portfolios', requireAuth, (req, res) => {
+  try {
+    if (fs.existsSync(PORTFOLIOS_FILE)) {
+      return res.json({ portfolios: JSON.parse(fs.readFileSync(PORTFOLIOS_FILE, 'utf8')) });
+    }
+  } catch (e) { console.error('portfolios read error:', e.message); }
+  res.json({ portfolios: null });
+});
+app.post('/api/portfolios', requireAdmin, (req, res) => {
+  const { portfolios } = req.body;
+  if (!Array.isArray(portfolios) || portfolios.length > 40) {
+    return res.status(400).json({ error: 'portfolios must be an array of up to 40 entries' });
+  }
+  const cleaned = [];
+  for (const p of portfolios) {
+    const img = (p && typeof p.img === 'string') ? p.img.trim() : '';
+    if (!/^(https?:\/\/|\/uploads\/)/.test(img)) {
+      return res.status(400).json({ error: 'Each entry needs an image URL starting with https:// or /uploads/' });
+    }
+    cleaned.push({ img, industry: (p.industry || '').toString().slice(0, 40) });
+  }
+  try {
+    fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
+    fs.writeFileSync(PORTFOLIOS_FILE, JSON.stringify(cleaned, null, 2));
+    res.json({ ok: true, count: cleaned.length });
+  } catch (err) {
+    console.error('portfolios write error:', err.message);
+    res.status(500).json({ error: 'Failed to save: ' + err.message });
+  }
+});
+
 // ─── Store an image on the persistent volume (client logos) ─────────
 // Content-addressed filenames: re-uploading the same logo reuses the same file.
 app.post('/api/upload-image', requireAuth, (req, res) => {

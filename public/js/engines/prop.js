@@ -100,6 +100,29 @@ window.selectLogoBg = function(mode) {
 // Case studies for the current build: the server-managed list (Settings → RGS Case
 // Studies) when one exists, otherwise the bundled defaults from case-studies.js.
 let activeCaseStudies = RGS_CASE_STUDIES;
+// Server-managed portfolio graphics (Settings -> Portfolios). Entries are
+// {img, industry}; the industry label maps loosely onto vertical keys.
+let activePortfolios = null;
+async function loadActivePortfolios() {
+  try {
+    const res = await fetch('/api/portfolios', { headers: getApiHeaders() });
+    if (res.ok) {
+      const d = await res.json();
+      if (Array.isArray(d.portfolios) && d.portfolios.length) return d.portfolios;
+    }
+  } catch (e) { /* fall through to bundled defaults */ }
+  return null;
+}
+function portfolioVerticalKey(label) {
+  const s = (label || '').toLowerCase();
+  const map = [['roof', 'roofers'], ['hvac', 'hvac'], ['heat', 'hvac'], ['plumb', 'plumbers'],
+    ['electr', 'electrical'], ['landscap', 'landscape'], ['lawn', 'landscape'],
+    ['construct', 'construction'], ['ecom', 'ecommerce'], ['e-com', 'ecommerce'], ['retail', 'ecommerce'],
+    ['home', 'home_services'], ['misc', 'misc'], ['other', 'other']];
+  for (const [k, v] of map) if (s.includes(k)) return v;
+  return '';
+}
+
 async function loadActiveCaseStudies() {
   try {
     const res = await fetch('/api/case-studies', { headers: getApiHeaders() });
@@ -737,7 +760,10 @@ function propBuildHTML(clientName) {
     electrical:    ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-3.jpg', null],
     construction:  ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-homeservices-3.jpg', null],
   };
-  const vpd = VPD[propVertical] || [];
+  const serverVpd = (activePortfolios || [])
+    .filter(pf => portfolioVerticalKey(pf.industry) === propVertical)
+    .map(pf => pf.img);
+  const vpd = serverVpd.length ? serverVpd : (VPD[propVertical] || []);
   const p1 = vpd[0] || GENERIC_P1;
   const p2 = vpd[1] || GENERIC_P2;
   const p3 = vpd[2] || GENERIC_P3;
@@ -1326,6 +1352,7 @@ async function propGenerate() {
     try {
       // Pick up the server-managed case-study list (falls back to bundled defaults)
       activeCaseStudies = await loadActiveCaseStudies();
+      activePortfolios = await loadActivePortfolios();
       // Analyze the client logo (white-heavy logos get a dark backdrop) and host it
       // on our server — a small URL in the file instead of an embedded base64 blob.
       propLogoInfo = null;

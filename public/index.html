@@ -117,12 +117,12 @@
         <img class="nav-logo-img" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative">
         <span class="nav-wordmark">prospector</span>
       </button>
-      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.23.2 // 2026-08-23</span>
+      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.24.0 // 2026-08-23</span>
     </div>
     <div class="header-right">
       <div class="header-btns">
         <button class="nav-link" id="back-btn" style="display:none">Home</button>
-        <button class="nav-link" onclick="showLibrary()">Library</button>
+        <button class="nav-link" id="nav-library-btn" onclick="showLibrary()">Library</button>
         <button class="nav-link" onclick="window.open('/user-guide.html','_blank')" title="User Guide">Guide</button>
         <button class="nav-link" onclick="showChangelog()" title="Update Log">Updates</button>
         <button class="nav-link" id="admin-settings-btn" style="display:none" onclick="showScreen('settings')" title="Admin Settings">Settings</button>
@@ -1331,43 +1331,42 @@
 </div>
 
 <div class="screen" id="screen-library">
-  <div style="max-width:900px;margin:0 auto;padding:40px 20px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-      <h1 style="font-size:28px;font-weight:800;color:#e2ddd4;margin:0;">Report Library</h1>
-      <div style="display:flex;gap:6px;">
-        <button class="library-filter-btn active" data-type="" onclick="filterLibrary('')" style="background:#252d3d;border:1px solid #333;color:#e2ddd4;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">All</button>
-        <button class="library-filter-btn" data-type="wsr" onclick="filterLibrary('wsr')" style="background:none;border:1px solid #333;color:#34d399;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">W.A.R.</button>
-        <button class="library-filter-btn" data-type="cca" onclick="filterLibrary('cca')" style="background:none;border:1px solid #333;color:#a78bfa;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Strategy</button>
-        <button class="library-filter-btn" data-type="cap" onclick="filterLibrary('cap')" style="background:none;border:1px solid #333;color:#2dd4bf;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Action Plan</button>
-        <button class="library-filter-btn" data-type="prop" onclick="filterLibrary('prop')" style="background:none;border:1px solid #333;color:#F56300;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Proposal</button>
-        <button class="library-filter-btn" data-type="competitor" onclick="filterLibrary('competitor')" style="background:none;border:1px solid #333;color:#ec4899;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Competitor</button>
-      </div>
+  <div class="pbx-hero">
+    <div class="pbx-bloom"></div>
+    <div class="pbx-hero-inner">
+      <div class="pbx-eyebrow" style="margin-bottom:16px;">efelle creative // prospector</div>
+      <h1 class="pbx-h1">Library.</h1>
+      <p class="pbx-sub">Every report, proposal, and plan the team has generated, in one place.</p>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-      <span style="font-size:10px;font-family:monospace;color:#4b5563;letter-spacing:0.1em;text-transform:uppercase;">Created by:</span>
-      <div style="display:flex;gap:6px;">
-        <button class="library-user-btn active" data-user="" onclick="filterLibraryUser('')" style="background:#252d3d;border:1px solid #333;color:#e2ddd4;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">All</button>
-        <button class="library-user-btn" data-user="fred@efelle.com" onclick="filterLibraryUser('fred@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Fred</button>
-        <button class="library-user-btn" data-user="doug@efelle.com" onclick="filterLibraryUser('doug@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Doug</button>
-        <button class="library-user-btn" data-user="christian@efelle.com" onclick="filterLibraryUser('christian@efelle.com')" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;">Christian</button>
-        <button onclick="openLibrarySearch()" style="background:none;border:1px solid #333;color:#9ca3af;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:monospace;transition:all 0.15s;" title="Search by client name" onmouseover="this.style.borderColor='#F56300';this.style.color='#F56300'" onmouseout="this.style.borderColor='#333';this.style.color='#9ca3af'">⌕ Search</button>
+  </div>
+  <div class="lbx-body">
+    <div class="lbx-container">
+      <div class="lbx-filters">
+        <input type="text" id="library-search-input" placeholder="Search by company" autocomplete="off" oninput="searchLibrary(this.value)" />
+        <div class="lbx-chipgroup">
+          <span class="lbx-chiplabel">Type</span>
+          <button class="library-filter-btn lbx-chip active" data-type="" onclick="filterLibrary('')">All</button>
+          <button class="library-filter-btn lbx-chip" data-type="wsr" onclick="filterLibrary('wsr')">WAR</button>
+          <button class="library-filter-btn lbx-chip" data-type="cca" onclick="filterLibrary('cca')">Strategy</button>
+          <button class="library-filter-btn lbx-chip" data-type="cap" onclick="filterLibrary('cap')">Action plan</button>
+          <button class="library-filter-btn lbx-chip" data-type="prop" onclick="filterLibrary('prop')">Proposal</button>
+          <button class="library-filter-btn lbx-chip" data-type="notes" onclick="filterLibrary('notes')">Handoff</button>
+          <button class="library-filter-btn lbx-chip" data-type="competitor" onclick="filterLibrary('competitor')">Competitor</button>
+        </div>
+        <span style="flex:1;"></span>
+        <div class="lbx-chipgroup">
+          <span class="lbx-chiplabel">Created by</span>
+          <button class="library-user-btn lbx-chip active" data-user="" onclick="filterLibraryUser('')">All</button>
+          <button class="library-user-btn lbx-chip" data-user="fred@efelle.com" onclick="filterLibraryUser('fred@efelle.com')">Fred</button>
+          <button class="library-user-btn lbx-chip" data-user="doug@efelle.com" onclick="filterLibraryUser('doug@efelle.com')">Doug</button>
+          <button class="library-user-btn lbx-chip" data-user="christian@efelle.com" onclick="filterLibraryUser('christian@efelle.com')">Christian</button>
+        </div>
       </div>
-    </div>
-    <!-- Search Modal -->
-    <div id="library-search-modal" style="display:none;margin-bottom:16px;background:#141820;border:1px solid #252d3d;border-radius:10px;padding:16px 20px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:10px;font-family:monospace;color:#F56300;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;">Search Client</span>
-        <input type="text" id="library-search-input" placeholder="Type a client name…" style="flex:1;background:#0c0f16;border:1px solid #252d3d;border-radius:6px;padding:8px 14px;color:#e2ddd4;font-size:13px;font-family:inherit;" oninput="searchLibrary(this.value)">
-        <button onclick="closeLibrarySearch()" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:16px;padding:4px;">✕</button>
-      </div>
-    </div>
-    <div id="library-list">
-      <p style="color:#666;text-align:center;padding:40px;">Click a filter or navigate here to see your saved reports.</p>
+      <div id="library-list"></div>
     </div>
   </div>
 </div>
 
-<!-- ADMIN SETTINGS -->
 <!-- GENERATE SALES NOTES -->
 <div class="screen" id="screen-notes">
   <div id="notes-input-wrap" style="max-width:860px;margin:0 auto;padding:8px 20px 80px;">
@@ -1404,62 +1403,113 @@
 </div>
 
 <div class="screen" id="screen-settings">
-  <div style="max-width:640px;margin:0 auto;padding:40px 20px 80px;">
-    <div style="margin-bottom:28px;">
-      <div style="font-size:10px;font-family:monospace;color:#f56300;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">Admin</div>
-      <h1 style="font-size:28px;font-weight:800;color:#e2ddd4;margin:0 0 6px;">API Key Settings</h1>
-      <p style="color:#4b5563;font-size:13px;line-height:1.6;">Update API keys here. Changes take effect immediately and persist to Railway if configured.</p>
-    </div>
-
-    <div style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:24px 26px;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-        <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;"></div>
-        <div style="font-size:10px;font-family:monospace;color:#a78bfa;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;">Anthropic (Claude)</div>
-      </div>
-      <div style="font-size:11px;font-family:monospace;color:#4b5563;margin-bottom:10px;">Current: <span id="admin-anthropic-current" style="color:#6b7a94;">loading…</span></div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <input type="password" id="admin-anthropic-input" placeholder="sk-ant-api03-..." style="flex:1;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:10px 14px;color:#e2ddd4;font-family:monospace;font-size:13px;" />
-        <button onclick="adminTestKey('anthropic')" id="admin-test-anthropic" style="padding:8px 14px;border-radius:7px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;font-family:monospace;cursor:pointer;white-space:nowrap;">Test</button>
-      </div>
-      <div id="admin-anthropic-status" style="font-size:11px;font-family:monospace;margin-top:8px;min-height:16px;"></div>
-    </div>
-
-    <div style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:24px 26px;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-        <div style="width:8px;height:8px;border-radius:50%;background:#34d399;"></div>
-        <div style="font-size:10px;font-family:monospace;color:#34d399;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;">Google Gemini</div>
-      </div>
-      <div style="font-size:11px;font-family:monospace;color:#4b5563;margin-bottom:10px;">Current: <span id="admin-gemini-current" style="color:#6b7a94;">loading…</span></div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <input type="password" id="admin-gemini-input" placeholder="AIza..." style="flex:1;background:#0c0f16;border:1px solid #252d3d;border-radius:8px;padding:10px 14px;color:#e2ddd4;font-family:monospace;font-size:13px;" />
-        <button onclick="adminTestKey('gemini')" id="admin-test-gemini" style="padding:8px 14px;border-radius:7px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:11px;font-family:monospace;cursor:pointer;white-space:nowrap;">Test</button>
-      </div>
-      <div id="admin-gemini-status" style="font-size:11px;font-family:monospace;margin-top:8px;min-height:16px;"></div>
-    </div>
-
-    <button onclick="adminSaveKeys()" id="admin-save-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#7a4a10,#fb923c);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px;box-shadow:0 4px 20px rgba(251,146,60,0.25);">Save Keys</button>
-    <div id="admin-save-status" style="font-size:12px;font-family:monospace;text-align:center;min-height:20px;"></div>
-
-    <div style="background:#141820;border:1px solid #252d3d;border-radius:10px;padding:24px 26px;margin-top:24px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <div style="width:8px;height:8px;border-radius:50%;background:#10B981;"></div>
-        <div style="font-size:10px;font-family:monospace;color:#10B981;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;">RGS Case Studies</div>
-      </div>
-      <p style="color:#4b5563;font-size:12px;line-height:1.6;margin:0 0 14px;">Case-study graphics shown on RGS Only proposals, two per page in order. Paste image URLs (upload graphics to the web server first). Changes apply to newly generated proposals.</p>
-      <div id="cs-manager-rows" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;"></div>
-      <div style="display:flex;gap:10px;">
-        <button onclick="csAddRow()" style="padding:9px 14px;border-radius:7px;border:1px solid #252d3d;background:transparent;color:#6b7a94;font-size:12px;font-family:monospace;cursor:pointer;">+ Add case study</button>
-        <button onclick="csSave()" id="cs-save-btn" style="flex:1;padding:9px 14px;border-radius:7px;border:none;background:linear-gradient(135deg,#065F46,#10B981);color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Save Case Studies</button>
-      </div>
-      <div id="cs-save-status" style="font-size:11px;font-family:monospace;margin-top:8px;min-height:16px;"></div>
-    </div>
-
-    <div style="background:#0c0f16;border:1px solid #1a1f2e;border-radius:10px;padding:18px 22px;margin-top:24px;">
-      <div style="font-size:10px;font-family:monospace;color:#4b5563;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">Railway Persistence</div>
-      <div id="admin-railway-status" style="font-size:12px;font-family:monospace;color:#6b7a94;line-height:1.7;">Checking…</div>
-      <p style="font-size:11px;font-family:monospace;color:#374151;margin-top:10px;line-height:1.6;">When Railway is configured, key updates persist across deploys. Without it, keys reset on the next deploy and must be updated in the Railway dashboard.</p>
+  <div class="pbx-hero">
+    <div class="pbx-bloom"></div>
+    <div class="pbx-hero-inner">
+      <div class="pbx-eyebrow" style="margin-bottom:16px;">Admin</div>
+      <h1 class="pbx-h1">Settings.</h1>
+      <p class="pbx-sub">Keys, portfolios, and case studies. Changes take effect immediately and persist to Railway.</p>
     </div>
   </div>
+  <div class="lbx-body">
+    <div class="stx-container">
+
+      <!-- Railway persistence -->
+      <div class="stx-band" id="admin-railway-band">
+        <span class="stx-band-check" id="admin-railway-check">&#10003;</span>
+        <div style="min-width:0;">
+          <div id="admin-railway-status" style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+            <span class="stx-band-title">Checking Railway persistence&hellip;</span>
+          </div>
+          <p class="stx-band-note">Without Railway, keys reset on the next deploy and must be updated in the Railway dashboard.</p>
+        </div>
+      </div>
+
+      <!-- Portfolios -->
+      <div class="stx-acc">
+        <button class="stx-acc-head" onclick="stAccordion('pf')">
+          <span class="stx-acc-eyebrow">Portfolios</span>
+          <span class="stx-acc-desc">Portfolio graphics shown on proposals, matched by industry.</span>
+          <span style="flex:1;"></span>
+          <span class="stx-acc-count" id="st-pf-count"></span>
+          <span class="stx-acc-chev" id="st-pf-chev">&#9652;</span>
+        </button>
+        <div class="stx-acc-body open" id="st-pf-body">
+          <p class="stx-acc-note">Paste image URLs (upload graphics to the web server first). The proposal pulls the portfolio matching the selected vertical. Changes apply to newly generated proposals.</p>
+          <div id="pf-manager-rows"></div>
+          <div class="stx-acc-foot">
+            <button class="stx-addbtn" onclick="pfAddRow()">+ Add portfolio</button>
+            <span style="flex:1;"></span>
+            <button class="stx-darkbtn" id="pf-save-btn" onclick="pfSave()">Save portfolios</button>
+          </div>
+          <div id="pf-save-status" class="stx-status"></div>
+        </div>
+      </div>
+
+      <!-- RGS case studies -->
+      <div class="stx-acc">
+        <button class="stx-acc-head" onclick="stAccordion('cs')">
+          <span class="stx-acc-eyebrow">RGS case studies</span>
+          <span class="stx-acc-desc">Case-study graphics shown on RGS Only proposals, two per page in order.</span>
+          <span style="flex:1;"></span>
+          <span class="stx-acc-count" id="st-cs-count"></span>
+          <span class="stx-acc-chev" id="st-cs-chev">&#9662;</span>
+        </button>
+        <div class="stx-acc-body" id="st-cs-body">
+          <p class="stx-acc-note">Paste image URLs (upload graphics to the web server first). Changes apply to newly generated proposals.</p>
+          <div id="cs-manager-rows"></div>
+          <div class="stx-acc-foot">
+            <button class="stx-addbtn" onclick="csAddRow()">+ Add case study</button>
+            <span style="flex:1;"></span>
+            <button class="stx-darkbtn" id="cs-save-btn" onclick="csSave()">Save case studies</button>
+          </div>
+          <div id="cs-save-status" class="stx-status"></div>
+        </div>
+      </div>
+
+      <!-- API keys -->
+      <div>
+        <div class="pbx-sechead"><span>API keys</span><i></i></div>
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="stx-card">
+            <div class="stx-card-head">
+              <span class="stx-card-title">Anthropic (Claude)</span>
+              <span class="stx-card-current">Current: <span id="admin-anthropic-current">loading&hellip;</span></span>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <input class="st-input" type="password" id="admin-anthropic-input" placeholder="sk-ant-api03-..." style="flex:1;" />
+              <button class="stx-addbtn" style="height:44px;" onclick="adminTestKey('anthropic')" id="admin-test-anthropic">Test the key</button>
+            </div>
+            <div id="admin-anthropic-status" class="stx-status"></div>
+          </div>
+          <div class="stx-card">
+            <div class="stx-card-head">
+              <span class="stx-card-title">Google Gemini</span>
+              <span class="stx-card-current">Current: <span id="admin-gemini-current">loading&hellip;</span></span>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <input class="st-input" type="password" id="admin-gemini-input" placeholder="AIza..." style="flex:1;" />
+              <button class="stx-addbtn" style="height:44px;" onclick="adminTestKey('gemini')" id="admin-test-gemini">Test the key</button>
+            </div>
+            <div id="admin-gemini-status" class="stx-status"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="admin-save-status" class="stx-status" style="flex:1;margin:0;"></div>
+            <button class="pbx-primary" onclick="adminSaveKeys()" id="admin-save-btn">Save the keys</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script>
+    window.stAccordion = function(key) {
+      var body = document.getElementById('st-' + key + '-body');
+      var chev = document.getElementById('st-' + key + '-chev');
+      var open = body.classList.toggle('open');
+      chev.innerHTML = open ? '&#9652;' : '&#9662;';
+    };
+  </script>
 </div>
 
   <div class="hp-footer">

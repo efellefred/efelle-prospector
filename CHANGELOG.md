@@ -2,6 +2,13 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.24.0 — 2026-08-23 — Library and Settings Design Refresh
+
+- Library rebuilt on the efelle design system: dark hero, live company search, type and created-by filter chips, sortable Name and Created columns, color-coded type pills, and per-row **Actions** and gear menus (View, Download, Edit, Delete)
+- Settings rebuilt for admins: Railway persistence status band, **Portfolios** and **RGS case studies** accordions, and API key cards with Test the key and one Save the keys button
+- New Portfolios manager: image URL + industry rows persist to the server (`/api/portfolios`), and newly generated proposals pull the portfolio matching the selected vertical, falling back to the built-in set
+- Library and Settings nav links highlight orange while you are on those screens
+
 ## 4.23.2 — 2026-08-23 — Setup Layout Polish
 
 - Vertical cards on the Proposal Builder setup step are compact single-line rows, matching the approved design and cutting scrolling
