@@ -4,6 +4,28 @@
 
 const CHANGELOG = [
   {
+    version: '4.26.0',
+    date: '2026-08-24',
+    title: 'Workflow View',
+    changes: [
+      'New Workflow view on the home screen: a left-to-right flowchart of all 10 programs across the 7 pipeline phases, with branch and converge connectors showing what feeds what',
+      'Hover or tab to any program and the detail band below the diagram fills in with its phase, description, and launch button; clicking a card opens the program exactly as the Table and Cards views do',
+      'New 06 Launch program added to all three views \u2014 in development, with go-live steps running from there once it ships',
+      'The view selector remembers your last choice, so Prospector opens on Table, Cards, or Workflow depending on where you left off',
+    ]
+  },
+  {
+    version: '4.25.0',
+    date: '2026-08-23',
+    title: 'Library Tracks Sent and Views',
+    changes: [
+      'The Library table now shows Sent (date plus recipient) and Views columns, both sortable; unsent reports always sort last',
+      'Sending a proposal from Email the proposal records the send date and recipients on its Library report',
+      'Publishing a proposal links the hosted client link to its Library report, so the Views column shows live open counts',
+      'Older reports show Not sent and 0 views until they are published or emailed again from the Proposal Builder',
+    ]
+  },
+  {
     version: '4.24.0',
     date: '2026-08-23',
     title: 'Library and Settings Design Refresh',

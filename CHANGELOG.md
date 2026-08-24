@@ -2,6 +2,21 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.26.0 — 2026-08-24 — Workflow View
+
+- New **Workflow** view on the home screen: a left-to-right flowchart of all 10 programs across the 7 pipeline phases, with branch and converge connectors showing what feeds what
+- Hover or tab to any program and the detail band below the diagram fills in with its phase, description, and launch button; clicking a card opens the program exactly as the Table and Cards views do
+- New **06 Launch** program added to all three views — in development, with go-live steps running from there once it ships
+- The view selector remembers your last choice, so Prospector opens on Table, Cards, or Workflow depending on where you left off
+- The Workflow view renders full width at 1:1 (it undoes the global page zoom, the same way the app's overlays do) because the seven-phase diagram needs more room than the 1200px content column; it scrolls sideways below a 1168px window
+
+## 4.25.0 — 2026-08-23 — Library Tracks Sent and Views
+
+- The Library table now shows **Sent** (date plus recipient) and **Views** columns, both sortable; unsent reports always sort last
+- Sending a proposal from **Email the proposal** records the send date and recipients on its Library report (`POST /api/reports/:id/sent`)
+- Publishing a proposal links the hosted client link to its Library report (`reportId` on `/api/publish`), and the report list joins live open counts from the publish store
+- Older reports show Not sent and 0 views until they are published or emailed again from the Proposal Builder
+
 ## 4.24.0 — 2026-08-23 — Library and Settings Design Refresh
 
 - Library rebuilt on the efelle design system: dark hero, live company search, type and created-by filter chips, sortable Name and Created columns, color-coded type pills, and per-row **Actions** and gear menus (View, Download, Edit, Delete)

@@ -117,7 +117,7 @@
         <img class="nav-logo-img" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative">
         <span class="nav-wordmark">prospector</span>
       </button>
-      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.24.0 // 2026-08-23</span>
+      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.26.0 // 2026-08-24</span>
     </div>
     <div class="header-right">
       <div class="header-btns">
@@ -152,6 +152,7 @@
         <div class="hp-view-toggle" role="tablist" aria-label="View">
           <button class="hp-view-btn active" id="hp-view-table-btn" onclick="hpSetView('table')">Table</button>
           <button class="hp-view-btn" id="hp-view-cards-btn" onclick="hpSetView('cards')">Cards</button>
+          <button class="hp-view-btn" id="hp-view-workflow-btn" onclick="hpSetView('workflow')">Workflow</button>
         </div>
       </div>
 
@@ -226,6 +227,15 @@
           <span class="hp-row-name">Site Blueprint</span>
           <span class="hp-row-desc">Build the complete site structure, sitemap, page plan, and content binder directly from the approved scope and project strategy.</span>
           <span class="hp-cta"><span class="hp-cta-inner">Build &rarr;</span></span>
+        </a>
+      </div>
+      <div class="hp-stage">
+        <div class="hp-stage-header"><span class="hp-stage-num">06</span><span class="hp-stage-name">Launch</span><span class="hp-stage-rule"></span></div>
+        <a class="hp-row" href="#" onclick="hpSoon('Launch');return false;">
+          <span class="hp-row-icon"><svg class="hp-glyph" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="9 7 17 7 17 15"/></svg></span>
+          <span class="hp-row-name">Launch</span>
+          <span class="hp-row-desc">New application in development. Go-live steps will run from here once it ships.</span>
+          <span class="hp-cta"><span class="hp-cta-inner">Launch &rarr;</span></span>
         </a>
       </div>
       </div>
@@ -303,9 +313,39 @@
           </a>
         </div>
       </div>
+      <div class="hp-cards-row">
+        <div class="hp-cards-rule">
+          <div class="hp-cards-label"><span class="hp-stage-num">06</span><span class="hp-stage-name">Launch</span><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-rule"></span></div>
+          <div class="hp-cards-label"><span class="hp-stage-rule"></span></div>
+        </div>
+        <div class="hp-cards-grid">
+          <a class="hp-card" href="#" onclick="hpSoon('Launch');return false;">
+            <span class="hp-card-head"><svg class="hp-glyph hp-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="9 7 17 7 17 15"/></svg><span class="hp-card-name">Launch</span></span>
+            <span class="hp-card-desc">New application in development. Go-live steps will run from here once it ships.</span>
+            <span class="hp-cta"><span class="hp-cta-inner">Launch &rarr;</span></span>
+          </a>
+        </div>
+      </div>
       </div>
 
     </div>
+
+        <div id="hp-view-workflow" class="hp-view" style="display:none">
+          <div class="hp-wf-scroll">
+            <div class="hp-wf-canvas" id="hp-wf-canvas">
+              <svg class="hp-wf-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g id="hp-wf-lines"></g></svg>
+            </div>
+          </div>
+          <div class="hp-wf-band">
+            <div>
+              <div class="hp-wf-tag" id="hp-wf-tag"></div>
+              <p class="hp-wf-desc" id="hp-wf-desc"></p>
+            </div>
+            <button class="hp-wf-btn" id="hp-wf-btn" type="button"></button>
+          </div>
+          <div class="hp-wf-hint">hover a program for details // click to launch</div>
+        </div>
   </div>
 
   </div>
@@ -313,16 +353,18 @@
   <div id="hp-toast" aria-live="polite"></div>
   <script>
     (function() {
+      var HP_VIEWS = ['table', 'cards', 'workflow'];
+
       window.hpSetView = function(v) {
-        var t = document.getElementById('hp-view-table'), c = document.getElementById('hp-view-cards');
-        var tb = document.getElementById('hp-view-table-btn'), cb = document.getElementById('hp-view-cards-btn');
-        var cards = v === 'cards';
-        t.style.display = cards ? 'none' : 'block';
-        c.style.display = cards ? 'block' : 'none';
-        tb.classList.toggle('active', !cards);
-        cb.classList.toggle('active', cards);
+        if (HP_VIEWS.indexOf(v) === -1) v = 'table';
+        HP_VIEWS.forEach(function(k) {
+          document.getElementById('hp-view-' + k).style.display = (k === v) ? 'block' : 'none';
+          document.getElementById('hp-view-' + k + '-btn').classList.toggle('active', k === v);
+        });
+        if (v === 'workflow') hpWfBuild();
         try { localStorage.setItem('prospectorHomeView', v); } catch (e) {}
       };
+
       window.hpSoon = function(name) {
         var el = document.getElementById('hp-toast');
         el.textContent = name + " isn't built yet \u2014 coming soon.";
@@ -330,9 +372,150 @@
         clearTimeout(window.__hpToastTimer);
         window.__hpToastTimer = setTimeout(function() { el.classList.remove('show'); }, 3000);
       };
+
+      /* ---- Workflow view ---------------------------------------------- */
+      var HP_WF_ICONS = {
+        target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+        search: '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/>',
+        bars: '<line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="18" y1="20" x2="18" y2="4"/>',
+        trend: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+        bolt: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+        doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+        clipboard: '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+        people: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        sitemap: '<rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/>',
+        arrow: '<line x1="7" y1="17" x2="17" y2="7"/><polyline points="9 7 17 7 17 15"/>'
+      };
+
+      // Phase colors: teal deep / teal mid / orange, matching the 2c chart palette.
+      var HP_WF_PHASES = [
+        { num: '00', name: 'Prospect', x: 8, color: '#2E5665', programs: [
+          { key: 'prospect-finder', title: 'Prospect\nFinder', icon: 'target', cta: 'Prospect', y: 54,
+            desc: 'Find potential clients using Google Business data and RB2B visitor intelligence; surface strong opportunities based on location, industry, website quality and buying signals.',
+            go: function() { hpSoon('Prospect Finder'); } }
+        ]},
+        { num: '01', name: 'Audit', x: 22, color: '#2E5665', programs: [
+          { key: 'war-report', title: 'WAR\nReport', icon: 'search', cta: 'Analyze', y: 32,
+            desc: 'Complete website audit and recommendations covering SEO, UX, performance, conversion opportunities, and AI search readiness.',
+            go: function() { showEngine('wsr'); } },
+          { key: 'competitor-analysis', title: 'Competitor\nAnalysis', icon: 'bars', cta: 'Compare', y: 76,
+            desc: 'Analyze three suggested local competitors side by side, including keyword gaps, positioning, visibility, and opportunities to outperform them.',
+            go: function() { showEngine('competitor'); } }
+        ]},
+        { num: '02', name: 'Pitch', x: 36, color: '#328A92', programs: [
+          { key: 'growth-strategy', title: 'Growth\nStrategy', icon: 'trend', cta: 'Generate', y: 32,
+            desc: 'Build a pitch-ready growth strategy combining client research, competitive analysis, opportunities, recommendations, and supporting data in one branded document.',
+            go: function() { showEngine('csp'); } },
+          { key: 'client-action-plan', title: 'Client\nAction Plan', icon: 'bolt', cta: 'Plan', y: 76,
+            desc: 'Create a standalone 12-month roadmap with prioritized recommendations, the top 10 quick wins, and an updated homepage messaging direction.',
+            go: function() { showEngine('cap'); } }
+        ]},
+        { num: '03', name: 'Close', x: 50, color: '#F56300', programs: [
+          { key: 'proposal-builder', title: 'Proposal\nBuilder', icon: 'doc', cta: 'Build', y: 54,
+            desc: 'Create a client-specific website proposal using their industry, recommended scope, pricing, RGS options, research, and supporting sales strategy.',
+            go: function() { showEngine('prop'); } }
+        ]},
+        { num: '04', name: 'Handoff', x: 64, color: '#6FE0D6', darkIcon: true, programs: [
+          { key: 'sales-handoff', title: 'Sales\nHandoff', icon: 'clipboard', cta: 'Generate', y: 32,
+            desc: 'Turn discovery files and sales notes into a clean internal handoff covering client goals, priorities, requirements, opportunities, and key context.',
+            go: function() { showEngine('notes'); } },
+          { key: 'client-onboarding', title: 'Client\nOnboarding', icon: 'people', cta: 'Onboard', y: 76,
+            desc: 'Build the kickoff plan from the signed proposal, including scope, timeline, staging schedule, responsibilities, required assets, and first-week action items.',
+            go: function() { hpSoon('Client Onboarding'); } }
+        ]},
+        { num: '05', name: 'Build', x: 78, color: '#6FE0D6', darkIcon: true, programs: [
+          { key: 'site-blueprint', title: 'Site\nBlueprint', icon: 'sitemap', cta: 'Build', y: 54,
+            desc: 'Build the complete site structure, sitemap, page plan, and content binder directly from the approved scope and project strategy.',
+            go: function() { hpSoon('Site Blueprint'); } }
+        ]},
+        { num: '06', name: 'Launch', x: 92, color: '#F56300', programs: [
+          { key: 'launch', title: 'Launch', icon: 'arrow', cta: 'Launch', y: 54,
+            desc: 'New application in development. Go-live steps will run from here once it ships.',
+            go: function() { hpSoon('Launch'); } }
+        ]}
+      ];
+
+      var hpWfSel = null, hpWfBuilt = false;
+
+      function hpWfIcon(name, dark) {
+        return '<svg class="hp-glyph" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="' +
+          (dark ? '#1D1D1F' : '#FFFFFF') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+          HP_WF_ICONS[name] + '</svg>';
+      }
+
+      function hpWfSelect(p, phase) {
+        hpWfSel = p;
+        document.getElementById('hp-wf-tag').textContent =
+          phase.num + ' ' + phase.name.toUpperCase() + ' // ' + p.title.replace(/[\n ]/g, ' ').toUpperCase();
+        document.getElementById('hp-wf-desc').textContent = p.desc;
+        document.getElementById('hp-wf-btn').textContent = p.cta + ' →';
+        var nodes = document.querySelectorAll('.hp-wf-node');
+        for (var i = 0; i < nodes.length; i++) {
+          nodes[i].classList.toggle('is-sel', nodes[i].getAttribute('data-key') === p.key);
+        }
+      }
+
+      function hpWfBuild() {
+        if (hpWfBuilt) return;
+        var canvas = document.getElementById('hp-wf-canvas');
+        var lines = document.getElementById('hp-wf-lines');
+        var HALF = 5.2, first = null, firstPhase = null, d = '';
+
+        HP_WF_PHASES.forEach(function(phase) {
+          var label = document.createElement('div');
+          label.className = 'hp-wf-label';
+          label.style.left = (phase.x - HALF) + '%';
+          // last phase: clip the trailing hairline to the canvas so it can't force a scrollbar
+          label.style.width = Math.min(13.6, 100 - (phase.x - HALF)) + '%';
+          label.innerHTML = '<span class="hp-stage-num">' + phase.num + '</span>' +
+            '<span class="hp-stage-name">' + phase.name + '</span><span class="hp-stage-rule"></span>';
+          canvas.appendChild(label);
+
+          phase.programs.forEach(function(p) {
+            if (!first) { first = p; firstPhase = phase; }
+            var a = document.createElement('a');
+            a.className = 'hp-wf-node';
+            a.href = '#';
+            a.setAttribute('data-key', p.key);
+            a.style.left = phase.x + '%';
+            a.style.top = p.y + '%';
+            a.style.borderTopColor = phase.color;
+            a.innerHTML = '<span class="hp-wf-head"><span class="hp-wf-badge" style="background:' + phase.color + '">' +
+              hpWfIcon(p.icon, phase.darkIcon) + '</span>' +
+              '<span class="hp-wf-name">' + p.title + '</span></span>' +
+              '<span class="hp-wf-cta">' + p.cta + ' &rarr;</span>';
+            a.addEventListener('mouseenter', function() { hpWfSelect(p, phase); });
+            a.addEventListener('focus', function() { hpWfSelect(p, phase); });
+            a.addEventListener('click', function(e) { e.preventDefault(); hpWfSelect(p, phase); p.go(); });
+            canvas.appendChild(a);
+          });
+        });
+
+        // Connectors: each program links to every program of the next phase, except
+        // between two dual-program phases, where only the matching rows connect.
+        for (var i = 0; i < HP_WF_PHASES.length - 1; i++) {
+          var a = HP_WF_PHASES[i], b = HP_WF_PHASES[i + 1];
+          var x1 = a.x + HALF, x2 = b.x - HALF, mx = (x1 + x2) / 2;
+          a.programs.forEach(function(pa) {
+            b.programs.forEach(function(pb) {
+              if (a.programs.length === 2 && b.programs.length === 2 && pa.y !== pb.y) return;
+              d += '<path d="M ' + x1 + ' ' + pa.y + ' C ' + mx + ' ' + pa.y + ', ' + mx + ' ' + pb.y +
+                ', ' + x2 + ' ' + pb.y + '" fill="none" stroke="#D2D2D7" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>';
+            });
+          });
+        }
+        lines.innerHTML = d;
+
+        document.getElementById('hp-wf-btn').addEventListener('click', function() {
+          if (hpWfSel) hpWfSel.go();
+        });
+        hpWfBuilt = true;
+        hpWfSelect(first, firstPhase);
+      }
+
       try {
         var saved = localStorage.getItem('prospectorHomeView');
-        if (saved === 'cards') window.hpSetView('cards');
+        if (saved && saved !== 'table') window.hpSetView(saved);
       } catch (e) {}
     })();
   </script>
