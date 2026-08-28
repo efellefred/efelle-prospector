@@ -1,0 +1,613 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "efelle-prospector/verticals/_schema.json",
+  "title": "GTM Vertical Pack",
+  "description": "Trade-specific content for the GTM Strategy Builder engine. One file per home-service trade. Engine code must never branch on trade; every trade difference lives here.",
+  "type": "object",
+  "required": [
+    "id",
+    "label",
+    "version",
+    "housingRelevance",
+    "everydayServices",
+    "specialties",
+    "navCategories",
+    "highValueServices",
+    "seasonality",
+    "licensing",
+    "seedKeywords",
+    "contentTiers",
+    "icp",
+    "gbp",
+    "competitorArchetypes",
+    "pipeline"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "label": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "sourceEngagement": {
+      "type": "string",
+      "description": "Which client engagement this pack was extracted from"
+    },
+    "housingRelevance": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "Drives which ACS variables the Market Pack pulls and how Section 3 argues. high = building age is central (plumbing, electrical). medium = age correlates but is not the driver (roofing, HVAC). low = value and lot matter, age does not (landscaping)."
+    },
+    "everydayServices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 5
+    },
+    "everydayNote": {
+      "type": "string"
+    },
+    "specialties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "services"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "positioningLine": {
+            "type": "string"
+          },
+          "buyerTrigger": {
+            "type": "string"
+          },
+          "educationHooks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": "string"
+          },
+          "requires": {
+            "type": "object",
+            "description": "Gate. Engine omits or demotes this specialty when the Market Pack does not meet these thresholds.",
+            "properties": {
+              "housingRelevance": {
+                "type": "string"
+              },
+              "minPre1940Share": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minMedianHomeValue": {
+                "type": "number"
+              },
+              "minOwnerOccupancy": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "navCategories": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": [
+          "label",
+          "covers"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "covers": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "highValueServices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cplBenchmarks": {
+      "type": "object",
+      "description": "Planning ranges only. Never rendered without the caveat string.",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "everyday": {
+          "$ref": "#/definitions/range"
+        },
+        "specialty": {
+          "$ref": "#/definitions/range"
+        }
+      }
+    },
+    "ticketBands": {
+      "type": "object",
+      "description": "Null by default. Filled per client from their own price book. Never published as pricing."
+    },
+    "seasonality": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "months",
+          "driver",
+          "push"
+        ],
+        "properties": {
+          "months": {
+            "type": "string"
+          },
+          "driver": {
+            "type": "string"
+          },
+          "push": {
+            "type": "string"
+          },
+          "publishLead": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "licensing": {
+      "type": "object",
+      "required": [
+        "credentialTypes"
+      ],
+      "properties": {
+        "credentialTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "optionalCredentials": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "byState": {
+          "type": "object",
+          "description": "Keyed by two-letter state code. Engine looks up the client's state; missing state means the licensing section renders generic and flags a research task.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "registrationBody": {
+                "type": "string"
+              },
+              "advertisingRule": {
+                "type": "string"
+              },
+              "advertisingExemptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "advertisingGuidance": {
+                "type": "string"
+              },
+              "verificationPitch": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "terminologyTraps": {
+      "type": "array",
+      "description": "Enforced by the QA gate. Using the wrong term anywhere in the output is a blocking error.",
+      "items": {
+        "type": "object",
+        "required": [
+          "wrong",
+          "right",
+          "context"
+        ],
+        "properties": {
+          "wrong": {
+            "type": "string"
+          },
+          "right": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "adjacentRevenue": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "seedKeywords": {
+      "type": "object",
+      "required": [
+        "everyday",
+        "specialty",
+        "negatives"
+      ],
+      "description": "Tokens {city} and {neighborhood} are substituted from the Market Pack.",
+      "properties": {
+        "everyday": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "specialty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "negatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "contentTiers": {
+      "type": "object",
+      "required": [
+        "tier1"
+      ],
+      "description": "tier1 publishes first. Tokens {city} and {neighborhood} substituted at render.",
+      "properties": {
+        "tier1": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tier2": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tier3": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tier4": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "icp": {
+      "type": "object",
+      "required": [
+        "censusAxes",
+        "cares",
+        "notFor"
+      ],
+      "properties": {
+        "definedBy": {
+          "type": "string"
+        },
+        "targetedBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "censusAxes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "medianYearBuilt",
+              "pre1940Share",
+              "ownerOccupancy",
+              "medianHomeValue",
+              "singleFamilyShare",
+              "heatingFuel",
+              "vacancyRate"
+            ]
+          }
+        },
+        "cares": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notFor": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "opsStack": {
+      "type": "object",
+      "properties": {
+        "fieldService": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fieldServiceDefault": {
+          "type": "string"
+        },
+        "callTracking": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "financing": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "documentationHardware": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "criticalMetric": {
+          "type": "string"
+        }
+      }
+    },
+    "referralPartners": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "partner",
+          "hook"
+        ],
+        "properties": {
+          "partner": {
+            "type": "string"
+          },
+          "hook": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "gbp": {
+      "type": "object",
+      "required": [
+        "primaryCategory"
+      ],
+      "properties": {
+        "primaryCategory": {
+          "type": "string"
+        },
+        "secondaryCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "competitorArchetypes": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "competesOn",
+          "vulnerableOn"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "competesOn": {
+            "type": "string"
+          },
+          "vulnerableOn": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "regulatoryHookTypes": {
+      "type": "array",
+      "description": "What to look for when building data/regulatory/<metro>/<trade>.json for this trade.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "description": "Industry gates. Decides which analyses run and which sections render. Engine code branches on this, never on trade id.",
+      "required": [
+        "requiredAnalyses",
+        "customerShape",
+        "sections",
+        "marketFactors",
+        "seasonalityShape"
+      ],
+      "properties": {
+        "requiredAnalyses": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "census.housingAge",
+              "census.heatingFuel",
+              "census.value",
+              "parcel.lotSize",
+              "competitors.serp",
+              "competitors.places",
+              "competitors.onPage",
+              "regulatory.permits",
+              "weather.stormEvents",
+              "ev.adoption"
+            ]
+          }
+        },
+        "optionalAnalyses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skipAnalyses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "customerShape": {
+          "enum": [
+            "recurring",
+            "episodic",
+            "oneAndDone",
+            "contract"
+          ]
+        },
+        "repeatIntervalMonths": {
+          "type": "integer"
+        },
+        "emergencyDriven": {
+          "type": "boolean"
+        },
+        "sections": {
+          "type": "object",
+          "description": "Section on/off flags. False removes the section entirely rather than rendering an empty one.",
+          "properties": {
+            "maintenancePlan": {
+              "type": "boolean"
+            },
+            "financing": {
+              "type": "boolean"
+            },
+            "membershipEconomics": {
+              "type": "boolean"
+            },
+            "stormResponse": {
+              "type": "boolean"
+            },
+            "contractRenewal": {
+              "type": "boolean"
+            },
+            "insuranceGuidance": {
+              "type": "boolean"
+            }
+          }
+        },
+        "marketFactors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "seasonalityShape": {
+          "enum": [
+            "flat",
+            "bimodal",
+            "spiky",
+            "contractCycle"
+          ]
+        },
+        "retentionVsReferral": {
+          "enum": [
+            "referralOnly",
+            "referralLed",
+            "balanced",
+            "retentionLed"
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "range": {
+      "type": "object",
+      "required": [
+        "low",
+        "high"
+      ],
+      "properties": {
+        "low": {
+          "type": "number"
+        },
+        "high": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

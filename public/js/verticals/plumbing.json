@@ -1,0 +1,428 @@
+{
+  "$schema": "./_schema.json",
+  "id": "plumbing",
+  "label": "Plumbing",
+  "version": "1.0.0",
+  "sourceEngagement": "Nic's Plumbing, Seattle, August 2026",
+  "housingRelevance": "high",
+  "everydayServices": [
+    "Leak detection and repair",
+    "Faucet repair and replacement",
+    "Toilet repair and replacement",
+    "Garbage disposals",
+    "Clogged drains",
+    "Water pressure problems",
+    "Pipe leaks",
+    "Hose bibbs",
+    "Shutoff valves",
+    "General plumbing troubleshooting",
+    "After-hours and emergency repairs"
+  ],
+  "everydayNote": "Not a lesser category. For a new company this is the fastest path to review volume and neighborhood recognition, and it is where nearly every high-value job originates. Budget and content should treat it as primary.",
+  "specialties": [
+    {
+      "id": "older-home",
+      "label": "Older-Home Plumbing",
+      "requires": {
+        "housingRelevance": "high",
+        "minPre1940Share": 0.2
+      },
+      "services": [
+        "Galvanized pipe replacement",
+        "Copper repiping",
+        "PEX repiping",
+        "Targeted repiping and whole-home repiping",
+        "Low water pressure diagnosis",
+        "Aging water supply line replacement",
+        "Cast iron drain-line problems",
+        "Older drain-system troubleshooting",
+        "Plumbing upgrades during remodeling",
+        "Old-home plumbing inspections, including pre-purchase and pre-remodel"
+      ],
+      "positioningLine": "Modern solutions without unnecessary damage to the character of the home.",
+      "buyerTrigger": "Low water pressure, a second leak in the same year, or a failed inspection during a sale"
+    },
+    {
+      "id": "drain-sewer",
+      "label": "Drain & Sewer",
+      "services": [
+        "Drain cleaning and main sewer cleaning",
+        "Sewer camera inspections",
+        "Root intrusion diagnosis and root removal",
+        "Side sewer diagnosis and repair",
+        "Trenchless sewer repair and replacement",
+        "Backwater valve installation and service",
+        "Sewer backup diagnosis",
+        "Basement and crawlspace drainage-related plumbing",
+        "Sump pumps where appropriate"
+      ],
+      "educationHooks": [
+        "Who owns the sewer line",
+        "What a side sewer is and where responsibility changes",
+        "How a sewer camera inspection works and what you are looking at",
+        "Root intrusion in mature neighborhoods",
+        "Repair versus replacement, and how to decide",
+        "Trenchless options and when they do not apply",
+        "Permitting requirements"
+      ],
+      "note": "Homeowner responsibility for the private lateral is the richest content vein in this trade. Confirm the local rule from the regulatory pack before publishing."
+    },
+    {
+      "id": "water-heaters",
+      "label": "Water Heaters",
+      "services": [
+        "Water heater repair and troubleshooting",
+        "Tank water heater replacement, gas and electric",
+        "Tankless water heaters and tank-to-tankless conversions",
+        "High-efficiency and heat pump water heater upgrades",
+        "Permit handling and code compliance"
+      ],
+      "note": "High frequency, high intent, predictable replacement cycle. Permitting rules are a live differentiator in several markets, see the regulatory pack."
+    }
+  ],
+  "navCategories": [
+    {
+      "label": "Plumbing Repair",
+      "covers": "Leaks, fixtures, toilets, faucets, water pressure, pipe repairs, everyday problems"
+    },
+    {
+      "label": "Water Heaters",
+      "covers": "Tank and tankless repair, replacement and installation, permits"
+    },
+    {
+      "label": "Drain & Sewer",
+      "covers": "Drain cleaning, sewer cameras, root problems, lateral repair, trenchless"
+    },
+    {
+      "label": "Repiping",
+      "covers": "Galvanized replacement, PEX, copper, whole-home upgrades"
+    }
+  ],
+  "highValueServices": [
+    "Galvanized repiping",
+    "Whole-home repiping",
+    "Sewer repair",
+    "Trenchless sewer replacement",
+    "Tankless water heater installation"
+  ],
+  "cplBenchmarks": {
+    "note": "Planning ranges only. Replace with account actuals after 90 days.",
+    "everyday": {
+      "low": 60,
+      "high": 130,
+      "currency": "USD"
+    },
+    "specialty": {
+      "low": 180,
+      "high": 450,
+      "currency": "USD"
+    }
+  },
+  "ticketBands": {
+    "note": "Set per client from their own price book. Never publish these as pricing.",
+    "everyday": null,
+    "midTier": null,
+    "highValue": null
+  },
+  "seasonality": [
+    {
+      "months": "Sep-Nov",
+      "driver": "Fall rains, root intrusion, sewer backups, drainage",
+      "push": "Sewer camera inspections and backwater valves",
+      "publishLead": "August"
+    },
+    {
+      "months": "Dec-Feb",
+      "driver": "Cold snaps, frozen and burst pipes, water heater failures peak",
+      "push": "Highest emergency spend",
+      "publishLead": "November, hose bibbs and shutoff valves"
+    },
+    {
+      "months": "Mar-May",
+      "driver": "Remodel season begins, spring inspections",
+      "push": "Repiping, remodel plumbing, old-home inspections",
+      "publishLead": "February"
+    },
+    {
+      "months": "Jun-Aug",
+      "driver": "Steadiest, lowest emergency volume",
+      "push": "Book planned repipes and sewer replacements",
+      "publishLead": "May"
+    }
+  ],
+  "licensing": {
+    "credentialTypes": [
+      "State contractor registration",
+      "Journey-level plumber certification",
+      "Surety bond",
+      "General liability insurance"
+    ],
+    "optionalCredentials": [
+      {
+        "id": "bat",
+        "label": "Backflow Assembly Tester",
+        "why": "Annual testing is recurring, low-drive-time revenue that suits a tight service area"
+      }
+    ],
+    "byState": {
+      "WA": {
+        "registrationBody": "Washington State Department of Labor & Industries",
+        "advertisingRule": "RCW 18.27.100 requires the current contractor registration number in advertising that shows the contractor's name or address",
+        "advertisingExemptions": [
+          "Alphabetized directory listings",
+          "Vehicle signage",
+          "On-premises signs",
+          "Broadcast advertising"
+        ],
+        "advertisingGuidance": "Narrow exemptions exist, but the practical recommendation is to carry the number on everything including the vehicle wrap",
+        "verificationPitch": "Invite homeowners to verify the license with L&I. Inviting verification converts better than claiming to be licensed"
+      }
+    }
+  },
+  "terminologyTraps": [
+    {
+      "wrong": "backflow preventer",
+      "right": "backwater valve",
+      "context": "Homeowner-facing marketing about sewer backups",
+      "why": "A backflow preventer protects potable water from contamination. A backwater valve stops sewage flowing back into the home. Using them interchangeably loses credibility with any homeowner who has already researched the problem"
+    }
+  ],
+  "adjacentRevenue": [
+    "Backflow assembly testing where the technician holds BAT certification",
+    "Annual maintenance membership: inspection, water heater flush, drain check, priority scheduling"
+  ],
+  "seedKeywords": {
+    "everyday": [
+      "plumber near me",
+      "plumber {neighborhood}",
+      "emergency plumber",
+      "drain cleaning",
+      "water heater repair",
+      "water heater replacement",
+      "leaking pipe",
+      "low water pressure"
+    ],
+    "specialty": [
+      "galvanized pipe replacement",
+      "repiping",
+      "whole house repipe",
+      "sewer repair",
+      "trenchless sewer replacement",
+      "sewer camera inspection",
+      "backwater valve installation",
+      "tankless water heater installation",
+      "water heater permit {city}"
+    ],
+    "negatives": [
+      "jobs",
+      "salary",
+      "apprentice",
+      "DIY",
+      "how to",
+      "parts",
+      "supply",
+      "wholesale",
+      "free",
+      "cheap",
+      "course",
+      "license",
+      "school"
+    ]
+  },
+  "contentTiers": {
+    "tier1": [
+      "Do I need a permit to replace a water heater in {city}?",
+      "Who owns the sewer line in {city}, and who pays when it breaks?",
+      "Does my {city} home still have galvanized pipes?",
+      "How much does it cost to repipe a {city} home?",
+      "What is a side sewer?"
+    ],
+    "tier2": [
+      "When should galvanized plumbing be replaced?",
+      "PEX vs. copper for {city} homes",
+      "Why is my older home losing water pressure?",
+      "Can you repipe a house without destroying the walls?"
+    ],
+    "tier3": [
+      "Who is responsible for a broken side sewer?",
+      "How does a sewer camera inspection work?",
+      "What causes tree roots in {city} sewer lines?",
+      "Do I need to replace my sewer line?",
+      "Trenchless sewer repair vs. excavation",
+      "What is a backwater valve, and do I need one?",
+      "How do I prevent a sewer backup?"
+    ],
+    "tier4": [
+      "Tank vs. tankless water heaters",
+      "How long do water heaters last?",
+      "Signs your water heater needs replacement",
+      "Best water heater for an older {city} home",
+      "Can I switch from a tank to tankless?"
+    ]
+  },
+  "icp": {
+    "definedBy": "mindset",
+    "targetedBy": [
+      "housing stock",
+      "household income"
+    ],
+    "censusAxes": [
+      "medianYearBuilt",
+      "pre1940Share",
+      "ownerOccupancy",
+      "medianHomeValue",
+      "singleFamilyShare"
+    ],
+    "cares": [
+      "Protecting the house",
+      "Fixing the problem correctly and avoiding repeat repairs",
+      "Understanding what they are paying for",
+      "Knowing when the plumber will arrive",
+      "Having someone trustworthy inside the home",
+      "Protecting hardwood floors, plaster, tile and cabinetry",
+      "Keeping the home clean during the work",
+      "Receiving photos or video showing the problem",
+      "Documentation of completed work"
+    ],
+    "notFor": [
+      "Lowest-bid shoppers",
+      "Absentee investors and flippers",
+      "Large multifamily and commercial buildings",
+      "Emergency-only callers with no intent to fix the underlying system"
+    ]
+  },
+  "opsStack": {
+    "fieldService": [
+      "Housecall Pro",
+      "Jobber",
+      "ServiceTitan"
+    ],
+    "fieldServiceDefault": "Housecall Pro",
+    "callTracking": [
+      "CallRail"
+    ],
+    "financing": [
+      "Wisetack",
+      "GreenSky"
+    ],
+    "documentationHardware": [
+      "Sewer camera with recording and WiFi export"
+    ],
+    "criticalMetric": "Call answer rate. Marketing converts to revenue at the moment the phone is answered."
+  },
+  "referralPartners": [
+    {
+      "partner": "Realtors",
+      "hook": "Pre-inspection sewer scopes during the inspection contingency",
+      "priority": 1
+    },
+    {
+      "partner": "Home inspectors",
+      "hook": "They find the galvanized pipe and the failing lateral",
+      "priority": 2
+    },
+    {
+      "partner": "Remodelers and general contractors",
+      "hook": "Older-home renovation work",
+      "priority": 3
+    },
+    {
+      "partner": "Restoration companies",
+      "hook": "Water damage calls produce plumbing work immediately",
+      "priority": 4
+    },
+    {
+      "partner": "Electricians and HVAC",
+      "hook": "Reciprocal, non-competing, same neighborhoods",
+      "priority": 5
+    },
+    {
+      "partner": "Architects and interior designers",
+      "hook": "Older-home projects",
+      "priority": 6
+    },
+    {
+      "partner": "Property managers",
+      "hook": "Small residential portfolios",
+      "priority": 7
+    }
+  ],
+  "gbp": {
+    "primaryCategory": "Plumber",
+    "secondaryCategories": [
+      "Water Heater Installation & Repair Service",
+      "Drainage Service"
+    ],
+    "note": "Do not over-add categories. Most operators in this trade are service-area businesses with a hidden address."
+  },
+  "competitorArchetypes": [
+    {
+      "id": "rollup",
+      "label": "High-volume multi-trade roll-up",
+      "competesOn": "Brand spend, broadcast advertising, 24/7 dispatch, plumbing plus HVAC plus electrical",
+      "vulnerableOn": "Impersonal, rotating technicians, pressure selling, pricing opacity. Cannot claim owner accountability"
+    },
+    {
+      "id": "franchise",
+      "label": "Regional franchise",
+      "competesOn": "Recognizable name, standardized pricing, large ad budget",
+      "vulnerableOn": "Generic, templated neighborhood pages, little genuine local knowledge"
+    },
+    {
+      "id": "independent",
+      "label": "Established independent",
+      "competesOn": "Real reputation, decades in market, good reviews",
+      "vulnerableOn": "Dated website, thin content, weak or unclaimed Google profile, no visual documentation"
+    },
+    {
+      "id": "lowcost",
+      "label": "Low-cost operator",
+      "competesOn": "Price",
+      "vulnerableOn": "No trust infrastructure, no warranty, no documentation"
+    }
+  ],
+  "regulatoryHookTypes": [
+    "Permit requirements for water heater replacement",
+    "Private lateral or side sewer ownership and permitting authority",
+    "Contractor advertising and registration display rules",
+    "Backflow assembly testing requirements",
+    "Seismic strapping and expansion tank requirements"
+  ],
+  "pipeline": {
+    "requiredAnalyses": [
+      "census.housingAge",
+      "census.value",
+      "competitors.serp",
+      "competitors.places",
+      "competitors.onPage",
+      "regulatory.permits"
+    ],
+    "optionalAnalyses": [
+      "census.heatingFuel"
+    ],
+    "skipAnalyses": [
+      "weather.stormEvents",
+      "parcel.lotSize",
+      "ev.adoption"
+    ],
+    "customerShape": "recurring",
+    "repeatIntervalMonths": 18,
+    "emergencyDriven": true,
+    "sections": {
+      "maintenancePlan": true,
+      "financing": true,
+      "membershipEconomics": false,
+      "stormResponse": false,
+      "contractRenewal": false,
+      "insuranceGuidance": false
+    },
+    "marketFactors": [
+      "buildingAge",
+      "ownerOccupancy",
+      "homeValue",
+      "singleFamilyShare"
+    ],
+    "seasonalityShape": "bimodal",
+    "retentionVsReferral": "balanced"
+  }
+}

@@ -1,0 +1,385 @@
+{
+  "_comment": "Regression fixture. Reproduces the Nic's Plumbing engagement, August 2026. Building from this must generate a document matching the shipped reference. Research outputs are included so the fixture runs without live API calls.",
+  "meta": {
+    "clientName": "Nic's Plumbing",
+    "createdAt": "2026-08-21",
+    "engineVersion": "1.0.0"
+  },
+  "vertical": {
+    "id": "plumbing"
+  },
+  "scope": {
+    "includesBrand": true,
+    "includesMessaging": true,
+    "includesStrategy": true,
+    "includesChannelPlans": [],
+    "_note": "Both ON for this engagement, which is the exception. Nic bought brand work. Four in five projects run with both OFF."
+  },
+  "company": {
+    "legalName": "Nic's Plumbing LLC",
+    "dba": "Nic's Plumbing",
+    "ownerFirstName": "Nic",
+    "entityType": "LLC",
+    "state": "WA",
+    "phone": "206-609-8586",
+    "domain": "nicsplumbing.com",
+    "domainStatus": "placeholder",
+    "addressLine": "123 10th Ave E, Unit 708",
+    "city": "Seattle",
+    "zip": "98102",
+    "addressIsPublic": false,
+    "headcount": null,
+    "jobsPerDayCapacity": null,
+    "serviceRadiusMiles": null,
+    "yearsInTrade": null,
+    "registrationNumber": null,
+    "certNumber": null,
+    "bondAmount": null,
+    "insuranceCoverage": null,
+    "warrantyTerms": null,
+    "hoursModel": null,
+    "financingAppetite": null
+  },
+  "market": {
+    "metroId": "seattle-wa",
+    "cityName": "Seattle",
+    "stateCode": "WA",
+    "tiers": {
+      "core": [
+        "Queen Anne",
+        "Magnolia",
+        "Ballard",
+        "Fremont",
+        "Wallingford"
+      ],
+      "expansion": [
+        "Phinney Ridge",
+        "Green Lake",
+        "Greenwood"
+      ],
+      "secondary": [
+        "Belltown",
+        "South Lake Union",
+        "Downtown Seattle"
+      ]
+    },
+    "zctas": [
+      "98109",
+      "98119",
+      "98199",
+      "98107",
+      "98117",
+      "98103",
+      "98105",
+      "98115",
+      "98133"
+    ],
+    "zipNeighborhoodMap": {
+      "98109": [
+        "Queen Anne south",
+        "South Lake Union"
+      ],
+      "98119": [
+        "Queen Anne west and north"
+      ],
+      "98199": [
+        "Magnolia"
+      ],
+      "98107": [
+        "Ballard central"
+      ],
+      "98117": [
+        "Ballard north",
+        "Loyal Heights",
+        "Greenwood west"
+      ],
+      "98103": [
+        "Fremont",
+        "Wallingford",
+        "Phinney Ridge",
+        "Green Lake",
+        "Greenwood"
+      ],
+      "98105": [
+        "Wallingford east",
+        "University District"
+      ],
+      "98115": [
+        "Green Lake east",
+        "Ravenna",
+        "View Ridge"
+      ],
+      "98133": [
+        "Greenwood north",
+        "Bitter Lake",
+        "Shoreline edge"
+      ]
+    },
+    "census": {
+      "vintage": "2019-2023",
+      "source": "ACS 5-year",
+      "expected": {
+        "98117": {
+          "medianYearBuilt": 1950,
+          "pre1940Share": 0.358,
+          "ownerOccupancy": 0.707,
+          "medianHomeValue": 1028100,
+          "singleFamilyShare": 0.781
+        },
+        "98103": {
+          "medianYearBuilt": 1967,
+          "pre1940Share": 0.357,
+          "ownerOccupancy": 0.452,
+          "medianHomeValue": 1012900,
+          "singleFamilyShare": 0.483
+        },
+        "98105": {
+          "medianYearBuilt": 1975,
+          "pre1940Share": 0.293,
+          "ownerOccupancy": 0.331,
+          "medianHomeValue": 1261100,
+          "singleFamilyShare": 0.36
+        },
+        "98119": {
+          "medianYearBuilt": 1968,
+          "pre1940Share": 0.274,
+          "ownerOccupancy": 0.393,
+          "medianHomeValue": 1032500,
+          "singleFamilyShare": 0.281
+        },
+        "98115": {
+          "medianYearBuilt": 1960,
+          "pre1940Share": 0.205,
+          "ownerOccupancy": 0.593,
+          "medianHomeValue": 1041500,
+          "singleFamilyShare": 0.646
+        },
+        "98199": {
+          "medianYearBuilt": 1960,
+          "pre1940Share": 0.183,
+          "ownerOccupancy": 0.624,
+          "medianHomeValue": 1160000,
+          "singleFamilyShare": 0.662
+        },
+        "98107": {
+          "medianYearBuilt": 1992,
+          "pre1940Share": 0.175,
+          "ownerOccupancy": 0.394,
+          "medianHomeValue": 924900,
+          "singleFamilyShare": 0.369
+        },
+        "98109": {
+          "medianYearBuilt": 2003,
+          "pre1940Share": 0.148,
+          "ownerOccupancy": 0.214,
+          "medianHomeValue": 986000,
+          "singleFamilyShare": 0.127
+        },
+        "98133": {
+          "medianYearBuilt": 1974,
+          "pre1940Share": 0.07,
+          "ownerOccupancy": 0.492,
+          "medianHomeValue": 719100,
+          "singleFamilyShare": 0.502
+        }
+      },
+      "cityBenchmark": {
+        "geo": "place:63000 in state:53",
+        "medianYearBuilt": 1974,
+        "pre1940Share": 0.234,
+        "ownerOccupancy": 0.442,
+        "medianHomeValue": 912100,
+        "singleFamilyShare": 0.438
+      }
+    },
+    "regulatoryFile": "data/regulatory/seattle-wa/plumbing.json"
+  },
+  "competitors": {
+    "source": "imported",
+    "importedReportType": "csp",
+    "reportDate": "2026-08-14",
+    "set": [
+      {
+        "name": "Fischer Plumbing",
+        "domain": "fischerplumbing.com",
+        "rating": 2.8,
+        "reviewCount": 5,
+        "claimed": false,
+        "photoCount": 2,
+        "postRecencyDays": null,
+        "monthlyOrganicVisits": 4102,
+        "sixMonthTrend": -0.1,
+        "yearsInBusiness": 40,
+        "onPageClaims": {
+          "pricingShown": false,
+          "emergencyClaim": true,
+          "freeEstimate": false,
+          "blogLastUpdated": "2014"
+        }
+      },
+      {
+        "name": "Bob Oates",
+        "domain": "boboates.com",
+        "rating": 4.7,
+        "reviewCount": 767,
+        "claimed": true,
+        "photoCount": 158,
+        "postRecencyDays": 0,
+        "monthlyOrganicVisits": 1703,
+        "sixMonthTrend": -0.1,
+        "yearsInBusiness": 30,
+        "auditScore": 92,
+        "onPageClaims": {
+          "pricingShown": false,
+          "emergencyClaim": true,
+          "freeEstimate": true,
+          "trustBadges": [
+            "LICENSED RSSC",
+            "20-YEAR WARRANTY",
+            "LOCAL, NEVER SUBCONTRACTED"
+          ]
+        }
+      },
+      {
+        "name": "South West Plumbing",
+        "domain": "onetocall.com",
+        "rating": 4.6,
+        "reviewCount": 5788,
+        "claimed": true,
+        "photoCount": 605,
+        "postRecencyDays": 3,
+        "monthlyOrganicVisits": 5750,
+        "sixMonthTrend": 0.43,
+        "yearsInBusiness": 40,
+        "onPageClaims": {
+          "pricingShown": false,
+          "emergencyClaim": true,
+          "financing": true
+        }
+      }
+    ],
+    "serpHolders": [
+      "rotorooter.com",
+      "yelp.com",
+      "queenplumbingllc.com",
+      "hartsservices.com",
+      "rsplumbingllc.com",
+      "trustedplumbingheating.com",
+      "bens.plumbing",
+      "beaconplumbing.net",
+      "angi.com"
+    ],
+    "serpConcentration": {
+      "domain": "rotorooter.com",
+      "appearsIn": 8,
+      "of": 10
+    }
+  },
+  "brand": {
+    "palette": [
+      {
+        "name": "Olive Green",
+        "hex": "#6B7444",
+        "role": "Primary wordmark, headline accents"
+      },
+      {
+        "name": "Sage Green",
+        "hex": "#8FA284",
+        "role": "Mountain form, large fields"
+      },
+      {
+        "name": "Teal",
+        "hex": "#1E7C88",
+        "role": "Secondary wordmark, links"
+      },
+      {
+        "name": "Deep Teal",
+        "hex": "#0D5560",
+        "role": "Apparel, sign frame, footer"
+      },
+      {
+        "name": "Sunset Orange",
+        "hex": "#E56A2E",
+        "role": "Single accent, calls to action only"
+      },
+      {
+        "name": "Warm Off-White",
+        "hex": "#F6F5F1",
+        "role": "Page ground"
+      }
+    ],
+    "typography": {
+      "headline": "Playfair Display Bold",
+      "body": "Montserrat Medium"
+    },
+    "existingTaglines": [
+      "Honest Service. Quality Work. Flowing Solutions."
+    ],
+    "assets": [
+      "logo",
+      "moodBoard",
+      "vehicleWrapWhite",
+      "vehicleWrapGray",
+      "buildingSignage",
+      "teeDeepTeal",
+      "teeHeather",
+      "poloOnSite",
+      "businessCard"
+    ],
+    "expectedAuditFindings": [
+      "domainMismatch",
+      "residentialVsCommercial",
+      "missingRegistrationNumber",
+      "addressOutsideCoreTier",
+      "taglineCollision",
+      "missingYardSign",
+      "fleetInconsistency",
+      "photographyContextConflict"
+    ]
+  },
+  "offer": {
+    "commercialMode": "embedded",
+    "strategyFee": 5000,
+    "websiteFee": 17500,
+    "contentFee": 2500,
+    "oneTimeTotal": 25000,
+    "rgsMonthly": 550,
+    "hostingMonthly": 65,
+    "adSpendMin": 750,
+    "paymentTerms": "50% deposit, remaining 50% over 24 interest-free monthly payments",
+    "financeMonths": 24,
+    "noticeDays": 30,
+    "launchWeeks": "2 to 4",
+    "designRounds": null,
+    "contactEmail": "ams@efelle.com",
+    "_modeNote": "embedded because no separate proposal was issued for this engagement. A deal with a prop report would use 'referred'.",
+    "_pricingNote": "NON-REPRESENTATIVE, do not use as a template. Nic is a personal contact. The $550 RGS figure is at-cost for a single service and the $65 hosting is far below the $145 standard. The $17,500 build also sits above the $12,500 semi-custom default. Standards are in the project type ladder in GTM-BUILD-SPEC.md. This fixture regression-tests document generation, not pricing.",
+    "projectType": "custom"
+  },
+  "expectedOutput": {
+    "sections": 19,
+    "appendices": [
+      "A",
+      "B",
+      "C"
+    ],
+    "identityPhrase": "Nic, the Classic Home Plumber",
+    "positioningLine": "Old Homes. Modern Plumbing.",
+    "clientOwnedPlaceholders": [
+      "L&I REG #",
+      "CERT #",
+      "BOND AMOUNT",
+      "COVERAGE AMOUNT",
+      "X YEARS",
+      "WARRANTY TERMS",
+      "GOOD",
+      "BETTER",
+      "BEST",
+      "NIC TO DECIDE",
+      "CONFIRM HEADCOUNT AND HIRING PLAN"
+    ],
+    "efelleOwnedPlaceholders": [
+      "NUMBER OF ROUNDS"
+    ]
+  }
+}
