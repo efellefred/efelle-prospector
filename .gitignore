@@ -5,3 +5,4 @@ data/reports/*.json
 data/published/
 data/uploads/
 data/case-studies.json
+docs/design-handoffs/render/out/
