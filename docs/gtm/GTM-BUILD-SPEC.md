@@ -41,8 +41,10 @@ public/js/gtm/sections.js                   the 19-section registry and prompts
 public/js/gtm/research.js                   census, competitor, regulatory, brand audit
 public/js/gtm/qa.js                         the export gate
 public/js/gtm/render.js                     HTML document builder
+public/js/gtm/brief.js                      owner's brief projection, see GTM-OWNER-BRIEF.md
 data/regulatory/seattle-wa/plumbing.json    first regulatory file
 docs/gtm/fixtures/nics-plumbing.input.json  regression fixture (written)
+docs/gtm/fixtures/nics-plumbing.owner-brief.reference.md   brief regression target (written)
 ```
 
 ### Modify
@@ -416,7 +418,14 @@ Single-file HTML, print-to-PDF, matching efelle deliverable standards.
 - **Bold inside dark table headers must inherit color.** `.doc thead th strong { color: inherit }`. Without it, bold header text renders black on black.
 - Wait for images and fonts before generating the PDF.
 
-Save with `saveReport('gtm', clientName, metadata, gtmState, html)`.
+**The owner's brief renders here too.** Every engagement ships two documents from one state: the full
+strategy and an 8 to 14 page brief written to the person who signs. It is a projection of the same
+`gtmState`, never a second generation pass, and it runs after the full document clears QA. The section
+map, the voice rules, the nine extra QA rules and the render overrides are specified in full in
+**`docs/gtm/GTM-OWNER-BRIEF.md`**. Read it before building `render.js`, because the two renders share a
+stylesheet and the brief adds overrides to it.
+
+Save both under one report: `saveReport('gtm', clientName, metadata, gtmState, { full, brief })`.
 
 ---
 
@@ -429,8 +438,10 @@ Save with `saveReport('gtm', clientName, metadata, gtmState, html)`.
 - [ ] Census returns real data for nine ZCTAs plus a city benchmark, percentages computed in JS
 - [ ] All nineteen sections render from the fixture
 - [ ] QA gate runs and blocks export on a seeded defect
-- [ ] Report saves and reloads from the library
+- [ ] Report saves and reloads from the library, with both documents under one entry
+- [ ] Owner's brief renders, passes its own QA rules, and its cover date matches the full document
 - [ ] **Regression: build from `fixtures/nics-plumbing.input.json` and diff against the shipped Nic document. Any section the engine cannot reproduce is a missing pack or state field. Log it, do not paper over it**
+- [ ] **Regression: diff the generated brief against `fixtures/nics-plumbing.owner-brief.reference.md`**
 
 **Phase 2:** competitor import from `csp`, Firecrawl on-page claims, brand audit from uploaded mood board.
 

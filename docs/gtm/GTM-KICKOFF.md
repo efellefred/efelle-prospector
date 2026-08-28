@@ -12,8 +12,9 @@ Read these first, in order:
   2. docs/gtm/GTM-BRIEFING.md        what the engine is and why
   3. docs/gtm/GTM-PIPELINE.md        how it fits with the other engines
   4. docs/gtm/GTM-BUILD-SPEC.md      the implementation spec, files, contracts, QA gate
-  5. docs/gtm/GTM-CLIENT-RECORD.md   the shared client record and CRM boundary
-  6. public/js/verticals/_schema.json and plumbing.json   the trade pack format
+  5. docs/gtm/GTM-OWNER-BRIEF.md     the second deliverable, and how it stays in sync
+  6. docs/gtm/GTM-CLIENT-RECORD.md   the shared client record and CRM boundary
+  7. public/js/verticals/_schema.json and plumbing.json   the trade pack format
 
 For the visual version of the whole pathway, open docs/gtm/prospecting-engine.html
 in a browser. It diagrams every stage from prospect discovery through ContentPro
@@ -32,6 +33,7 @@ Build Phase 1 only, as defined in section 7 of the build spec:
   - vertical pack loader with schema validation
   - Census ACS integration through a new /api/census server proxy
   - all 19 sections rendering from the fixture
+  - the owner's brief rendering from the same state, with its own QA rules
   - the QA gate from section 5 of the build spec, blocking export
   - saveReport with type 'gtm'
 
@@ -62,9 +64,11 @@ Do not push to main until I have reviewed. Push triggers a production deploy.
 | `docs/gtm/GTM-PIPELINE.md` | System flow, industry gates, ContentPro handoff |
 | `docs/gtm/GTM-BUILD-SPEC.md` | Implementation spec |
 | `docs/gtm/GTM-CLIENT-RECORD.md` | Client record, CRM adapter, HubSpot to Seedly assessment |
+| `docs/gtm/GTM-OWNER-BRIEF.md` | The owner's brief: section map, voice rules, QA rules, render |
 | `docs/gtm/prospecting-engine.html` | Visual walkthrough of the full pathway, 8 diagrams |
 | `docs/gtm/GTM-KICKOFF.md` | This file |
 | `docs/gtm/fixtures/nics-plumbing.input.json` | Regression fixture |
+| `docs/gtm/fixtures/nics-plumbing.owner-brief.reference.md` | Brief regression target |
 | `public/js/verticals/_schema.json` | Vertical pack schema |
 | `public/js/verticals/plumbing.json` | First trade pack |
 

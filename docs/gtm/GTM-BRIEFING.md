@@ -264,6 +264,15 @@ Sections 16 and 17 pull from the same pricing model `prop.js` uses. One source o
 
 ---
 
+### The second document
+
+The engine outputs two documents, not one. The full strategy is written to survive scrutiny. The owner's
+brief, 8 to 14 pages, is written to the person who signs, in second person, with no vocabulary he has to
+look up. It is a projection of the same state rather than a second pass, which is what keeps the two from
+contradicting each other. `scope.includesOwnerBrief` defaults to true. See `GTM-OWNER-BRIEF.md`.
+
+---
+
 ## 7. The QA gate: build this, it is where three revision rounds went
 
 Every one of these was a real defect caught late in the Nic build. All are mechanically checkable and should block export.

@@ -223,6 +223,13 @@ Every report reads the client record, so **none of them is gated by the signatur
 
 ---
 
+**Every GTM engagement ships two documents.** The full strategy, and an owner's brief of 8 to 14 pages
+written to the person who signs. Same state, two renders, so they cannot disagree. The brief is what goes
+in the email; the strategy sits underneath it and gets used live on the call. Specified in
+`docs/gtm/GTM-OWNER-BRIEF.md`. Nothing downstream consumes either rendered document, only `gtmState`.
+
+---
+
 ## 7. Scope toggles: not every project is a brand project
 
 Branding and messaging work applies to roughly one project in five. The other four are a website and a growth program for a company whose identity already exists and is not in question. Producing forty pages of brand analysis for those clients is wasted effort and it makes the document read as padded.
