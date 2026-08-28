@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Prospecting Engine</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#FBFAF8; --raise:#FFFFFF; --ink:#1A1917; --ink-2:#4A463F; --mute:#6B6862;
+  --rule:#DFDBD4; --rule-soft:#EDEAE5;
+  --accent:#F05128; --accent-soft:rgba(240,81,40,.10); --accent-line:rgba(240,81,40,.32);
+  --crm:#2F6E7A; --crm-soft:rgba(47,110,122,.10); --crm-line:rgba(47,110,122,.34);
+  --shadow:0 1px 2px rgba(26,25,23,.05),0 8px 24px -12px rgba(26,25,23,.12);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --paper:#141312; --raise:#1D1B19; --ink:#F2EFEA; --ink-2:#C9C3B9; --mute:#938C81;
+    --rule:#332F2B; --rule-soft:#252220;
+    --accent:#FF7A52; --accent-soft:rgba(255,122,82,.13); --accent-line:rgba(255,122,82,.40);
+    --crm:#68B4C2; --crm-soft:rgba(104,180,194,.12); --crm-line:rgba(104,180,194,.40);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --paper:#141312; --raise:#1D1B19; --ink:#F2EFEA; --ink-2:#C9C3B9; --mute:#938C81;
+  --rule:#332F2B; --rule-soft:#252220;
+  --accent:#FF7A52; --accent-soft:rgba(255,122,82,.13); --accent-line:rgba(255,122,82,.40);
+  --crm:#68B4C2; --crm-soft:rgba(104,180,194,.12); --crm-line:rgba(104,180,194,.40);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink-2);
+  font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.65; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:960px;margin:0 auto;padding:64px 28px 96px;display:flex;flex-direction:column;gap:0}
+.mono{font-family:'IBM Plex Mono','SF Mono',ui-monospace,monospace}
+
+/* masthead */
+header{border-bottom:2px solid var(--ink);padding-bottom:22px;margin-bottom:44px}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+h1{font-size:clamp(34px,5.2vw,50px);line-height:1.04;letter-spacing:-.025em;font-weight:700;color:var(--ink);margin:0 0 14px;text-wrap:balance}
+.standfirst{font-size:18px;line-height:1.6;color:var(--mute);max-width:60ch;margin:0}
+
+section{padding-top:52px}
+h2{font-size:12px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--mute);margin:0 0 8px;display:flex;align-items:baseline;gap:12px}
+h2 .n{color:var(--accent)}
+h3{font-size:clamp(21px,2.6vw,27px);line-height:1.22;letter-spacing:-.017em;font-weight:600;color:var(--ink);margin:0 0 16px;text-wrap:balance;max-width:26ch}
+p{margin:0 0 16px;max-width:66ch}
+p strong{color:var(--ink);font-weight:600}
+code{font-family:'IBM Plex Mono',monospace;font-size:.87em;background:var(--rule-soft);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+
+figure{margin:30px 0 12px;background:var(--raise);border:1px solid var(--rule);border-radius:10px;padding:26px 24px 18px;box-shadow:var(--shadow);overflow-x:auto}
+figure svg{display:block;width:100%;max-width:100%;height:auto;min-width:640px;color:var(--ink)}
+figcaption{margin-top:18px;padding-top:14px;border-top:1px solid var(--rule-soft);font-size:13.5px;line-height:1.6;color:var(--mute);max-width:70ch}
+figcaption b{color:var(--ink-2);font-weight:600}
+
+.callout{border-left:3px solid var(--accent);background:var(--accent-soft);padding:16px 20px;border-radius:0 7px 7px 0;margin:26px 0}
+.callout p{margin:0;max-width:62ch;color:var(--ink-2)}
+.callout p strong{color:var(--ink)}
+
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px}
+th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--mute);padding:0 14px 9px 0;border-bottom:1px solid var(--rule)}
+td{padding:11px 14px 11px 0;border-bottom:1px solid var(--rule-soft);vertical-align:top;line-height:1.5}
+td:first-child{color:var(--ink);font-weight:500}
+tr:last-child td{border-bottom:none}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.tag.local{background:var(--accent-soft);color:var(--accent)}
+.tag.crm{background:var(--crm-soft);color:var(--crm)}
+
+footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--mute);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .mono{letter-spacing:.04em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">efelle creative &middot; Systems architecture</p>
+  <h1>The Prospecting Engine</h1>
+  <p class="standfirst">Reordering the stack so useful work reaches a prospect before the first conversation, the CRM only ever holds real opportunities, and one client record carries a company from an unknown pin on a map to a published website.</p>
+</header>
+
+<section>
+  <h2><span class="n">01</span> The shift</h2>
+  <h3>The reports move in front of the conversation</h3>
+  <p>Today a lead arrives, gets a meeting link, and the war report and competitor report are prepared for a call that is already booked. The research supports a conversation that inbound already won.</p>
+  <p>Inverted, the same two reports become the reason the conversation happens. <strong>The work is the outreach.</strong> A roofer who receives a genuine audit of their site and three named competitors has been given something before being asked for anything.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 300" role="img" aria-label="Two timelines comparing the current inbound sequence with the proposed outbound sequence. In the current flow the first conversation happens at the start, before any research. In the proposed flow the research is produced first and the first conversation happens after the prospect has received it.">
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+        <marker id="a1c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <text x="0" y="20" class="mono" font-size="11" font-weight="600" letter-spacing="1.6" fill="var(--mute)">TODAY &#183; INBOUND</text>
+      <line x1="0" y1="34" x2="900" y2="34" stroke="var(--rule)" stroke-width="1"/>
+
+      <g font-family="IBM Plex Sans" font-size="12.5" fill="currentColor">
+        <rect x="0" y="56" width="152" height="42" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="76" y="81" text-anchor="middle" fill="var(--accent)" font-weight="600">Lead arrives</text>
+
+        <rect x="188" y="56" width="150" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="263" y="81" text-anchor="middle">Meeting link</text>
+
+        <rect x="374" y="56" width="168" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="458" y="76" text-anchor="middle">War + competitor</text>
+        <text x="458" y="90" text-anchor="middle" font-size="10.5" fill="var(--mute)">reports</text>
+
+        <rect x="578" y="56" width="128" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="642" y="81" text-anchor="middle">Meeting</text>
+
+        <rect x="742" y="56" width="158" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="821" y="81" text-anchor="middle">Proposal</text>
+
+        <line x1="152" y1="77" x2="182" y2="77" stroke="currentColor" stroke-width="1.3" marker-end="url(#a1)"/>
+        <line x1="338" y1="77" x2="368" y2="77" stroke="currentColor" stroke-width="1.3" marker-end="url(#a1)"/>
+        <line x1="542" y1="77" x2="572" y2="77" stroke="currentColor" stroke-width="1.3" marker-end="url(#a1)"/>
+        <line x1="706" y1="77" x2="736" y2="77" stroke="currentColor" stroke-width="1.3" marker-end="url(#a1)"/>
+      </g>
+      <line x1="76" y1="108" x2="76" y2="126" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="76" y="140" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="var(--accent)">FIRST CONTACT</text>
+      <text x="76" y="154" text-anchor="middle" font-size="10.5" fill="var(--mute)">before any work exists</text>
+
+      <text x="0" y="200" class="mono" font-size="11" font-weight="600" letter-spacing="1.6" fill="var(--mute)">PROPOSED &#183; OUTBOUND</text>
+      <line x1="0" y1="214" x2="900" y2="214" stroke="var(--rule)" stroke-width="1"/>
+
+      <g font-family="IBM Plex Sans" font-size="12.5" fill="currentColor">
+        <rect x="0" y="236" width="152" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="76" y="255" text-anchor="middle">Source</text>
+        <text x="76" y="269" text-anchor="middle" font-size="10.5" fill="var(--mute)">by trade + market</text>
+
+        <rect x="188" y="236" width="150" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="263" y="255" text-anchor="middle">War + competitor</text>
+        <text x="263" y="269" text-anchor="middle" font-size="10.5" fill="var(--mute)">run unprompted</text>
+
+        <rect x="374" y="236" width="168" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="458" y="255" text-anchor="middle">Send the reports</text>
+        <text x="458" y="269" text-anchor="middle" font-size="10.5" fill="var(--mute)">no ask attached</text>
+
+        <rect x="578" y="236" width="128" height="42" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="642" y="261" text-anchor="middle" fill="var(--accent)" font-weight="600">They reply</text>
+
+        <rect x="742" y="236" width="158" height="42" rx="5" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="821" y="255" text-anchor="middle">Meeting</text>
+        <text x="821" y="269" text-anchor="middle" font-size="10.5" fill="var(--mute)">already informed</text>
+
+        <line x1="152" y1="257" x2="182" y2="257" stroke="currentColor" stroke-width="1.3" marker-end="url(#a1)"/>
+        <line x1="338" y1="257" x2="368" y2="257" stroke="currentColor" stroke-width="1.3" marker-end="url(#a1)"/>
+        <line x1="542" y1="257" x2="572" y2="257" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#a1c)"/>
+        <line x1="706" y1="257" x2="736" y2="257" stroke="currentColor" stroke-width="1.3" marker-end="url(#a1)"/>
+      </g>
+      <line x1="642" y1="212" x2="642" y2="230" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="642" y="206" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="var(--accent)">FIRST CONTACT</text>
+      <text x="642" y="294" text-anchor="middle" font-size="10.5" fill="var(--mute)">after the work has landed</text>
+    </svg>
+    <figcaption><b>The only structural change is where first contact sits.</b> Same reports, same meeting, same proposal. Moving the research ahead of the conversation turns it from sales support into the reason a stranger writes back.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="n">02</span> The gate</h2>
+  <h3>Records are born local and promoted into the CRM</h3>
+  <p>Running war reports on forty roofers should not put forty companies into the CRM. Prospector is a research tool, and research is cheap; a CRM full of companies nobody ever spoke to is worse than useless because it destroys the meaning of the pipeline count.</p>
+  <p>So a client record starts as <code>crmSource: "local"</code> and lives entirely inside Prospector. It crosses into the CRM at one point only.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 400" role="img" aria-label="Pipeline diagram. On the left, inside Prospector, sourcing produces a local client record which feeds the war report and competitor engines. A vertical qualification gate sits in the middle. Only records that pass the gate are promoted into the CRM, where a company is created and a CRM id is written back. The strategy, proposal, SEO and ContentPro stages run to the right of the gate.">
+      <defs>
+        <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+        <marker id="a2c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="var(--crm)"/>
+        </marker>
+        <marker id="a2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <rect x="0" y="30" width="404" height="300" rx="8" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="14" y="52" class="mono" font-size="11" font-weight="600" letter-spacing="1.4" fill="var(--accent)">PROSPECTOR &#183; LOCAL</text>
+
+      <rect x="496" y="30" width="404" height="300" rx="8" fill="var(--crm-soft)" stroke="var(--crm-line)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="886" y="52" text-anchor="end" class="mono" font-size="11" font-weight="600" letter-spacing="1.4" fill="var(--crm)">CRM &#183; REAL OPPORTUNITIES</text>
+
+      <line x1="450" y1="18" x2="450" y2="352" stroke="var(--accent)" stroke-width="2"/>
+      <text x="450" y="14" text-anchor="middle" class="mono" font-size="11" font-weight="600" letter-spacing="1.2" fill="var(--accent)">QUALIFICATION GATE</text>
+      <text x="450" y="368" text-anchor="middle" font-size="11.5" fill="var(--mute)">they booked the call</text>
+
+      <g font-family="IBM Plex Sans" font-size="12.5" fill="currentColor">
+        <rect x="26" y="76" width="150" height="40" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="101" y="101" text-anchor="middle">Source prospects</text>
+
+        <rect x="26" y="148" width="150" height="40" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="101" y="167" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">wsr</text>
+        <text x="101" y="181" text-anchor="middle" font-size="10.5" fill="var(--mute)">war report</text>
+
+        <rect x="26" y="220" width="150" height="40" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="101" y="239" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">competitor</text>
+        <text x="101" y="253" text-anchor="middle" font-size="10.5" fill="var(--mute)">market audit</text>
+
+        <rect x="228" y="140" width="176" height="106" rx="6" fill="var(--raise)" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="316" y="166" text-anchor="middle" font-weight="600" fill="var(--ink)">Client record</text>
+        <text x="316" y="186" text-anchor="middle" class="mono" font-size="10.5" fill="var(--accent)">crmSource: "local"</text>
+        <text x="316" y="208" text-anchor="middle" font-size="10.5" fill="var(--mute)">company &#183; site &#183; market</text>
+        <text x="316" y="224" text-anchor="middle" font-size="10.5" fill="var(--mute)">competitors &#183; reports</text>
+
+        <line x1="176" y1="96" x2="222" y2="150" stroke="currentColor" stroke-width="1.2" marker-end="url(#a2)"/>
+        <line x1="176" y1="168" x2="222" y2="180" stroke="currentColor" stroke-width="1.2" marker-end="url(#a2)"/>
+        <line x1="176" y1="240" x2="222" y2="216" stroke="currentColor" stroke-width="1.2" marker-end="url(#a2)"/>
+
+        <path d="M404 174 L470 174" stroke="var(--accent)" stroke-width="2" marker-end="url(#a2a)"/>
+        <text x="437" y="164" text-anchor="middle" class="mono" font-size="10" fill="var(--accent)">PROMOTE</text>
+
+        <rect x="522" y="76" width="180" height="52" rx="5" fill="var(--raise)" stroke="var(--crm)" stroke-width="1.6"/>
+        <text x="612" y="97" text-anchor="middle" font-weight="600" fill="var(--crm)">Company created</text>
+        <text x="612" y="114" text-anchor="middle" class="mono" font-size="10.5" fill="var(--mute)">returns crmId</text>
+
+        <path d="M612 128 C612 150 470 150 470 168" fill="none" stroke="var(--crm)" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#a2c)"/>
+        <text x="560" y="146" text-anchor="middle" class="mono" font-size="10" fill="var(--crm)">writes back</text>
+
+        <rect x="522" y="164" width="118" height="40" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="581" y="189" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">gtm</text>
+
+        <rect x="664" y="164" width="118" height="40" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="723" y="189" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">prop</text>
+
+        <rect x="522" y="236" width="118" height="40" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="581" y="261" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">seo &#183; cap</text>
+
+        <rect x="664" y="236" width="180" height="40" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="754" y="261" text-anchor="middle" font-size="11.5">ContentPro</text>
+
+        <line x1="640" y1="184" x2="658" y2="184" stroke="currentColor" stroke-width="1.3" marker-end="url(#a2)"/>
+        <line x1="581" y1="204" x2="581" y2="230" stroke="currentColor" stroke-width="1.3" marker-end="url(#a2)"/>
+        <line x1="640" y1="256" x2="658" y2="256" stroke="currentColor" stroke-width="1.3" marker-end="url(#a2)"/>
+        <text x="723" y="222" text-anchor="middle" font-size="10.5" fill="var(--mute)">signed</text>
+      </g>
+    </svg>
+    <figcaption><b>One arrow crosses the gate, and it only fires when a prospect engages.</b> Everything to the left costs nothing but compute. Because reports are keyed to the internal record id rather than the CRM id, the entire research history follows the company across at promotion, with nothing re-entered.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <p><strong>Yes, pushed in rather than pulled from.</strong> A prospect who already exists in the CRM is picked from search and pulled down instead, but that is the smaller path. In an outbound motion most records are born in Prospector and promoted, which is why the pipeline count stays honest.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">03</span> What fires the gate</h2>
+  <h3>Open events, not a judgment call</h3>
+  <p>Sourcing from Google Places gives more than a name and a URL. An unclaimed profile, thin photos, no Posts and a review count under the market median say a prospect has an addressable problem <em>and</em> that nobody is already selling them. <strong>Score the list on those signals rather than only personalizing from them</strong>, so the send queue is ranked by opportunity instead of alphabet.</p>
+  <p>Then reuse what already exists. Prospector mints publish tokens and serves hosted pages at <code>/p/:token</code> for proposals, with views logged. Point that at the war and competitor reports and the send becomes a short personal note plus a link, which beats a PDF attachment on deliverability and produces the signal below.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 330" role="img" aria-label="Diagram of the outbound loop. Google Places sourcing feeds a scored queue. Reports are generated and published as hosted links. Send events produce four states: never opened stays cold, opened once is interest, opened repeatedly is warm, and a reply or booking is qualified. Only the qualified state crosses the promotion gate into the CRM.">
+      <defs>
+        <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+        <marker id="a5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <g font-family="IBM Plex Sans" font-size="12" fill="currentColor">
+        <rect x="0" y="24" width="140" height="44" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="70" y="44" text-anchor="middle">Google Places</text>
+        <text x="70" y="58" text-anchor="middle" font-size="10.5" fill="var(--mute)">trade + market</text>
+
+        <rect x="176" y="24" width="140" height="44" rx="5" fill="var(--raise)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="246" y="44" text-anchor="middle" fill="var(--accent)" font-weight="600">Scored queue</text>
+        <text x="246" y="58" text-anchor="middle" font-size="10.5" fill="var(--mute)">weak incumbent first</text>
+
+        <rect x="352" y="24" width="140" height="44" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="422" y="44" text-anchor="middle">wsr + competitor</text>
+        <text x="422" y="58" text-anchor="middle" font-size="10.5" fill="var(--mute)">generated</text>
+
+        <rect x="528" y="24" width="152" height="44" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="604" y="44" text-anchor="middle" class="mono" font-size="11">/p/:token</text>
+        <text x="604" y="58" text-anchor="middle" font-size="10.5" fill="var(--mute)">hosted, not attached</text>
+
+        <rect x="716" y="24" width="140" height="44" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="786" y="44" text-anchor="middle">Send</text>
+        <text x="786" y="58" text-anchor="middle" font-size="10.5" fill="var(--mute)">note + link</text>
+
+        <line x1="140" y1="46" x2="170" y2="46" stroke="currentColor" stroke-width="1.3" marker-end="url(#a5)"/>
+        <line x1="316" y1="46" x2="346" y2="46" stroke="currentColor" stroke-width="1.3" marker-end="url(#a5)"/>
+        <line x1="492" y1="46" x2="522" y2="46" stroke="currentColor" stroke-width="1.3" marker-end="url(#a5)"/>
+        <line x1="680" y1="46" x2="710" y2="46" stroke="currentColor" stroke-width="1.3" marker-end="url(#a5)"/>
+
+        <path d="M786 68 L786 96 L70 96 L70 128" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#a5)"/>
+        <text x="428" y="90" text-anchor="middle" class="mono" font-size="10" fill="var(--mute)">VIEW EVENTS LOGGED ON THE LOCAL RECORD</text>
+
+        <rect x="0" y="136" width="196" height="56" rx="5" fill="var(--raise)" stroke="var(--rule)" stroke-width="1"/>
+        <text x="16" y="158" class="mono" font-size="10.5" font-weight="600" fill="var(--mute)">COLD</text>
+        <text x="16" y="176" font-size="11.5">never opened</text>
+        <text x="16" y="186" font-size="10.5" fill="var(--mute)">stays local, no record</text>
+
+        <rect x="228" y="136" width="196" height="56" rx="5" fill="var(--raise)" stroke="var(--rule)" stroke-width="1"/>
+        <text x="244" y="158" class="mono" font-size="10.5" font-weight="600" fill="var(--mute)">INTEREST</text>
+        <text x="244" y="176" font-size="11.5">opened once</text>
+        <text x="244" y="186" font-size="10.5" fill="var(--mute)">queue a follow-up</text>
+
+        <rect x="456" y="136" width="196" height="56" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1.3"/>
+        <text x="472" y="158" class="mono" font-size="10.5" font-weight="600" fill="var(--ink)">WARM</text>
+        <text x="472" y="176" font-size="11.5">opened again, read deep</text>
+        <text x="472" y="186" font-size="10.5" fill="var(--mute)">surface for outreach</text>
+
+        <rect x="684" y="136" width="196" height="56" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="700" y="158" class="mono" font-size="10.5" font-weight="600" fill="var(--accent)">QUALIFIED</text>
+        <text x="700" y="176" font-size="11.5" fill="var(--ink)">replied or booked</text>
+        <text x="700" y="186" font-size="10.5" fill="var(--mute)">the only state that crosses</text>
+
+        <line x1="196" y1="164" x2="222" y2="164" stroke="var(--rule)" stroke-width="1.2"/>
+        <line x1="424" y1="164" x2="450" y2="164" stroke="currentColor" stroke-width="1.2" marker-end="url(#a5)"/>
+        <line x1="652" y1="164" x2="678" y2="164" stroke="currentColor" stroke-width="1.2" marker-end="url(#a5)"/>
+
+        <line x1="782" y1="192" x2="782" y2="240" stroke="var(--accent)" stroke-width="2" marker-end="url(#a5a)"/>
+        <text x="792" y="220" class="mono" font-size="10" fill="var(--accent)">PROMOTE</text>
+
+        <rect x="620" y="248" width="280" height="56" rx="6" fill="var(--crm-soft)" stroke="var(--crm)" stroke-width="1.6"/>
+        <text x="760" y="272" text-anchor="middle" font-weight="600" fill="var(--crm)">CRM company created</text>
+        <text x="760" y="290" text-anchor="middle" font-size="10.5" fill="var(--mute)">open history pushes as activity</text>
+
+        <text x="0" y="272" font-size="11.5" fill="var(--mute)">Everything left of qualified costs</text>
+        <text x="0" y="288" font-size="11.5" fill="var(--mute)">compute and nothing else.</text>
+      </g>
+    </svg>
+    <figcaption><b>The gate stops being a judgment call.</b> Sent and never opened produces no CRM record at all, which is what keeps the pipeline count meaningful. When a company does cross, its open history crosses with it, so the first CRM touch has a real timeline instead of an empty one.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <p><strong>Framing decides the reply more than specificity does.</strong> "Your Google profile is unclaimed and you have 12 reviews" is the most-used cold SEO opener in existence and gets categorized by line two. "Fischer has been on Queen Anne forty years with an unclaimed profile and two photos, Bob Oates posted yesterday and has 767 reviews, here is the gap that leaves" is the same data handed over as market intelligence. The test: if the opening line survives a find-and-replace of the company name, it is a merge field and it will read as one.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">04</span> The spine</h2>
+  <h3>Every engine reads the record and writes back to it</h3>
+  <p>The reason the reordering works at all is that facts stop living inside documents. Today the only way to reuse something the war report established is to open the PDF. Once the record is the source of truth, each engine contributes its slice and consumes everyone else's.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 300" role="img" aria-label="Diagram of the client record as a central spine. The war report and competitor engines write company, site and competitor data into it. The strategy, SEO, proposal and action plan engines read from it and write their own slices back. ContentPro consumes the finished record.">
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+      </defs>
+
+      <rect x="60" y="128" width="780" height="46" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.8"/>
+      <text x="450" y="150" text-anchor="middle" font-family="IBM Plex Sans" font-size="14" font-weight="600" fill="var(--ink)">CLIENT RECORD</text>
+      <text x="450" y="166" text-anchor="middle" class="mono" font-size="10.5" fill="var(--accent)">company &#183; site &#183; market &#183; competitors &#183; brand &#183; positioning &#183; offer &#183; keywords</text>
+
+      <g font-family="IBM Plex Sans" font-size="12" fill="currentColor">
+        <rect x="86" y="40" width="122" height="36" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="147" y="63" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">wsr</text>
+        <line x1="147" y1="76" x2="147" y2="122" stroke="currentColor" stroke-width="1.2" marker-end="url(#a3)"/>
+        <text x="153" y="102" font-size="10.5" fill="var(--mute)">company, site</text>
+
+        <rect x="296" y="40" width="152" height="36" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="372" y="63" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">competitor</text>
+        <line x1="372" y1="76" x2="372" y2="122" stroke="currentColor" stroke-width="1.2" marker-end="url(#a3)"/>
+        <text x="378" y="102" font-size="10.5" fill="var(--mute)">competitor set, SERP</text>
+
+        <rect x="560" y="40" width="122" height="36" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="621" y="63" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">gtm</text>
+        <line x1="621" y1="122" x2="621" y2="80" stroke="currentColor" stroke-width="1.2" marker-end="url(#a3)"/>
+        <line x1="640" y1="76" x2="640" y2="122" stroke="currentColor" stroke-width="1.2" marker-end="url(#a3)"/>
+        <text x="648" y="102" font-size="10.5" fill="var(--mute)">positioning, brand</text>
+
+        <rect x="742" y="40" width="122" height="36" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="803" y="63" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">prop</text>
+        <line x1="803" y1="122" x2="803" y2="80" stroke="currentColor" stroke-width="1.2" marker-end="url(#a3)"/>
+        <text x="811" y="102" font-size="10.5" fill="var(--mute)">offer</text>
+
+        <rect x="176" y="226" width="152" height="36" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="252" y="249" text-anchor="middle" class="mono" font-size="11.5" font-weight="600">seo &#183; cap</text>
+        <line x1="252" y1="180" x2="252" y2="220" stroke="currentColor" stroke-width="1.2" marker-end="url(#a3)"/>
+        <text x="260" y="204" font-size="10.5" fill="var(--mute)">reads all</text>
+
+        <rect x="536" y="226" width="212" height="36" rx="5" fill="var(--raise)" stroke="var(--crm)" stroke-width="1.4"/>
+        <text x="642" y="249" text-anchor="middle" font-size="12.5" fill="var(--crm)" font-weight="600">ContentPro</text>
+        <line x1="642" y1="180" x2="642" y2="220" stroke="var(--crm)" stroke-width="1.4" marker-end="url(#a3)"/>
+        <text x="650" y="204" font-size="10.5" fill="var(--mute)">profile, sitemap, content plan</text>
+      </g>
+    </svg>
+    <figcaption><b>Order stops mattering.</b> Run the strategy cold and it does its own research; run it after the war report and competitor audit and it skips two stages and starts from evidence. The two upstream engines become accelerators rather than prerequisites.</figcaption>
+  </figure>
+
+  <table>
+    <thead><tr><th>Engine</th><th>Writes</th><th>Reads</th><th>Side</th></tr></thead>
+    <tbody>
+      <tr><td>wsr</td><td>company, site</td><td>entry point</td><td><span class="tag local">local</span></td></tr>
+      <tr><td>competitor</td><td>competitor set, SERP holders</td><td>domain, city, trade</td><td><span class="tag local">local</span></td></tr>
+      <tr><td>gtm</td><td>positioning, market, census, brand</td><td>everything above</td><td><span class="tag crm">promoted</span></td></tr>
+      <tr><td>prop</td><td>offer</td><td>scope implied by gtm</td><td><span class="tag crm">promoted</span></td></tr>
+      <tr><td>seo, cap</td><td>keywords, silos, plan</td><td>all</td><td><span class="tag crm">promoted</span></td></tr>
+      <tr><td>ContentPro</td><td>content</td><td>the finished record</td><td><span class="tag crm">promoted</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2><span class="n">05</span> The full pathway</h2>
+  <h3>Four systems, one record, six stages</h3>
+  <p>The engines are stages in one lifecycle rather than separate tools. Everything left of signature is a sales artifact and lives locally; everything right of it is a delivery obligation. The boundaries between apps matter because they decide who is allowed to write.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 460" role="img" aria-label="Full lifecycle diagram. Command Center owns the client record and contains Prospector and Onboard. Six stages run left to right: find, warm, educate, sell, onboard, build. The record is local through the first three stages, promoted to the CRM at qualification, and exported at onboarding to ContentPro and the invoicing app. ContentPro never writes back; invoicing writes only payment status.">
+      <defs>
+        <marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+        <marker id="a6a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"/>
+        </marker>
+        <marker id="a6c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="var(--crm)"/>
+        </marker>
+      </defs>
+
+      <rect x="0" y="26" width="900" height="212" rx="9" fill="var(--accent-soft)" stroke="var(--accent-line)" stroke-width="1.2"/>
+      <text x="16" y="48" class="mono" font-size="11" font-weight="600" letter-spacing="1.4" fill="var(--accent)">COMMAND CENTER &#183; OWNS THE CLIENT RECORD</text>
+
+      <g font-family="IBM Plex Sans" font-size="11.5" fill="currentColor">
+        <text x="76" y="76" text-anchor="middle" class="mono" font-size="10" font-weight="600" letter-spacing="1.1" fill="var(--mute)">FIND</text>
+        <rect x="20" y="86" width="112" height="46" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="76" y="106" text-anchor="middle">Places</text>
+        <text x="76" y="120" text-anchor="middle" font-size="10" fill="var(--mute)">score the list</text>
+
+        <text x="222" y="76" text-anchor="middle" class="mono" font-size="10" font-weight="600" letter-spacing="1.1" fill="var(--mute)">WARM</text>
+        <rect x="158" y="86" width="128" height="46" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="222" y="106" text-anchor="middle" class="mono" font-size="11">wsr &#183; competitor</text>
+        <text x="222" y="120" text-anchor="middle" font-size="10" fill="var(--mute)">sent, opens tracked</text>
+
+        <text x="382" y="76" text-anchor="middle" class="mono" font-size="10" font-weight="600" letter-spacing="1.1" fill="var(--mute)">EDUCATE</text>
+        <rect x="312" y="86" width="140" height="46" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="382" y="106" text-anchor="middle" class="mono" font-size="11">gtm &#183; channel plans</text>
+        <text x="382" y="120" text-anchor="middle" font-size="10" fill="var(--mute)">a menu, not a sequence</text>
+
+        <text x="548" y="76" text-anchor="middle" class="mono" font-size="10" font-weight="600" letter-spacing="1.1" fill="var(--mute)">SELL</text>
+        <rect x="478" y="86" width="140" height="46" rx="5" fill="var(--raise)" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="548" y="106" text-anchor="middle" class="mono" font-size="11" fill="var(--accent)">prop</text>
+        <text x="548" y="120" text-anchor="middle" font-size="10" fill="var(--mute)">signature</text>
+
+        <text x="714" y="76" text-anchor="middle" class="mono" font-size="10" font-weight="600" letter-spacing="1.1" fill="var(--mute)">ONBOARD</text>
+        <rect x="644" y="86" width="140" height="46" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="714" y="106" text-anchor="middle">Onboard</text>
+        <text x="714" y="120" text-anchor="middle" font-size="10" fill="var(--mute)">access, brackets filled</text>
+
+        <line x1="132" y1="109" x2="152" y2="109" stroke="currentColor" stroke-width="1.3" marker-end="url(#a6)"/>
+        <line x1="286" y1="109" x2="306" y2="109" stroke="currentColor" stroke-width="1.3" marker-end="url(#a6)"/>
+        <line x1="452" y1="109" x2="472" y2="109" stroke="currentColor" stroke-width="1.3" marker-end="url(#a6)"/>
+        <line x1="618" y1="109" x2="638" y2="109" stroke="currentColor" stroke-width="1.3" marker-end="url(#a6)"/>
+
+        <rect x="20" y="164" width="764" height="52" rx="6" fill="var(--raise)" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="402" y="186" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">CLIENT RECORD</text>
+        <text x="402" y="203" text-anchor="middle" class="mono" font-size="10" fill="var(--accent)">local &#8594;&#8594;&#8594; promoted at qualification &#8594;&#8594;&#8594; project</text>
+
+        <line x1="76" y1="132" x2="76" y2="158" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="222" y1="132" x2="222" y2="158" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="382" y1="132" x2="382" y2="158" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="548" y1="132" x2="548" y2="158" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="714" y1="132" x2="714" y2="158" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/>
+
+        <line x1="836" y1="86" x2="836" y2="216" stroke="var(--crm-line)" stroke-width="1.4" stroke-dasharray="4 4"/>
+        <text x="864" y="150" text-anchor="middle" class="mono" font-size="9.5" font-weight="600" fill="var(--crm)" transform="rotate(90 864 150)">CRM SYNC</text>
+
+        <text x="452" y="252" text-anchor="middle" class="mono" font-size="10" font-weight="600" letter-spacing="1.2" fill="var(--accent)">EXPORT AT ONBOARDING</text>
+        <path d="M300 216 C300 268 240 268 240 300" fill="none" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#a6a)"/>
+        <path d="M600 216 C600 268 660 268 660 300" fill="none" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#a6a)"/>
+
+        <rect x="20" y="308" width="440" height="118" rx="8" fill="var(--crm-soft)" stroke="var(--crm)" stroke-width="1.4"/>
+        <text x="240" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="var(--crm)">ContentPro</text>
+        <text x="240" y="354" text-anchor="middle" font-size="11">client profile &#183; sitemap &#183; content plan</text>
+        <text x="240" y="372" text-anchor="middle" font-size="11">plus every report as its knowledge base</text>
+        <text x="240" y="398" text-anchor="middle" class="mono" font-size="10" font-weight="600" fill="var(--crm)">READ ONLY &#183; NEVER WRITES BACK</text>
+        <text x="240" y="414" text-anchor="middle" font-size="10" fill="var(--mute)">a building tool, not a source of truth</text>
+
+        <rect x="484" y="308" width="352" height="118" rx="8" fill="var(--crm-soft)" stroke="var(--crm)" stroke-width="1.4"/>
+        <text x="660" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="var(--crm)">Invoicing</text>
+        <text x="660" y="354" text-anchor="middle" font-size="11">offer &#183; schedule &#183; signature</text>
+        <text x="660" y="372" text-anchor="middle" font-size="11">recurring starts at launch, not signature</text>
+        <text x="660" y="398" text-anchor="middle" class="mono" font-size="10" font-weight="600" fill="var(--crm)">WRITES BACK: PAYMENT STATUS</text>
+        <text x="660" y="414" text-anchor="middle" font-size="10" fill="var(--mute)">one field, because the system needs it</text>
+
+        <path d="M770 308 C790 280 800 250 800 220" fill="none" stroke="var(--crm)" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a6c)"/>
+      </g>
+    </svg>
+    <figcaption><b>Only Command Center writes the client record.</b> ContentPro consumes a snapshot and never writes back, because content decisions are not client facts. Invoicing writes exactly one field, payment status, because whether a client is current is something the rest of the system needs to know. Corrections from either go through Command Center rather than around it.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <p><strong>The reports are a menu, not a sequence.</strong> Local SEO, organic, paid and silo plans usually run after close, but nothing stops them running earlier and one of them is often what closes the deal. Gate them with a warning, never a block: a salesperson asking for a local SEO report on an unreplied prospect may have a reason the system cannot see. The one real dependency is that the silo plan inherits positioning, so building it before the strategy settles means building it twice.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">06</span> Scope</h2>
+  <h3>Four projects in five are not brand projects</h3>
+  <p>Brand and messaging work applies to about one engagement in five. For the rest, forty pages of identity analysis is effort nobody bought and it makes the document read as padded. <strong>Both toggles default off</strong>, using the same section-flag mechanism as the trade gates.</p>
+
+  <table>
+    <thead><tr><th>Toggle off</th><th>Removed</th><th>Reduced</th></tr></thead>
+    <tbody>
+      <tr><td>includesBrand</td><td>11 Brand Voice, 12 Applying the Identity</td><td>1 loses the naming argument</td></tr>
+      <tr><td>includesMessaging</td><td>Appendix B Copy Library</td><td>1 keeps position, drops taglines. 13 keeps architecture, drops hero copy</td></tr>
+      <tr><td>Both</td><td>11, 12, Appendix B</td><td>Roughly half the length, still the argument that wins the deal</td></tr>
+    </tbody>
+  </table>
+
+  <p>With both off the document is market, service area, ideal customer, services, trust, operations, channels and measurement. That is the part demonstrating thinking. Brand is the part demonstrating taste, and only some clients are buying it.</p>
+  <p><strong>Sections renumber rather than leaving gaps.</strong> A document jumping from 10 to 13 tells the client something was removed, and a cross-reference pointing at a dropped section is a blocking error whose fix is rewriting the sentence, never re-enabling the section.</p>
+</section>
+
+<section>
+  <h2><span class="n">07</span> The gates by trade</h2>
+  <h3>One pipeline, branching on the vertical pack</h3>
+  <p>A roofer and a landscaper need genuinely different documents, not the same document with the service list swapped. The vertical pack carries a <code>pipeline</code> block that decides which analyses run and which sections exist, so engine code never branches on trade.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 290" role="img" aria-label="Diagram showing one shared engine reading a vertical pack, which branches the pipeline. For plumbing the pack requires a housing age analysis and enables a maintenance plan section. For roofing the pack requires storm event data and an insurance section, and disables the maintenance plan because the customer returns only once every twenty years.">
+      <defs>
+        <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+      </defs>
+
+      <rect x="24" y="106" width="168" height="70" rx="6" fill="var(--raise)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="108" y="134" text-anchor="middle" class="mono" font-size="12" font-weight="600" fill="var(--ink)">gtm engine</text>
+      <text x="108" y="152" text-anchor="middle" font-size="10.5" fill="var(--mute)">one codebase</text>
+      <text x="108" y="166" text-anchor="middle" font-size="10.5" fill="var(--mute)">no trade logic</text>
+
+      <rect x="244" y="106" width="150" height="70" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.6"/>
+      <text x="319" y="134" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--ink)">Vertical pack</text>
+      <text x="319" y="152" text-anchor="middle" class="mono" font-size="10" fill="var(--accent)">pipeline{}</text>
+      <text x="319" y="166" text-anchor="middle" font-size="10.5" fill="var(--mute)">gates + sections</text>
+
+      <line x1="192" y1="141" x2="238" y2="141" stroke="currentColor" stroke-width="1.4" marker-end="url(#a4)"/>
+
+      <g font-family="IBM Plex Sans" font-size="11.5" fill="currentColor">
+        <path d="M394 128 C440 128 440 62 480 62" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#a4)"/>
+        <rect x="486" y="26" width="390" height="74" rx="6" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="502" y="48" class="mono" font-size="11" font-weight="600" fill="var(--ink)">plumbing</text>
+        <text x="502" y="68" font-size="11">requires housing age &#183; recurring customer &#183; bimodal season</text>
+        <text x="502" y="86" font-size="11" fill="var(--mute)">maintenance plan ON &#183; financing ON &#183; storm OFF</text>
+
+        <path d="M394 154 C440 154 440 220 480 220" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#a4)"/>
+        <rect x="486" y="184" width="390" height="74" rx="6" fill="var(--raise)" stroke="var(--accent)" stroke-width="1.4"/>
+        <text x="502" y="206" class="mono" font-size="11" font-weight="600" fill="var(--accent)">roofing</text>
+        <text x="502" y="226" font-size="11">requires storm events &#183; one-and-done &#183; spiky season</text>
+        <text x="502" y="244" font-size="11" fill="var(--mute)">maintenance plan OFF &#183; insurance ON &#183; referral only</text>
+      </g>
+    </svg>
+    <figcaption><b>Roofing is the trade that breaks a naive design.</b> The customer returns once every twenty years, so a maintenance-plan section is actively wrong and the entire retention budget belongs in referral and review velocity instead. Build roofing second; if the gate model survives it, it survives everything.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="n">08</span> Compounding</h2>
+  <h3>The tenth client in a market is nearly free</h3>
+  <p>Every engagement produces research that is not client-specific. The census pull for Seattle ZIPs, the competitor set for plumbing in Queen Anne, the King County permit file: none of it belongs to one client, it belongs to the market. Treated as per-client work, the second plumber in Ballard costs the same to research as the first.</p>
+  <p>Cache it under <code>data/markets/{metro}/</code> and only the client-specific parts stay fresh.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 330" role="img" aria-label="Matrix showing five research components across four sequential clients in the Seattle market. The first plumber requires all five fresh. The second plumber needs only a competitor refresh and their own site audit, because census, regulatory and SERP data are cached. The first electrician re-runs the trade-specific components but inherits census. The third plumber needs the fewest. A bar beside each row counts the components still requiring fresh research.">
+      <defs>
+        <marker id="a7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+      </defs>
+
+      <g font-family="IBM Plex Sans" font-size="10.5" fill="var(--mute)">
+        <text x="188" y="34" text-anchor="middle" class="mono" font-weight="600" letter-spacing=".6">CENSUS</text>
+        <text x="286" y="34" text-anchor="middle" class="mono" font-weight="600" letter-spacing=".6">REGULATORY</text>
+        <text x="396" y="34" text-anchor="middle" class="mono" font-weight="600" letter-spacing=".6">COMPETITORS</text>
+        <text x="490" y="34" text-anchor="middle" class="mono" font-weight="600" letter-spacing=".6">SERP</text>
+        <text x="580" y="34" text-anchor="middle" class="mono" font-weight="600" letter-spacing=".6">SITE AUDIT</text>
+        <text x="676" y="34" text-anchor="start" class="mono" font-weight="600" letter-spacing=".6">FRESH RESEARCH REQUIRED</text>
+      </g>
+      <line x1="0" y1="44" x2="900" y2="44" stroke="var(--rule)" stroke-width="1"/>
+
+      <g font-family="IBM Plex Sans" font-size="12">
+        <text x="0" y="76" fill="var(--ink)" font-weight="600">Plumber 1</text>
+        <text x="0" y="90" font-size="10" fill="var(--mute)">Seattle, first ever</text>
+        <rect x="144" y="58" width="88" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="242" y="58" width="88" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="340" y="58" width="112" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="462" y="58" width="56" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="528" y="58" width="104" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="676" y="62" width="200" height="26" rx="4" fill="var(--accent)"/>
+        <text x="866" y="80" text-anchor="end" font-size="11.5" font-weight="600" fill="var(--paper)">5 of 5</text>
+
+        <text x="0" y="132" fill="var(--ink)" font-weight="600">Plumber 2</text>
+        <text x="0" y="146" font-size="10" fill="var(--mute)">same market</text>
+        <rect x="144" y="114" width="88" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="188" y="135" text-anchor="middle" font-size="10" fill="var(--mute)">cached</text>
+        <rect x="242" y="114" width="88" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="286" y="135" text-anchor="middle" font-size="10" fill="var(--mute)">cached</text>
+        <rect x="340" y="114" width="112" height="34" rx="4" fill="var(--accent)"/>
+        <text x="396" y="135" text-anchor="middle" font-size="10" fill="var(--paper)">refresh</text>
+        <rect x="462" y="114" width="56" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="528" y="114" width="104" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="676" y="118" width="80" height="26" rx="4" fill="var(--accent)"/>
+        <text x="764" y="136" font-size="11.5" font-weight="600" fill="var(--ink)">2 of 5</text>
+
+        <text x="0" y="188" fill="var(--ink)" font-weight="600">Electrician 1</text>
+        <text x="0" y="202" font-size="10" fill="var(--mute)">same market, new trade</text>
+        <rect x="144" y="170" width="88" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="188" y="191" text-anchor="middle" font-size="10" fill="var(--mute)">cached</text>
+        <rect x="242" y="170" width="88" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="340" y="170" width="112" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="462" y="170" width="56" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="528" y="170" width="104" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="676" y="174" width="160" height="26" rx="4" fill="var(--accent)"/>
+        <text x="844" y="192" font-size="11.5" font-weight="600" fill="var(--ink)">4 of 5</text>
+
+        <text x="0" y="244" fill="var(--ink)" font-weight="600">Plumber 3</text>
+        <text x="0" y="258" font-size="10" fill="var(--mute)">same market and trade</text>
+        <rect x="144" y="226" width="88" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="188" y="247" text-anchor="middle" font-size="10" fill="var(--mute)">cached</text>
+        <rect x="242" y="226" width="88" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="286" y="247" text-anchor="middle" font-size="10" fill="var(--mute)">cached</text>
+        <rect x="340" y="226" width="112" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="396" y="247" text-anchor="middle" font-size="10" fill="var(--mute)">cached</text>
+        <rect x="462" y="226" width="56" height="34" rx="4" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <rect x="528" y="226" width="104" height="34" rx="4" fill="var(--accent)"/>
+        <rect x="676" y="230" width="40" height="26" rx="4" fill="var(--accent)"/>
+        <text x="724" y="248" font-size="11.5" font-weight="600" fill="var(--ink)">1 of 5</text>
+      </g>
+
+      <line x1="0" y1="278" x2="900" y2="278" stroke="var(--rule)" stroke-width="1"/>
+      <g font-family="IBM Plex Sans" font-size="11">
+        <rect x="0" y="294" width="26" height="14" rx="3" fill="var(--accent)"/>
+        <text x="34" y="305" fill="var(--mute)">fresh research, costs API calls and tokens</text>
+        <rect x="316" y="294" width="26" height="14" rx="3" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="350" y="305" fill="var(--mute)">cached from the market, free</text>
+        <text x="676" y="305" fill="var(--mute)" font-size="10.5">bar length counts the fresh cells in that row</text>
+      </g>
+    </svg>
+    <figcaption><b>The site audit is the only component that is always fresh, because it is the only one that is genuinely about the client.</b> After a year in a market efelle can produce a credible market section for any trade in any neighborhood in minutes, from data nobody else has assembled. A competitor with the same tools still has to do the first pull, and that gap widens with every engagement.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <p><strong>Two rules keep it safe.</strong> Everything cached carries a vintage and a source, because a shared fact with no provenance becomes a liability the moment a client questions it. And client-specific interpretation never enters the cache: the census table is shared, but "98117 is the strongest fit for this brand" belongs to one client and stays in their record.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">09</span> The states that are not a win</h2>
+  <h3>Most prospects do not convert, and that is the pipeline</h3>
+  <p>Everything so far describes forward motion. In an outbound engine the majority of records stop somewhere, and the ones that stop this quarter are next year's list. What makes them worth keeping is that the research is already done and can be refreshed rather than rebuilt.</p>
+
+  <figure>
+    <svg viewBox="0 0 900 300" role="img" aria-label="Diagram of terminal and paused states. From the send, records that are never opened become cold, records that engage then go quiet become stalled, explicit declines become passed, and proposals that do not close become lost with a captured reason. Cold and stalled records requeue to sourcing after a refresh; passed records are suppressed but retained; lost reasons feed back into the sourcing score.">
+      <defs>
+        <marker id="a8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+        </marker>
+        <marker id="a8a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <g font-family="IBM Plex Sans" font-size="12" fill="currentColor">
+        <rect x="0" y="118" width="118" height="42" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="59" y="144" text-anchor="middle" fill="var(--accent)" font-weight="600">Send queue</text>
+
+        <rect x="182" y="118" width="106" height="42" rx="5" fill="var(--raise)" stroke="currentColor" stroke-width="1"/>
+        <text x="235" y="144" text-anchor="middle">Sent</text>
+        <line x1="118" y1="139" x2="176" y2="139" stroke="currentColor" stroke-width="1.3" marker-end="url(#a8)"/>
+
+        <rect x="372" y="20" width="150" height="40" rx="5" fill="var(--raise)" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="447" y="38" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="var(--mute)">COLD</text>
+        <text x="447" y="52" text-anchor="middle" font-size="10.5" fill="var(--mute)">no open in 21 days</text>
+
+        <rect x="372" y="76" width="150" height="40" rx="5" fill="var(--raise)" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="447" y="94" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="var(--mute)">STALLED</text>
+        <text x="447" y="108" text-anchor="middle" font-size="10.5" fill="var(--mute)">engaged, then quiet</text>
+
+        <rect x="372" y="132" width="150" height="40" rx="5" fill="var(--raise)" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="447" y="150" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="var(--mute)">PASSED</text>
+        <text x="447" y="164" text-anchor="middle" font-size="10.5" fill="var(--mute)">explicit no</text>
+
+        <rect x="372" y="188" width="150" height="44" rx="5" fill="var(--raise)" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="447" y="206" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="var(--accent)">LOST</text>
+        <text x="447" y="220" text-anchor="middle" font-size="10.5" fill="var(--mute)">proposal, no signature</text>
+
+        <rect x="372" y="248" width="150" height="40" rx="5" fill="var(--raise)" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="447" y="266" text-anchor="middle" class="mono" font-size="10.5" font-weight="600" fill="var(--mute)">CHURNED</text>
+        <text x="447" y="280" text-anchor="middle" font-size="10.5" fill="var(--mute)">left after signing</text>
+
+        <path d="M288 132 C330 132 330 40 366 40" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+        <path d="M288 136 C330 136 330 96 366 96" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+        <path d="M288 145 C330 145 330 152 366 152" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+        <path d="M288 150 C330 150 330 208 366 208" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+        <path d="M288 156 C330 156 330 266 366 266" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+
+        <rect x="600" y="48" width="160" height="44" rx="5" fill="var(--raise)" stroke="var(--accent)" stroke-width="1.4"/>
+        <text x="680" y="66" text-anchor="middle" font-size="11.5" fill="var(--ink)" font-weight="600">Refresh and requeue</text>
+        <text x="680" y="80" text-anchor="middle" font-size="10.5" fill="var(--mute)">6 months, what changed</text>
+        <line x1="522" y1="42" x2="594" y2="62" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+        <line x1="522" y1="96" x2="594" y2="80" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+
+        <rect x="600" y="132" width="160" height="40" rx="5" fill="var(--raise)" stroke="var(--rule)" stroke-width="1.2"/>
+        <text x="680" y="150" text-anchor="middle" font-size="11.5">Suppressed, retained</text>
+        <text x="680" y="164" text-anchor="middle" font-size="10.5" fill="var(--mute)">never deleted</text>
+        <line x1="522" y1="152" x2="594" y2="152" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+
+        <rect x="600" y="196" width="160" height="44" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="680" y="214" text-anchor="middle" font-size="11.5" fill="var(--accent)" font-weight="600">Loss reason</text>
+        <text x="680" y="228" text-anchor="middle" font-size="10.5" fill="var(--mute)">a field, not a note</text>
+        <line x1="522" y1="210" x2="594" y2="214" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#a8a)"/>
+        <line x1="522" y1="268" x2="594" y2="238" stroke="currentColor" stroke-width="1.2" marker-end="url(#a8)"/>
+
+        <path d="M680 240 C680 282 60 282 59 166" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a8a)"/>
+        <text x="370" y="296" text-anchor="middle" class="mono" font-size="10" font-weight="600" fill="var(--accent)">FEEDS THE SOURCING SCORE</text>
+
+        <path d="M680 92 C680 112 120 112 118 132" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#a8)"/>
+      </g>
+    </svg>
+    <figcaption><b>Loss reason is the most valuable field in the system.</b> Price, timing, went elsewhere, did it in-house, no longer trading. After fifty deals it says which trades, markets and project types actually close, and the sourcing score in section 03 should learn from it. Nothing else here produces that signal.</figcaption>
+  </figure>
+
+  <p><strong>Suppression is not deletion.</strong> A passed record keeps its research so a re-approach in two years costs a refresh, and so nobody emails them again by accident next quarter. A churned client is the warmest cold prospect in the database: they have read the reports, they know the work, and something changed.</p>
+</section>
+
+<section>
+  <h2><span class="n">10</span> Sequence</h2>
+  <h3>What to build, and in what order</h3>
+  <table>
+    <thead><tr><th>Step</th><th>Why it comes here</th></tr></thead>
+    <tbody>
+      <tr><td>Client record and local adapter</td><td>Unblocks everything and needs no CRM at all. Also the test double.</td></tr>
+      <tr><td>gtm phase 1, plumbing, scope toggles from day one</td><td>The toggles are not a later feature. Four in five documents need them.</td></tr>
+      <tr><td>wsr and competitor write to the record</td><td>Turns the two upstream engines into accelerators.</td></tr>
+      <tr><td>Publish tokens and open logging on both reports</td><td>The send vehicle and the qualification signal. Mostly built already for proposals.</td></tr>
+      <tr><td>Promotion gate and CRM adapter</td><td>Only useful once there is something worth promoting.</td></tr>
+      <tr><td>Onboard module, including bracket resolution</td><td>Where the record stops being a prospect file and becomes a project file.</td></tr>
+      <tr><td>Invoicing export contract</td><td>The weekend app needs a shape to build against. Cheaper than retrofitting one.</td></tr>
+      <tr><td>Pipeline gates in the pack schema</td><td>Unblocks every trade that is not plumbing.</td></tr>
+      <tr><td>Roofing pack</td><td>The hardest one. Validates the gate model.</td></tr>
+      <tr><td>ContentPro export with the reports as knowledge base</td><td>Closes the loop from first audit to published content.</td></tr>
+      <tr><td>Channel report engines: localseo, organicseo, paid, silo</td><td>Highest value once the record is rich enough to make them cheap.</td></tr>
+      <tr><td>Market cache under data/markets/</td><td>The moment there are two clients in one metro. The difference between linear cost and compounding advantage.</td></tr>
+      <tr><td>State model, loss reasons, engine metrics</td><td>Cheap to add early, impossible to backfill. The loss data only exists if it was captured at the time.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <span>efelle creative &middot; Prospector systems architecture</span>
+  <span class="mono">v1 &middot; August 2026</span>
+</footer>
+</div>
+</body>
+</html>

@@ -12,7 +12,12 @@ Read these first, in order:
   2. docs/gtm/GTM-BRIEFING.md        what the engine is and why
   3. docs/gtm/GTM-PIPELINE.md        how it fits with the other engines
   4. docs/gtm/GTM-BUILD-SPEC.md      the implementation spec, files, contracts, QA gate
-  5. public/js/verticals/_schema.json and plumbing.json   the trade pack format
+  5. docs/gtm/GTM-CLIENT-RECORD.md   the shared client record and CRM boundary
+  6. public/js/verticals/_schema.json and plumbing.json   the trade pack format
+
+For the visual version of the whole pathway, open docs/gtm/prospecting-engine.html
+in a browser. It diagrams every stage from prospect discovery through ContentPro
+handoff and is the fastest way to load the architecture.
 
 Then read these existing files to match the house patterns before writing anything:
   public/js/core/nav.js        engine registration and routing
@@ -56,6 +61,8 @@ Do not push to main until I have reviewed. Push triggers a production deploy.
 | `docs/gtm/GTM-BRIEFING.md` | Architecture and rationale |
 | `docs/gtm/GTM-PIPELINE.md` | System flow, industry gates, ContentPro handoff |
 | `docs/gtm/GTM-BUILD-SPEC.md` | Implementation spec |
+| `docs/gtm/GTM-CLIENT-RECORD.md` | Client record, CRM adapter, HubSpot to Seedly assessment |
+| `docs/gtm/prospecting-engine.html` | Visual walkthrough of the full pathway, 8 diagrams |
 | `docs/gtm/GTM-KICKOFF.md` | This file |
 | `docs/gtm/fixtures/nics-plumbing.input.json` | Regression fixture |
 | `public/js/verticals/_schema.json` | Vertical pack schema |
