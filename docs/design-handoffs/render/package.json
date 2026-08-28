@@ -1,0 +1,16 @@
+{
+  "name": "render",
+  "version": "1.0.0",
+  "description": "The `.dc.html` files in a design handoff package are templates, not pages. Opening one in a browser shows an unstyled skeleton with visible `{{ }}` holes, because the export references two things it does not ship:",
+  "main": "dc-runtime.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.62.1"
+  }
+}
