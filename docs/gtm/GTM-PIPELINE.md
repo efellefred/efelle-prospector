@@ -359,7 +359,7 @@ Small contract. The invoicing app needs the commercial terms and the project sha
   "client": { "legalName": "…", "billingContact": {}, "billingEmail": "…", "address": {} },
   "project": { "type": "semiCustom", "label": "Semi-custom website", "launchTarget": "…" },
   "oneTime": { "total": 25000, "deposit": 12500,
-               "schedule": { "instalments": 24, "amount": 520.83, "interest": 0 },
+               "schedule": { "installments": 24, "amount": 520.83, "interest": 0 },
                "lines": [{ "label": "Strategy", "amount": 5000 }] },
   "recurring": [
     { "label": "Revenue Growth Service", "amount": 550, "cadence": "monthly", "startsOn": "launch" },
