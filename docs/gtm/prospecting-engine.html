@@ -73,6 +73,29 @@ footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--rule);font-si
 footer .mono{letter-spacing:.04em}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
+.rev{border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:9px;
+  padding:16px 20px 14px;margin:30px 0 6px;}
+.rev-h{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 10px;}
+.rev ul{margin:0;padding-left:18px;}
+.rev li{font-size:14px;line-height:1.55;color:var(--ink-2);margin-bottom:5px;}
+.rev li b{color:var(--ink);font-weight:600;}
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  background:var(--paper);border-top:1px solid var(--rule);border-left:1px solid var(--rule);
+  border-radius:9px;overflow:hidden;margin:26px 0 4px;}
+.toc a{display:flex;align-items:baseline;gap:9px;padding:10px 13px;
+  border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  font-size:13.5px;color:var(--ink-2);text-decoration:none;transition:background 120ms;}
+.toc a span{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);font-weight:500;}
+.toc a:hover,.toc a:focus-visible{background:var(--raise);color:var(--ink);}
+.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
+figure.wide{margin-inline:calc(50% - 50vw + 16px);border-radius:0;border-left:0;border-right:0;}
+figure.wide svg{min-width:1180px;}
+figure.wide figcaption{max-width:70ch;}
+@media (min-width:1010px){ figure.wide{border-radius:10px;border:1px solid var(--rule);} }
+section{scroll-margin-top:20px;}
+@media (max-width:640px){ .toc{grid-template-columns:1fr 1fr;} }
 </style>
 </head>
 <body>
@@ -80,10 +103,156 @@ footer .mono{letter-spacing:.04em}
 <header>
   <p class="kicker">efelle creative &middot; Systems architecture</p>
   <h1>The Prospecting Engine</h1>
-  <p class="standfirst">Reordering the stack so useful work reaches a prospect before the first conversation, the CRM only ever holds real opportunities, and one client record carries a company from an unknown pin on a map to a published website.</p>
+  <p class="standfirst">How efelle turns an unknown pin on a map into a paying client, and what each system does along the way. Reports reach a prospect before the first conversation, the CRM only ever holds real opportunities, and one client record carries the company from the first audit to the recurring invoice.</p>
 </header>
-
-<section>
+<div class="rev">
+  <p class="rev-h">Revised 29 August 2026</p>
+  <ul>
+    <li><b>An end to end map</b> of every function and task, lead to revenue. Section 00</li>
+    <li><b>The contract has its own repo.</b> The client record moved out of Prospector into <code>efelle-contracts</code>. Section 05</li>
+    <li><b>Every engagement now ships two documents</b>, the strategy and an owner&#8217;s brief, from one state. Section 07</li>
+    <li><b>Command Center found the join key bug four times over</b> in its own code, under four different names. Section 04</li>
+  </ul>
+</div><nav class="toc" aria-label="Contents"><a href="#s00"><span>00</span>The whole thing</a><a href="#s01"><span>01</span>The shift</a><a href="#s02"><span>02</span>The gate</a><a href="#s03"><span>03</span>What fires the gate</a><a href="#s04"><span>04</span>The spine</a><a href="#s05"><span>05</span>One contract, four apps</a><a href="#s06"><span>06</span>The full pathway</a><a href="#s07"><span>07</span>Two documents, one state</a><a href="#s08"><span>08</span>Scope</a><a href="#s09"><span>09</span>The gates by trade</a><a href="#s10"><span>10</span>Compounding</a><a href="#s11"><span>11</span>The states that are not a win</a><a href="#s12"><span>12</span>Sequence</a></nav>
+<section id="s00">
+  <h2><span class="n">00</span> The whole thing</h2>
+  <h3>Lead to revenue, in one picture</h3>
+  <p>Seven stages across the top, the systems that do the work down the side. Two vertical lines
+  matter more than anything else on the page: <strong>the qualification gate</strong>, left of which
+  nothing touches the CRM, and <strong>signature</strong>, which is the only moment money starts.</p>
+  <p>The shaded band is the write boundary. Prospector, the record and Command Center sit inside it.
+  ContentPro and invoicing sit outside and receive exports, which is what stops four systems from
+  each holding their own version of the truth.</p>
+  <figure class="wide">
+    <svg viewBox="0 0 1596 824" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="End to end map from lead to revenue. Seven stages across the top: discover, warm, qualify, sell, close, onboard, deliver and bill. Five systems as rows plus the client record and a revenue row. Prospector, the client record and Command Center sit inside the write boundary; ContentPro and invoicing sit outside it and receive exports. The record is born with a local id and is promoted to a CRM id at qualification. Revenue lands as a deposit at close, instalments from onboarding, and recurring charges from launch.">
+<rect x="8" y="62" width="1580" height="336" rx="12" fill="currentColor" opacity=".035"/>
+<text x="8" y="55" font-size="10" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".38">WRITE BOUNDARY</text>
+<text x="1588" y="414" text-anchor="end" font-size="10" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".38">OUTSIDE THE BOUNDARY: EXPORTS ONLY</text>
+<text x="178" y="30" font-size="11" font-weight="600" letter-spacing=".1em" fill="var(--accent)">01</text>
+<text x="204" y="30" font-size="13" font-weight="600" fill="currentColor">DISCOVER</text>
+<line x1="178" y1="42" x2="368" y2="42" stroke="currentColor" stroke-opacity=".22"/>
+<text x="380" y="30" font-size="11" font-weight="600" letter-spacing=".1em" fill="var(--accent)">02</text>
+<text x="406" y="30" font-size="13" font-weight="600" fill="currentColor">WARM</text>
+<line x1="380" y1="42" x2="570" y2="42" stroke="currentColor" stroke-opacity=".22"/>
+<text x="582" y="30" font-size="11" font-weight="600" letter-spacing=".1em" fill="var(--accent)">03</text>
+<text x="608" y="30" font-size="13" font-weight="600" fill="currentColor">QUALIFY</text>
+<line x1="582" y1="42" x2="772" y2="42" stroke="currentColor" stroke-opacity=".22"/>
+<text x="784" y="30" font-size="11" font-weight="600" letter-spacing=".1em" fill="var(--accent)">04</text>
+<text x="810" y="30" font-size="13" font-weight="600" fill="currentColor">SELL</text>
+<line x1="784" y1="42" x2="974" y2="42" stroke="currentColor" stroke-opacity=".22"/>
+<text x="986" y="30" font-size="11" font-weight="600" letter-spacing=".1em" fill="var(--accent)">05</text>
+<text x="1012" y="30" font-size="13" font-weight="600" fill="currentColor">CLOSE</text>
+<line x1="986" y1="42" x2="1176" y2="42" stroke="currentColor" stroke-opacity=".22"/>
+<text x="1188" y="30" font-size="11" font-weight="600" letter-spacing=".1em" fill="var(--accent)">06</text>
+<text x="1214" y="30" font-size="13" font-weight="600" fill="currentColor">ONBOARD</text>
+<line x1="1188" y1="42" x2="1378" y2="42" stroke="currentColor" stroke-opacity=".22"/>
+<text x="1390" y="30" font-size="11" font-weight="600" letter-spacing=".1em" fill="var(--accent)">07</text>
+<text x="1416" y="30" font-size="13" font-weight="600" fill="currentColor">DELIVER AND BILL</text>
+<line x1="1390" y1="42" x2="1580" y2="42" stroke="currentColor" stroke-opacity=".22"/>
+<text x="162" y="93" text-anchor="end" font-size="11" font-weight="600" letter-spacing=".07em" fill="currentColor" opacity=".72">PROSPECTOR</text>
+<line x1="8" y1="68" x2="1588" y2="68" stroke="currentColor" stroke-opacity=".1"/>
+<text x="162" y="213" text-anchor="end" font-size="11" font-weight="600" letter-spacing=".07em" fill="currentColor" opacity=".72">CLIENT RECORD</text>
+<line x1="8" y1="188" x2="1588" y2="188" stroke="currentColor" stroke-opacity=".1"/>
+<text x="162" y="287" text-anchor="end" font-size="11" font-weight="600" letter-spacing=".07em" fill="currentColor" opacity=".72">COMMAND CENTER</text>
+<line x1="8" y1="262" x2="1588" y2="262" stroke="currentColor" stroke-opacity=".1"/>
+<text x="162" y="433" text-anchor="end" font-size="11" font-weight="600" letter-spacing=".07em" fill="currentColor" opacity=".72">CRM</text>
+<line x1="8" y1="408" x2="1588" y2="408" stroke="currentColor" stroke-opacity=".1"/>
+<text x="162" y="519" text-anchor="end" font-size="11" font-weight="600" letter-spacing=".07em" fill="currentColor" opacity=".72">CONTENTPRO</text>
+<line x1="8" y1="494" x2="1588" y2="494" stroke="currentColor" stroke-opacity=".1"/>
+<text x="162" y="611" text-anchor="end" font-size="11" font-weight="600" letter-spacing=".07em" fill="currentColor" opacity=".72">INVOICING</text>
+<line x1="8" y1="586" x2="1588" y2="586" stroke="currentColor" stroke-opacity=".1"/>
+<text x="162" y="715" text-anchor="end" font-size="11" font-weight="600" letter-spacing=".07em" fill="currentColor" opacity=".72">REVENUE</text>
+<line x1="8" y1="690" x2="1588" y2="690" stroke="currentColor" stroke-opacity=".1"/>
+<rect x="178" y="78" width="190" height="34" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="187" y="92" font-size="11.5" fill="currentColor">Maps scan, filter by trade</text>
+<text x="187" y="106" font-size="11.5" fill="currentColor">and service area</text>
+<rect x="178" y="118" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="187" y="132" font-size="11.5" fill="currentColor">Site audit, reviews, GBP</text>
+<rect x="380" y="78" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="389" y="92" font-size="11.5" fill="currentColor">WAR report</text>
+<rect x="380" y="104" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="389" y="118" font-size="11.5" fill="currentColor">Competitor report</text>
+<rect x="380" y="130" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="389" y="144" font-size="11.5" fill="currentColor">Personal email, no call yet</text>
+<rect x="582" y="78" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="591" y="92" font-size="11.5" fill="currentColor">Publish link, track opens</text>
+<rect x="784" y="78" width="190" height="34" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
+<text x="793" y="92" font-size="11.5" fill="var(--accent)">GTM strategy</text>
+<text x="793" y="106" font-size="11.5" fill="var(--accent)">+ owner's brief</text>
+<rect x="784" y="118" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="793" y="132" font-size="11.5" fill="currentColor">Proposal</text>
+<rect x="986" y="78" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="995" y="92" font-size="11.5" fill="currentColor">Online signature</text>
+<rect x="1188" y="78" width="190" height="34" rx="5" fill="none" stroke="currentColor" stroke-opacity=".16" stroke-dasharray="3 3"/>
+<text x="1197" y="92" font-size="11.5" fill="currentColor" opacity=".45">Channel reports:</text>
+<text x="1197" y="106" font-size="11.5" fill="currentColor" opacity=".45">local, organic, paid</text>
+<rect x="178" y="198" width="190" height="20" rx="5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+<text x="187" y="212" font-size="11.5" fill="var(--crm)">local-  id minted</text>
+<rect x="582" y="198" width="190" height="20" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
+<text x="591" y="212" font-size="11.5" fill="var(--accent)">promoted → crm- id</text>
+<rect x="784" y="198" width="190" height="20" rx="5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+<text x="793" y="212" font-size="11.5" fill="var(--crm)">offer, scope, brand</text>
+<rect x="986" y="198" width="190" height="20" rx="5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+<text x="995" y="212" font-size="11.5" fill="var(--crm)">signature stored</text>
+<rect x="1188" y="198" width="190" height="20" rx="5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+<text x="1197" y="212" font-size="11.5" fill="var(--crm)">two exports written</text>
+<rect x="1390" y="198" width="190" height="20" rx="5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+<text x="1399" y="212" font-size="11.5" fill="var(--crm)">← billing.status</text>
+<rect x="1188" y="304" width="190" height="34" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1197" y="318" font-size="11.5" fill="currentColor">Onboard: kickoff, access,</text>
+<text x="1197" y="332" font-size="11.5" fill="currentColor">project setup</text>
+<rect x="1188" y="344" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1197" y="358" font-size="11.5" fill="currentColor">Fill the open brackets</text>
+<rect x="1390" y="304" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1399" y="318" font-size="11.5" fill="currentColor">Activity push to CRM</text>
+<rect x="178" y="418" width="190" height="20" rx="5" fill="none" stroke="currentColor" stroke-opacity=".16" stroke-dasharray="3 3"/>
+<text x="187" y="432" font-size="11.5" fill="currentColor" opacity=".45">nothing. prospects stay out</text>
+<rect x="380" y="418" width="190" height="20" rx="5" fill="none" stroke="currentColor" stroke-opacity=".16" stroke-dasharray="3 3"/>
+<text x="389" y="432" font-size="11.5" fill="currentColor" opacity=".45">nothing</text>
+<rect x="582" y="418" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="591" y="432" font-size="11.5" fill="currentColor">company created</text>
+<rect x="784" y="418" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="793" y="432" font-size="11.5" fill="currentColor">deal stage</text>
+<rect x="986" y="418" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="995" y="432" font-size="11.5" fill="currentColor">closed won</text>
+<rect x="1390" y="418" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1399" y="432" font-size="11.5" fill="currentColor">activity log</text>
+<rect x="1188" y="504" width="190" height="34" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1197" y="518" font-size="11.5" fill="currentColor">receives export:</text>
+<text x="1197" y="532" font-size="11.5" fill="currentColor">profile, sitemap, plan</text>
+<rect x="1390" y="504" width="190" height="34" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1399" y="518" font-size="11.5" fill="currentColor">Pages written from the</text>
+<text x="1399" y="532" font-size="11.5" fill="currentColor">researched position</text>
+<rect x="986" y="596" width="190" height="20" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="995" y="610" font-size="11.5" fill="currentColor">receives offer export</text>
+<rect x="1188" y="596" width="190" height="34" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1197" y="610" font-size="11.5" fill="currentColor">schedule built,</text>
+<text x="1197" y="624" font-size="11.5" fill="currentColor">QBO customer matched</text>
+<rect x="1390" y="596" width="190" height="34" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+<text x="1399" y="610" font-size="11.5" fill="currentColor">Invoices out.</text>
+<text x="1399" y="624" font-size="11.5" fill="currentColor">Writes billing.status back</text>
+<rect x="986" y="700" width="190" height="20" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
+<text x="995" y="714" font-size="11.5" fill="var(--accent)">Deposit  $12,500</text>
+<rect x="1188" y="700" width="190" height="34" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
+<text x="1197" y="714" font-size="11.5" fill="var(--accent)">Instalments begin</text>
+<text x="1197" y="728" font-size="11.5" fill="var(--accent)">24 x $520.83</text>
+<rect x="1390" y="700" width="190" height="34" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
+<text x="1399" y="714" font-size="11.5" fill="var(--accent)">Monthly program + hosting</text>
+<text x="1399" y="728" font-size="11.5" fill="var(--accent)">from launch, not signature</text>
+<rect x="178" y="272" width="998" height="26" rx="5" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-dasharray="4 3"/>
+<text x="188" y="289" font-size="11.5" fill="currentColor" opacity=".75">owns the client record from the first prospect onward, and is the only writer</text>
+<line x1="576.0" y1="16" x2="576.0" y2="766" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 4" stroke-opacity=".75"/>
+<text x="583.0" y="784" font-size="11" font-weight="600" fill="var(--accent)">QUALIFICATION GATE</text>
+<text x="583.0" y="798" font-size="10.5" fill="currentColor" opacity=".6">an open event, not a judgement call. Nothing left of here touches the CRM</text>
+<line x1="980.0" y1="16" x2="980.0" y2="766" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 4" stroke-opacity=".75"/>
+<text x="987.0" y="784" font-size="11" font-weight="600" fill="var(--accent)">SIGNATURE</text>
+<text x="987.0" y="798" font-size="10.5" fill="currentColor" opacity=".6">the only moment money starts</text>
+</svg>
+    <figcaption>Everything below is one column of this picture, explained. If you read one thing,
+    read this and then <b>05</b> and <b>07</b>, which are what changed this week. On a narrow screen the diagram scrolls sideways.</figcaption>
+  </figure>
+</section>
+<section id="s01">
   <h2><span class="n">01</span> The shift</h2>
   <h3>The reports move in front of the conversation</h3>
   <p>Today a lead arrives, gets a meeting link, and the war report and competitor report are prepared for a call that is already booked. The research supports a conversation that inbound already won.</p>
@@ -164,8 +333,7 @@ footer .mono{letter-spacing:.04em}
     <figcaption><b>The only structural change is where first contact sits.</b> Same reports, same meeting, same proposal. Moving the research ahead of the conversation turns it from sales support into the reason a stranger writes back.</figcaption>
   </figure>
 </section>
-
-<section>
+<section id="s02">
   <h2><span class="n">02</span> The gate</h2>
   <h3>Records are born local and promoted into the CRM</h3>
   <p>Running war reports on forty roofers should not put forty companies into the CRM. Prospector is a research tool, and research is cheap; a CRM full of companies nobody ever spoke to is worse than useless because it destroys the meaning of the pipeline count.</p>
@@ -252,8 +420,7 @@ footer .mono{letter-spacing:.04em}
     <p><strong>Yes, pushed in rather than pulled from.</strong> A prospect who already exists in the CRM is picked from search and pulled down instead, but that is the smaller path. In an outbound motion most records are born in Prospector and promoted, which is why the pipeline count stays honest.</p>
   </div>
 </section>
-
-<section>
+<section id="s03">
   <h2><span class="n">03</span> What fires the gate</h2>
   <h3>Open events, not a judgment call</h3>
   <p>Sourcing from Google Places gives more than a name and a URL. An unclaimed profile, thin photos, no Posts and a review count under the market median say a prospect has an addressable problem <em>and</em> that nobody is already selling them. <strong>Score the list on those signals rather than only personalizing from them</strong>, so the send queue is ranked by opportunity instead of alphabet.</p>
@@ -341,8 +508,7 @@ footer .mono{letter-spacing:.04em}
     <p><strong>Framing decides the reply more than specificity does.</strong> "Your Google profile is unclaimed and you have 12 reviews" is the most-used cold SEO opener in existence and gets categorized by line two. "Fischer has been on Queen Anne forty years with an unclaimed profile and two photos, Bob Oates posted yesterday and has 767 reviews, here is the gap that leaves" is the same data handed over as market intelligence. The test: if the opening line survives a find-and-replace of the company name, it is a merge field and it will read as one.</p>
   </div>
 </section>
-
-<section>
+<section id="s04">
   <h2><span class="n">04</span> The spine</h2>
   <h3>Every engine reads the record and writes back to it</h3>
   <p>The reason the reordering works at all is that facts stop living inside documents. Today the only way to reuse something the war report established is to open the PDF. Once the record is the source of truth, each engine contributes its slice and consumes everyone else's.</p>
@@ -408,8 +574,89 @@ footer .mono{letter-spacing:.04em}
   </table>
 </section>
 
-<section>
-  <h2><span class="n">05</span> The full pathway</h2>
+<section id="s05">
+  <h2><span class="n">05</span> One contract, four apps</h2>
+  <h3>The record outgrew the repo it was written in</h3>
+  <p>The client record is not a Prospector feature. It is a contract that Command Center, Prospector,
+  invoicing and ContentPro all implement against. It was written inside Prospector&#8217;s docs folder
+  because that is where the work happened, and that was wrong in a specific way: a change to the
+  contract appeared in one app&#8217;s history and nowhere else, and <strong>the app that owns the
+  record had no record of the contract it implements.</strong></p>
+  <figure>
+    <svg viewBox="0 0 900 400" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Before and after comparison of where the client record contract lives. Before, the contract sat inside the efelle-prospector repository and the other three apps reached into it, so a change to the contract appeared in only one app's history. After, the contract lives in its own efelle-contracts repository and all four apps reference it.">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+    <marker id="ahh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+    </marker>
+  </defs>
+
+  <text x="0" y="14" font-size="11" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".5">BEFORE</text>
+
+  <rect x="0" y="30" width="180" height="38" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+  <text x="12" y="54" font-size="12" fill="currentColor">command center</text>
+  <rect x="480" y="30" width="180" height="38" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+  <text x="492" y="54" font-size="12" fill="currentColor">invoicing</text>
+  <rect x="700" y="30" width="180" height="38" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+  <text x="712" y="54" font-size="12" fill="currentColor">contentpro</text>
+
+  <rect x="230" y="22" width="220" height="112" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".38"/>
+  <text x="242" y="42" font-size="12" font-weight="600" fill="currentColor">efelle-prospector</text>
+  <rect x="244" y="58" width="192" height="60" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
+  <text x="256" y="80" font-size="12" font-weight="600" fill="var(--accent)">the contract</text>
+  <text x="256" y="98" font-size="11" fill="currentColor" opacity=".72">and its whole history</text>
+
+  <line x1="182" y1="49" x2="226" y2="60" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ah)"/>
+  <line x1="478" y1="49" x2="454" y2="60" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ah)"/>
+  <path d="M 790 72 L 790 100 L 456 100" fill="none" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ah)"/>
+
+  <text x="0" y="160" font-size="11.5" fill="currentColor" opacity=".62">A change to the contract appears in one app&#8217;s log. The app that owns the record has no record of the contract it implements.</text>
+
+  <line x1="0" y1="186" x2="900" y2="186" stroke="currentColor" stroke-opacity=".14"/>
+
+  <text x="0" y="216" font-size="11" font-weight="600" letter-spacing=".14em" fill="var(--accent)">AFTER</text>
+
+  <rect x="0" y="232" width="180" height="38" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+  <text x="12" y="256" font-size="12" fill="currentColor">command center</text>
+  <rect x="230" y="232" width="180" height="38" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+  <text x="242" y="256" font-size="12" fill="currentColor">efelle-prospector</text>
+  <rect x="480" y="232" width="180" height="38" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+  <text x="492" y="256" font-size="12" fill="currentColor">invoicing</text>
+  <rect x="700" y="232" width="180" height="38" rx="5" fill="var(--raise)" stroke="currentColor" stroke-opacity=".28"/>
+  <text x="712" y="256" font-size="12" fill="currentColor">contentpro</text>
+
+  <line x1="90"  y1="272" x2="330" y2="316" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#ahh)"/>
+  <line x1="320" y1="272" x2="400" y2="316" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#ahh)"/>
+  <line x1="570" y1="272" x2="500" y2="316" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#ahh)"/>
+  <line x1="790" y1="272" x2="570" y2="316" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#ahh)"/>
+  <text x="612" y="300" font-size="10.5" fill="var(--accent)" opacity=".9">implements</text>
+
+  <rect x="230" y="320" width="440" height="60" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/>
+  <text x="246" y="343" font-size="12.5" font-weight="600" fill="var(--accent)">efelle-contracts</text>
+  <text x="246" y="363" font-size="11" fill="currentColor" opacity=".78">the record, its schema, the boundary rules, both export contracts, a versioning policy</text>
+</svg>
+
+    <figcaption>The move costs nothing while there are two apps and one person. It gets expensive at
+    the point a third app depends on it, which is exactly when it happened.</figcaption>
+  </figure>
+  <p>The contract repo holds the record and its JSON schema, the boundary rules, both export contracts,
+  and a versioning policy that says what may change additively and what has to be announced to every
+  consumer first.</p>
+  <div class="callout">
+    <p><strong>The rule that stops it fragmenting again:</strong> a consumer repo documents its
+    <em>implementation</em>, never the contract. Tables, migrations, endpoints, storage decisions, all
+    of that is local. A restatement of what the record holds or who may write it is a copy, and copies
+    drift. That is the whole reason for the move.</p>
+  </div>
+  <p>Two corollaries came out of the first consumer reading it, and both are the keying rule applied
+  somewhere new. <strong>A billing-system id is not a key.</strong> QuickBooks and Stripe customer ids
+  are references the record holds. <strong>Neither is a proposal id.</strong> Billing artifacts key to
+  the client, not to one sales document, or a second proposal orphans the first one&#8217;s invoices.</p>
+</section>
+<section id="s06">
+  <h2><span class="n">06</span> The full pathway</h2>
   <h3>Four systems, one record, six stages</h3>
   <p>The engines are stages in one lifecycle rather than separate tools. Everything left of signature is a sales artifact and lives locally; everything right of it is a delivery obligation. The boundaries between apps matter because they decide who is allowed to write.</p>
 
@@ -503,8 +750,84 @@ footer .mono{letter-spacing:.04em}
   </div>
 </section>
 
-<section>
-  <h2><span class="n">06</span> Scope</h2>
+<section id="s07">
+  <h2><span class="n">07</span> Two documents, one state</h2>
+  <h3>The person who signs is not the person the strategy was written for</h3>
+  <p>The strategy document is written to survive scrutiny, which is the right way to write it. The owner
+  of a one-truck plumbing business is not the person doing the scrutinising. On the first engagement the
+  owner read all sixty-three pages and asked, politely, whether there was a shorter one. There was not.
+  Now there is, and it ships as part of the package rather than as a favour.</p>
+  <figure>
+    <svg viewBox="0 0 900 300" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="One state produces two documents. The engine state feeds a full strategy render and an owner's brief render. The brief is a projection of the same state rather than a second generation pass, and a QA rule checks that every number in the brief also appears in the full document.">
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+    <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="106" width="150" height="60" rx="6" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+  <text x="14" y="132" font-size="12.5" font-weight="600" fill="var(--crm)">gtmState</text>
+  <text x="14" y="150" font-size="11" fill="currentColor" opacity=".72">one source</text>
+
+  <line x1="152" y1="136" x2="212" y2="136" stroke="currentColor" stroke-opacity=".5" marker-end="url(#a2)"/>
+
+  <rect x="216" y="106" width="140" height="60" rx="6" fill="var(--raise)" stroke="currentColor" stroke-opacity=".3"/>
+  <text x="230" y="132" font-size="12" fill="currentColor">QA gate</text>
+  <text x="230" y="150" font-size="11" fill="currentColor" opacity=".72">19 rules</text>
+
+  <path d="M 358 126 L 400 126 L 400 70 L 446 70" fill="none" stroke="currentColor" stroke-opacity=".5" marker-end="url(#a2)"/>
+  <path d="M 358 146 L 400 146 L 400 214 L 446 214" fill="none" stroke="currentColor" stroke-opacity=".5" marker-end="url(#a2)"/>
+
+  <rect x="450" y="42" width="200" height="56" rx="6" fill="var(--raise)" stroke="currentColor" stroke-opacity=".3"/>
+  <text x="464" y="66" font-size="12" fill="currentColor">render: full document</text>
+  <text x="464" y="84" font-size="11" fill="currentColor" opacity=".72">19 sections, prose</text>
+
+  <rect x="450" y="186" width="200" height="56" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
+  <text x="464" y="210" font-size="12" fill="var(--accent)">render: owner&#8217;s brief</text>
+  <text x="464" y="228" font-size="11" fill="currentColor" opacity=".78">mostly projection, not prose</text>
+
+  <line x1="652" y1="70" x2="700" y2="70" stroke="currentColor" stroke-opacity=".5" marker-end="url(#a2)"/>
+  <line x1="652" y1="214" x2="700" y2="214" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#a3)"/>
+
+  <rect x="704" y="42" width="196" height="56" rx="6" fill="var(--raise)" stroke="currentColor" stroke-opacity=".38"/>
+  <text x="718" y="66" font-size="12.5" font-weight="600" fill="currentColor">The strategy</text>
+  <text x="718" y="84" font-size="11" fill="currentColor" opacity=".72">40 to 65 pages, for efelle</text>
+
+  <rect x="704" y="186" width="196" height="56" rx="6" fill="var(--raise)" stroke="var(--accent)" stroke-opacity=".5"/>
+  <text x="718" y="210" font-size="12.5" font-weight="600" fill="var(--accent)">The owner&#8217;s brief</text>
+  <text x="718" y="228" font-size="11" fill="currentColor" opacity=".72">8 to 14 pages, for the signer</text>
+
+  <path d="M 802 184 L 802 100" fill="none" stroke="var(--accent)" stroke-opacity=".6" stroke-dasharray="4 4" marker-end="url(#a3)"/>
+  <text x="704" y="264" font-size="11" font-weight="600" fill="var(--accent)">B1: every number in the brief</text>
+  <text x="704" y="280" font-size="11" fill="currentColor" opacity=".72">must appear in the strategy</text>
+</svg>
+
+    <figcaption>The brief is a projection of the same state, never a second generation pass. Two
+    independent passes over one engagement produce two documents that disagree about a number, and the
+    client finds the disagreement before we do.</figcaption>
+  </figure>
+  <p>Most of the brief is not written at all. The service area tiers, the cost tables, the blocking-items
+  list and the next-steps tables already exist as structured data, so they reformat straight through with
+  no model call. Five sections get a constrained rewrite, and those receive the rendered source text as
+  their only input under one hard rule: introduce no fact that is not in it.</p>
+  <p>Nine QA rules police the result. Two carry the weight. <strong>B1</strong> extracts every numeric
+  token from both documents and fails on anything in the brief that is absent from the full one, which is
+  what turns one-state-two-renders from an intention into something the gate checks. <strong>B5</strong>
+  requires every blocking item in the full document to survive into the brief: the ask may be reworded,
+  it may not be made smaller. Softening the ask is what happens naturally when a document is rewritten to
+  be friendlier, and a softened ask is how a launch slips three weeks.</p>
+  <div class="callout">
+    <p><strong>Keep the cautions.</strong> A summary that drops every warning becomes a sales document,
+    and the owner meets the warning later as a surprise. Four survive by rule: leads do not arrive in
+    month one, set the ad budget from capacity rather than ambition, the second technician breaks the
+    service promises, and the promises need software behind them before they are published.</p>
+  </div>
+</section>
+<section id="s08">
+  <h2><span class="n">08</span> Scope</h2>
   <h3>Four projects in five are not brand projects</h3>
   <p>Brand and messaging work applies to about one engagement in five. For the rest, forty pages of identity analysis is effort nobody bought and it makes the document read as padded. <strong>Both toggles default off</strong>, using the same section-flag mechanism as the trade gates.</p>
 
@@ -520,9 +843,8 @@ footer .mono{letter-spacing:.04em}
   <p>With both off the document is market, service area, ideal customer, services, trust, operations, channels and measurement. That is the part demonstrating thinking. Brand is the part demonstrating taste, and only some clients are buying it.</p>
   <p><strong>Sections renumber rather than leaving gaps.</strong> A document jumping from 10 to 13 tells the client something was removed, and a cross-reference pointing at a dropped section is a blocking error whose fix is rewriting the sentence, never re-enabling the section.</p>
 </section>
-
-<section>
-  <h2><span class="n">07</span> The gates by trade</h2>
+<section id="s09">
+  <h2><span class="n">09</span> The gates by trade</h2>
   <h3>One pipeline, branching on the vertical pack</h3>
   <p>A roofer and a landscaper need genuinely different documents, not the same document with the service list swapped. The vertical pack carries a <code>pipeline</code> block that decides which analyses run and which sections exist, so engine code never branches on trade.</p>
 
@@ -563,9 +885,8 @@ footer .mono{letter-spacing:.04em}
     <figcaption><b>Roofing is the trade that breaks a naive design.</b> The customer returns once every twenty years, so a maintenance-plan section is actively wrong and the entire retention budget belongs in referral and review velocity instead. Build roofing second; if the gate model survives it, it survives everything.</figcaption>
   </figure>
 </section>
-
-<section>
-  <h2><span class="n">08</span> Compounding</h2>
+<section id="s10">
+  <h2><span class="n">10</span> Compounding</h2>
   <h3>The tenth client in a market is nearly free</h3>
   <p>Every engagement produces research that is not client-specific. The census pull for Seattle ZIPs, the competitor set for plumbing in Queen Anne, the King County permit file: none of it belongs to one client, it belongs to the market. Treated as per-client work, the second plumber in Ballard costs the same to research as the first.</p>
   <p>Cache it under <code>data/markets/{metro}/</code> and only the client-specific parts stay fresh.</p>
@@ -653,9 +974,8 @@ footer .mono{letter-spacing:.04em}
     <p><strong>Two rules keep it safe.</strong> Everything cached carries a vintage and a source, because a shared fact with no provenance becomes a liability the moment a client questions it. And client-specific interpretation never enters the cache: the census table is shared, but "98117 is the strongest fit for this brand" belongs to one client and stays in their record.</p>
   </div>
 </section>
-
-<section>
-  <h2><span class="n">09</span> The states that are not a win</h2>
+<section id="s11">
+  <h2><span class="n">11</span> The states that are not a win</h2>
   <h3>Most prospects do not convert, and that is the pipeline</h3>
   <p>Everything so far describes forward motion. In an outbound engine the majority of records stop somewhere, and the ones that stop this quarter are next year's list. What makes them worth keeping is that the research is already done and can be refreshed rather than rebuilt.</p>
 
@@ -732,9 +1052,8 @@ footer .mono{letter-spacing:.04em}
 
   <p><strong>Suppression is not deletion.</strong> A passed record keeps its research so a re-approach in two years costs a refresh, and so nobody emails them again by accident next quarter. A churned client is the warmest cold prospect in the database: they have read the reports, they know the work, and something changed.</p>
 </section>
-
-<section>
-  <h2><span class="n">10</span> Sequence</h2>
+<section id="s12">
+  <h2><span class="n">12</span> Sequence</h2>
   <h3>What to build, and in what order</h3>
   <table>
     <thead><tr><th>Step</th><th>Why it comes here</th></tr></thead>
