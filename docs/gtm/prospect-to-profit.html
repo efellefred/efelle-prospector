@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Prospecting Engine</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prospect to Profit</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 :root{
@@ -106,25 +106,163 @@ section{scroll-margin-top:20px;}
 section ol{margin:0 0 16px;padding-left:20px;max-width:66ch;}
 section ol li{margin-bottom:9px;line-height:1.6;}
 section ol li strong{color:var(--ink);}
+:root{--pos:#0A7C56;}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){--pos:#3DBF90;} }
+:root[data-theme="dark"]{--pos:#3DBF90;}
+
+.model{border:1px solid var(--rule);border-radius:11px;padding:20px 20px 16px;margin:24px 0 6px;
+  background:var(--raise);}
+.ctrls{display:grid;grid-template-columns:1.5fr repeat(6,1fr);gap:12px 11px;
+  padding-bottom:16px;border-bottom:1px solid var(--rule-soft);}
+.ctrls label{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.ctrls .lb{font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--mute);line-height:1.25;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ctrls .ctl{display:flex;align-items:center;gap:5px;min-width:0;}
+.ctrls input[type=number]{flex:1 1 auto;min-width:0;width:100%;font-family:'IBM Plex Mono',monospace;
+  font-size:12.5px;padding:6px 5px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);
+  color:var(--ink);font-variant-numeric:tabular-nums;}
+.ctrls .pre,.ctrls .suf{flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  color:var(--mute);white-space:nowrap;}
+.ctrls input[type=range]{flex:1 1 auto;min-width:0;accent-color:var(--accent);}
+.ctrls output{flex:0 0 auto;min-width:18px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:14px;
+  font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;}
+.ctrls input:focus-visible,.tbl summary:focus-visible,.years input:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;}
+@media (max-width:1080px){ .ctrls{grid-template-columns:repeat(auto-fit,minmax(128px,1fr));} }
+
+.ctrls .rng{gap:3px;flex:1 1 auto;align-items:center;}
+.per{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:14px 0 0;
+  padding:10px 14px;border:1px solid var(--rule-soft);border-radius:8px;background:var(--paper);}
+.per-h{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);}
+.per-i{font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.per-i b{color:var(--ink);font-weight:700;font-size:14.5px;}
+
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule-soft);
+  margin:14px 0 0;border:1px solid var(--rule-soft);border-radius:8px;overflow:hidden;}
+.tile{background:var(--raise);padding:10px 8px;display:flex;flex-direction:column;gap:3px;min-width:0;
+  align-items:center;text-align:center;justify-content:center;}
+.tl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);
+  width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tv{font-size:19px;font-weight:700;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;
+  white-space:nowrap;}
+@media (max-width:900px){ .tiles{grid-template-columns:repeat(3,1fr);} }
+@media (max-width:560px){ .tiles{grid-template-columns:1fr 1fr;} }
+
+.years{margin:14px 0 0;}
+.years table{width:100%;font-size:12.5px;margin:0;}
+.years th{padding:0 12px 6px 0;font-size:9.5px;}
+.years td{padding:7px 12px 7px 0;font-variant-numeric:tabular-nums;}
+.years td:first-child{color:var(--ink);font-weight:600;}
+.years tbody tr:last-child td{border-bottom:none;}
+.years td.tot{color:var(--ink);font-weight:600;}
+.years input{width:58px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:3px 6px;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink);
+  font-variant-numeric:tabular-nums;}
+.years input[readonly]{border-color:transparent;background:none;color:var(--mute);}
+.years-note{font-size:11.5px;color:var(--mute);margin:6px 0 0;max-width:none;}
+
+.chartfig{margin:8px 0 0;background:none;border:0;padding:0;box-shadow:none;overflow:visible;}
+.chartfig svg{min-width:0;}
+.capline{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;
+  margin-top:10px;padding-top:10px;border-top:1px solid var(--rule-soft);}
+.capline figcaption{margin:0;padding:0;border:0;flex:1 1 320px;font-size:12.5px;}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:11.5px;color:var(--mute);flex:0 0 auto;}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;}
+.sw-d{background:var(--viz-dep);} .sw-i{background:var(--viz-inst);} .sw-r{background:var(--viz-recur);}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+.cap-note{margin-top:12px;font-size:12.5px;line-height:1.5;color:var(--ink-2);
+  border-left:3px solid var(--rule);padding-left:13px;}
+.cap-note.warn{border-left-color:var(--accent);color:var(--ink);}
+.cap-note b{color:var(--ink);}
+
+.tbl{margin-top:12px;}
+.tbl summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--accent);}
+.tbl-scroll{overflow-x:auto;margin-top:10px;}
+.tbl table{font-size:12px;margin:0;}
+.tbl td{font-variant-numeric:tabular-nums;padding:5px 13px 5px 0;}
+
+:root{--viz-dep:#F05128;--viz-inst:#0E9F6E;--viz-recur:#2563EB;}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --viz-dep:#E0603A;--viz-inst:#22A97A;--viz-recur:#4F8FE8;} }
+:root[data-theme="dark"]{--viz-dep:#E0603A;--viz-inst:#22A97A;--viz-recur:#4F8FE8;}
+
+/* figures line up on their right edge, labels stay left */
+.years th:nth-child(n+3),.years td:nth-child(n+3){text-align:right;padding:7px 0 7px 16px;}
+.tbl th:nth-child(n+2),.tbl td:nth-child(n+2){text-align:right;padding:5px 0 5px 16px;}
+.years th:nth-child(-n+2),.tbl th:first-child{text-align:left;}
+.per .mrr{display:flex;flex-direction:column;align-items:flex-start;gap:5px;flex:0 0 auto;}
+.per .one{display:flex;flex-wrap:nowrap;align-items:baseline;gap:6px 16px;margin-left:auto;}
+.mrr-ctl{display:flex;align-items:center;gap:5px;}
+.mrr-ctl .pre{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mute);}
+.mrr-ctl input{width:92px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:5px 6px;
+  border:1px solid var(--rule);border-radius:6px;background:var(--raise);color:var(--ink);
+  font-variant-numeric:tabular-nums;}
+.mrr-ctl input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+@media (max-width:760px){ .per .one{margin-left:0;} }
+.years .tot{white-space:nowrap;}
+.yoy{display:inline-block;min-width:40px;margin-left:9px;text-align:right;font-size:11px;
+  font-weight:600;color:var(--pos);font-variant-numeric:tabular-nums;letter-spacing:.01em;}
+
+.aside{border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:10px;
+  padding:18px 20px 14px;margin:26px 0;}
+.aside-h{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px;}
+.aside table{margin:0 0 14px;font-size:14px;}
+.aside td,.aside th{border-color:var(--accent-line);}
+.aside p:last-child{margin-bottom:0;}
+td.ok,tr.ok td:last-child{color:var(--crm);font-weight:600;white-space:nowrap;}
+td.no,tr.no td:last-child{color:var(--accent);font-weight:600;white-space:nowrap;}
+.nrr-tbl{overflow-x:auto;}
+.nrr-tbl table{font-size:14px;min-width:460px;}
+.nrr-tbl td{font-variant-numeric:tabular-nums;}
+.nrr-tbl tr.no td{color:var(--mute);}
+.nrr-tbl tr.ok td{color:var(--ink);font-weight:600;}
+.nrr-tbl .tag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;
+  text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--rule-soft);
+  color:var(--mute);margin-left:6px;font-weight:500;}
+section h4{font-size:15px;font-weight:700;color:var(--ink);margin:28px 0 10px;letter-spacing:-.005em;}
+.fineprint{font-size:12.5px;line-height:1.55;color:var(--mute);border-top:1px solid var(--rule-soft);
+  padding-top:12px;margin-top:26px;max-width:72ch;}
+
+.traj th:nth-child(n+2),.traj td:nth-child(n+2){text-align:right;padding-right:0;padding-left:18px;}
+.traj td{font-variant-numeric:tabular-nums;}
+.nrr-tbl th:nth-child(n+2),.nrr-tbl td:nth-child(n+2){text-align:right;padding-right:0;padding-left:18px;}
+
+.prose-tbl td:last-child,.prose-tbl th:last-child{text-align:right;}
+.prose-tbl td:nth-child(2){white-space:nowrap;}
+.prose-tbl td:last-child{max-width:34ch;}
+.cap-tbl td:last-child,.cap-tbl th:last-child{text-align:left;max-width:46ch;}
+.cap-tbl td:nth-child(2),.cap-tbl th:nth-child(2){white-space:normal;text-align:left;width:20%;}
+.cap-tbl td:first-child{width:26%;}
 </style>
 </head>
 <body>
+
+
 <div class="wrap">
 <header>
   <p class="kicker">efelle creative &middot; Company roadmap</p>
   <h1>Prospect to Profit</h1>
-  <p class="standfirst">The end to end client lifecycle: how a stranger on a map becomes a paying client, what each system does along the way, what the whole thing is worth, and what we are building next. This supersedes The Prospecting Engine, which covered the first third of it.</p>
+  <p class="standfirst">The end to end client lifecycle: how a stranger on a map becomes a paying client, what each system does along the way, what the whole thing is worth, and what we are building next. The financial model in Part Five is live: put your own numbers in it. This supersedes The Prospecting Engine, which covered the first third of it.</p>
 </header>
 <div class="rev">
-  <p class="rev-h">Version 2.0 &middot; 29 August 2026 &middot; supersedes The Prospecting Engine</p>
+  <p class="rev-h">Version 2.2 &middot; 29 August 2026 &middot; supersedes The Prospecting Engine</p>
   <ul>
     <li><b>Reframed as the full lifecycle.</b> The old document stopped at the proposal. Everything from
       onboarding to collections was missing, which is most of the business.</li>
     <li><b>Three new parts:</b> Deliver, Profit, and The machine.</li>
     <li><b>What a client is worth</b>, and the two numbers we cannot yet supply.</li>
     <li><b>A board of every system</b> and the state each one is in.</li>
+    <li><b>An interactive financial model.</b> Move the dials, from one client a month up to four a week.
+      It now opens on the current planning case: eight, ten and twelve clients a month at $2,250.</li>
+    <li><b>The delivery chain</b>, style tile through launch, and where the launch graphics fit.</li>
+    <li><b>What an investor would need to see</b>, the term recommendation, and why retention is the gate.</li>
+    <li><b>A potential FusionCMS future state</b>, sorted by what each item does to the margin.</li>
+    <li><b>Selling it</b>, on a tech-enabled service basis, and what a contract term is worth in
+      enterprise value.</li>
   </ul>
-</div><nav class="toc" aria-label="Contents"><a href="#s00"><span>00</span>The whole thing</a><a href="#s01"><span>01</span>The shift</a><a href="#s02"><span>02</span>The gate</a><a href="#s03"><span>03</span>What fires the gate</a><a href="#s04"><span>04</span>The spine</a><a href="#s05"><span>05</span>The full pathway</a><a href="#s06"><span>06</span>One contract, four apps</a><a href="#s07"><span>07</span>Two documents, one state</a><a href="#s08"><span>08</span>Scope</a><a href="#s09"><span>09</span>The gates by trade</a><a href="#s10"><span>10</span>Onboarding, and the two exports</a><a href="#s11"><span>11</span>The build, and the content engine</a><a href="#s12"><span>12</span>The recurring program</a><a href="#s13"><span>13</span>What a client is worth</a><a href="#s14"><span>14</span>Getting paid</a><a href="#s15"><span>15</span>Compounding</a><a href="#s16"><span>16</span>The systems, and the state of each</a><a href="#s17"><span>17</span>The states that are not a win</a><a href="#s18"><span>18</span>When it ends</a><a href="#s19"><span>19</span>Measuring the engine, not just the clients</a><a href="#s20"><span>20</span>Sequence</a><a href="#s21"><span>21</span>What we do not know yet</a></nav><section id="s00">
+</div><nav class="toc" aria-label="Contents"><a href="#s00"><span>00</span>The whole thing</a><a href="#s01"><span>01</span>The shift</a><a href="#s02"><span>02</span>Step one, and it is not built yet</a><a href="#s03"><span>03</span>The gate</a><a href="#s04"><span>04</span>What fires the gate</a><a href="#s05"><span>05</span>The spine</a><a href="#s06"><span>06</span>The full pathway</a><a href="#s07"><span>07</span>One contract, four apps</a><a href="#s08"><span>08</span>Two documents, one state</a><a href="#s09"><span>09</span>Scope</a><a href="#s10"><span>10</span>The gates by trade</a><a href="#s11"><span>11</span>Onboarding, and the two exports</a><a href="#s12"><span>12</span>How a site actually gets built</a><a href="#s13"><span>13</span>Launch is a marketing event</a><a href="#s14"><span>14</span>The recurring program</a><a href="#s15"><span>15</span>What a client is worth</a><a href="#s16"><span>16</span>Getting paid</a><a href="#s17"><span>17</span>Compounding</a><a href="#s18"><span>18</span>The model</a><a href="#s19"><span>19</span>What an investor would need to see</a><a href="#s20"><span>20</span>The systems, and the state of each</a><a href="#s21"><span>21</span>The states that are not a win</a><a href="#s22"><span>22</span>When it ends</a><a href="#s23"><span>23</span>Measuring the engine, not just the clients</a><a href="#s24"><span>24</span>Sequence</a><a href="#s25"><span>25</span>Potential FusionCMS future state</a><a href="#s26"><span>26</span>Selling it, and what it is worth</a><a href="#s27"><span>27</span>What we do not know yet</a></nav><section id="s00">
   <h2><span class="n">00</span> The whole thing</h2>
   <h3>Lead to revenue, in one picture</h3>
   <p>Seven stages across the top, the systems that do the work down the side. Two vertical lines
@@ -134,7 +272,7 @@ section ol li strong{color:var(--ink);}
   ContentPro and invoicing sit outside and receive exports, which is what stops four systems from
   each holding their own version of the truth.</p>
   <figure class="wide">
-    <svg viewBox="0 0 1596 824" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="End to end map from lead to revenue. Seven stages across the top: discover, warm, qualify, sell, close, onboard, deliver and bill. Five systems as rows plus the client record and a revenue row. Prospector, the client record and Command Center sit inside the write boundary; ContentPro and invoicing sit outside it and receive exports. The record is born with a local id and is promoted to a CRM id at qualification. Revenue lands as a deposit at close, instalments from onboarding, and recurring charges from launch.">
+    <svg viewBox="0 0 1596 824" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="End to end map from lead to revenue. Seven stages across the top: discover, warm, qualify, sell, close, onboard, deliver and bill. Five systems as rows plus the client record and a revenue row. Prospector, the client record and Command Center sit inside the write boundary; ContentPro and invoicing sit outside it and receive exports. The record is born with a local id and is promoted to a CRM id at qualification. Revenue lands as a deposit at close, installments from onboarding, and recurring charges from launch.">
 <rect x="8" y="62" width="1580" height="336" rx="12" fill="currentColor" opacity=".035"/>
 <text x="8" y="55" font-size="10" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".38">WRITE BOUNDARY</text>
 <text x="1588" y="414" text-anchor="end" font-size="10" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".38">OUTSIDE THE BOUNDARY: EXPORTS ONLY</text>
@@ -244,7 +382,7 @@ section ol li strong{color:var(--ink);}
 <rect x="986" y="700" width="190" height="20" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
 <text x="995" y="714" font-size="11.5" fill="var(--accent)">Deposit  $12,500</text>
 <rect x="1188" y="700" width="190" height="34" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
-<text x="1197" y="714" font-size="11.5" fill="var(--accent)">Instalments begin</text>
+<text x="1197" y="714" font-size="11.5" fill="var(--accent)">Installments begin</text>
 <text x="1197" y="728" font-size="11.5" fill="var(--accent)">24 x $520.83</text>
 <rect x="1390" y="700" width="190" height="34" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
 <text x="1399" y="714" font-size="11.5" fill="var(--accent)">Monthly program + hosting</text>
@@ -253,13 +391,12 @@ section ol li strong{color:var(--ink);}
 <text x="188" y="289" font-size="11.5" fill="currentColor" opacity=".75">owns the client record from the first prospect onward, and is the only writer</text>
 <line x1="576.0" y1="16" x2="576.0" y2="766" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 4" stroke-opacity=".75"/>
 <text x="583.0" y="784" font-size="11" font-weight="600" fill="var(--accent)">QUALIFICATION GATE</text>
-<text x="583.0" y="798" font-size="10.5" fill="currentColor" opacity=".6">an open event, not a judgement call. Nothing left of here touches the CRM</text>
+<text x="583.0" y="798" font-size="10.5" fill="currentColor" opacity=".6">an open event, not a judgment call. Nothing left of here touches the CRM</text>
 <line x1="980.0" y1="16" x2="980.0" y2="766" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 4" stroke-opacity=".75"/>
 <text x="987.0" y="784" font-size="11" font-weight="600" fill="var(--accent)">SIGNATURE</text>
 <text x="987.0" y="798" font-size="10.5" fill="currentColor" opacity=".6">the only moment money starts</text>
 </svg>
-    <figcaption>Everything below is one column of this picture, explained. If you read one thing,
-    read this and then <b>05</b> and <b>07</b>, which are what changed this week. On a narrow screen the diagram scrolls sideways.</figcaption>
+    <figcaption>Everything below is one column of this picture, explained. If you read one thing, read this, then <b>18</b> for the model with your own numbers in it, then <b>26</b> for what the whole thing is worth. On a narrow screen the diagram scrolls sideways.</figcaption>
   </figure>
 </section>
 
@@ -345,8 +482,39 @@ section ol li strong{color:var(--ink);}
     <figcaption><b>The only structural change is where first contact sits.</b> Same reports, same meeting, same proposal. Moving the research ahead of the conversation turns it from sales support into the reason a stranger writes back.</figcaption>
   </figure>
 </section>
+
 <section id="s02">
-  <h2><span class="n">02</span> The gate</h2>
+  <h2><span class="n">02</span> Step one, and it is not built yet</h2>
+  <h3>Today the lead still arrives. Tomorrow we go and find it</h3>
+  <p>Everything in the previous section describes the motion we are building, not the one running now.
+  Right now a lead arrives by email or contact form, gets a meeting link, and the reports are prepared for
+  a conversation that already happened. <strong>The half that finds the prospect in the first place is a
+  separate script that has never been connected to anything.</strong></p>
+  <p>That script exists and it works. It queries Google Maps for a trade across a list of markets, pulls
+  place details, and scores every result by digital weakness:</p>
+  <table>
+    <thead><tr><th>Score</th><th>What it means</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td><b>Hot</b></td><td>No website, or almost no reviews</td><td>Call this week</td></tr>
+      <tr><td><b>Warm</b></td><td>Has a site, weak presence</td><td>Run the audit first</td></tr>
+      <tr><td><b>Cold</b></td><td>Established digital presence</td><td>Skip for now</td></tr>
+    </tbody>
+  </table>
+  <p>It outputs a CSV, an interactive dashboard and optionally a Google Sheet. Roughly five to eight
+  dollars of Places API spend gets sixty results across five markets, which is the cheapest lead sourcing
+  in the business by a wide margin.</p>
+  <div class="callout">
+    <p><strong>What is missing is not the research, it is the connection.</strong> The scored prospect
+    lands in a spreadsheet and stops. Nothing mints a client record, nothing chains the audit, nothing
+    tracks whether the email was opened. Folding this into Prospector as a first engine that writes to the
+    record is step one, and it is what turns a list into a pipeline.</p>
+  </div>
+  <p>Two things to get right when it moves in. The market list and the trade keyword belong in the vertical
+  pack, not hardcoded in the script. And the scoring thresholds should be visible and tunable, because
+  what counts as a weak presence is different for a roofer than for an electrician.</p>
+</section>
+<section id="s03">
+  <h2><span class="n">03</span> The gate</h2>
   <h3>Records are born local and promoted into the CRM</h3>
   <p>Running war reports on forty roofers should not put forty companies into the CRM. Prospector is a research tool, and research is cheap; a CRM full of companies nobody ever spoke to is worse than useless because it destroys the meaning of the pipeline count.</p>
   <p>So a client record starts as <code>crmSource: "local"</code> and lives entirely inside Prospector. It crosses into the CRM at one point only.</p>
@@ -432,8 +600,8 @@ section ol li strong{color:var(--ink);}
     <p><strong>Yes, pushed in rather than pulled from.</strong> A prospect who already exists in the CRM is picked from search and pulled down instead, but that is the smaller path. In an outbound motion most records are born in Prospector and promoted, which is why the pipeline count stays honest.</p>
   </div>
 </section>
-<section id="s03">
-  <h2><span class="n">03</span> What fires the gate</h2>
+<section id="s04">
+  <h2><span class="n">04</span> What fires the gate</h2>
   <h3>Open events, not a judgment call</h3>
   <p>Sourcing from Google Places gives more than a name and a URL. An unclaimed profile, thin photos, no Posts and a review count under the market median say a prospect has an addressable problem <em>and</em> that nobody is already selling them. <strong>Score the list on those signals rather than only personalizing from them</strong>, so the send queue is ranked by opportunity instead of alphabet.</p>
   <p>Then reuse what already exists. Prospector mints publish tokens and serves hosted pages at <code>/p/:token</code> for proposals, with views logged. Point that at the war and competitor reports and the send becomes a short personal note plus a link, which beats a PDF attachment on deliverability and produces the signal below.</p>
@@ -522,8 +690,8 @@ section ol li strong{color:var(--ink);}
 </section>
 
 <div class="part"><span class="part-n">Part Two</span><h2 class="part-t">The spine</h2><p class="part-s">One record, one contract. Everything after this depends on both.</p></div>
-<section id="s04">
-  <h2><span class="n">04</span> The spine</h2>
+<section id="s05">
+  <h2><span class="n">05</span> The spine</h2>
   <h3>Every engine reads the record and writes back to it</h3>
   <p>The reason the reordering works at all is that facts stop living inside documents. Today the only way to reuse something the war report established is to open the PDF. Once the record is the source of truth, each engine contributes its slice and consumes everyone else's.</p>
 
@@ -587,8 +755,8 @@ section ol li strong{color:var(--ink);}
     </tbody>
   </table>
 </section>
-<section id="s05">
-  <h2><span class="n">05</span> The full pathway</h2>
+<section id="s06">
+  <h2><span class="n">06</span> The full pathway</h2>
   <h3>Four systems, one record, six stages</h3>
   <p>The engines are stages in one lifecycle rather than separate tools. Everything left of signature is a sales artifact and lives locally; everything right of it is a delivery obligation. The boundaries between apps matter because they decide who is allowed to write.</p>
 
@@ -681,8 +849,8 @@ section ol li strong{color:var(--ink);}
     <p><strong>The reports are a menu, not a sequence.</strong> Local SEO, organic, paid and silo plans usually run after close, but nothing stops them running earlier and one of them is often what closes the deal. Gate them with a warning, never a block: a salesperson asking for a local SEO report on an unreplied prospect may have a reason the system cannot see. The one real dependency is that the silo plan inherits positioning, so building it before the strategy settles means building it twice.</p>
   </div>
 </section>
-<section id="s06">
-  <h2><span class="n">06</span> One contract, four apps</h2>
+<section id="s07">
+  <h2><span class="n">07</span> One contract, four apps</h2>
   <h3>The record outgrew the repo it was written in</h3>
   <p>The client record is not a Prospector feature. It is a contract that Command Center, Prospector,
   invoicing and ContentPro all implement against. It was written inside Prospector&#8217;s docs folder
@@ -719,6 +887,7 @@ section ol li strong{color:var(--ink);}
   <line x1="478" y1="49" x2="454" y2="60" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ah)"/>
   <path d="M 790 72 L 790 100 L 456 100" fill="none" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ah)"/>
 
+  <text x="880" y="126" text-anchor="end" font-size="10.5" fill="currentColor" opacity=".6">each reaches into Prospector&#8217;s repo to read it</text>
   <text x="0" y="160" font-size="11.5" fill="currentColor" opacity=".62">A change to the contract appears in one app&#8217;s log. The app that owns the record has no record of the contract it implements.</text>
 
   <line x1="0" y1="186" x2="900" y2="186" stroke="currentColor" stroke-opacity=".14"/>
@@ -738,7 +907,9 @@ section ol li strong{color:var(--ink);}
   <line x1="320" y1="272" x2="400" y2="316" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#ahh)"/>
   <line x1="570" y1="272" x2="500" y2="316" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#ahh)"/>
   <line x1="790" y1="272" x2="570" y2="316" stroke="var(--accent)" stroke-opacity=".55" marker-end="url(#ahh)"/>
-  <text x="612" y="300" font-size="10.5" fill="var(--accent)" opacity=".9">implements</text>
+  <text x="0" y="344" font-size="11" font-weight="600" fill="var(--accent)">all four</text>
+  <text x="0" y="360" font-size="11" font-weight="600" fill="var(--accent)">implement it</text>
+  <text x="0" y="378" font-size="10.5" fill="currentColor" opacity=".6">nothing flows back</text>
 
   <rect x="230" y="320" width="440" height="60" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/>
   <text x="246" y="343" font-size="12.5" font-weight="600" fill="var(--accent)">efelle-contracts</text>
@@ -764,13 +935,13 @@ section ol li strong{color:var(--ink);}
 </section>
 
 <div class="part"><span class="part-n">Part Three</span><h2 class="part-t">Sell</h2><p class="part-s">What we send, what it costs to produce, and what it is allowed to promise.</p></div>
-<section id="s07">
-  <h2><span class="n">07</span> Two documents, one state</h2>
+<section id="s08">
+  <h2><span class="n">08</span> Two documents, one state</h2>
   <h3>The person who signs is not the person the strategy was written for</h3>
   <p>The strategy document is written to survive scrutiny, which is the right way to write it. The owner
-  of a one-truck plumbing business is not the person doing the scrutinising. On the first engagement the
+  of a one-truck plumbing business is not the person doing the scrutinizing. On the first engagement the
   owner read all sixty-three pages and asked, politely, whether there was a shorter one. There was not.
-  Now there is, and it ships as part of the package rather than as a favour.</p>
+  Now there is, and it ships as part of the package rather than as a favor.</p>
   <figure>
     <svg viewBox="0 0 900 300" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="One state produces two documents. The engine state feeds a full strategy render and an owner's brief render. The brief is a projection of the same state rather than a second generation pass, and a QA rule checks that every number in the brief also appears in the full document.">
   <defs>
@@ -840,8 +1011,8 @@ section ol li strong{color:var(--ink);}
     service promises, and the promises need software behind them before they are published.</p>
   </div>
 </section>
-<section id="s08">
-  <h2><span class="n">08</span> Scope</h2>
+<section id="s09">
+  <h2><span class="n">09</span> Scope</h2>
   <h3>Four projects in five are not brand projects</h3>
   <p>Brand and messaging work applies to about one engagement in five. For the rest, forty pages of identity analysis is effort nobody bought and it makes the document read as padded. <strong>Both toggles default off</strong>, using the same section-flag mechanism as the trade gates.</p>
 
@@ -857,8 +1028,8 @@ section ol li strong{color:var(--ink);}
   <p>With both off the document is market, service area, ideal customer, services, trust, operations, channels and measurement. That is the part demonstrating thinking. Brand is the part demonstrating taste, and only some clients are buying it.</p>
   <p><strong>Sections renumber rather than leaving gaps.</strong> A document jumping from 10 to 13 tells the client something was removed, and a cross-reference pointing at a dropped section is a blocking error whose fix is rewriting the sentence, never re-enabling the section.</p>
 </section>
-<section id="s09">
-  <h2><span class="n">09</span> The gates by trade</h2>
+<section id="s10">
+  <h2><span class="n">10</span> The gates by trade</h2>
   <h3>One pipeline, branching on the vertical pack</h3>
   <p>A roofer and a landscaper need genuinely different documents, not the same document with the service list swapped. The vertical pack carries a <code>pipeline</code> block that decides which analyses run and which sections exist, so engine code never branches on trade.</p>
 
@@ -902,8 +1073,8 @@ section ol li strong{color:var(--ink);}
 
 <div class="part"><span class="part-n">Part Four</span><h2 class="part-t">Deliver</h2><p class="part-s">The part clients actually pay for, and the handover that usually loses a fortnight.</p></div>
 
-<section id="s10">
-  <h2><span class="n">10</span> Onboarding, and the two exports</h2>
+<section id="s11">
+  <h2><span class="n">11</span> Onboarding, and the two exports</h2>
   <h3>The moment the record stops being a sales artifact and becomes a project</h3>
   <p>A signature does not finish anything. It starts the part of the business that actually costs money to
   run, and the handover between the two is where agencies routinely lose a fortnight retyping what they
@@ -927,29 +1098,57 @@ section ol li strong{color:var(--ink);}
   own isolation model depends on and which is far cheaper to enforce at the boundary.</p>
 </section>
 
-<section id="s11">
-  <h2><span class="n">11</span> The build, and the content engine</h2>
-  <h3>Where the strategy stops being a document</h3>
-  <p>The site is built on FusionCMS, which is efelle&#8217;s own platform and the reason a small team can
-  ship custom marketing sites at all. Everything upstream in this document exists to make the build start
-  from a researched position rather than a blank sitemap.</p>
-  <p>Content runs through ContentPro. It takes the export, produces the binder, and the binder is what the
-  pages get written from. The scale is not small: recent binders have run to 107, 51 and 36 pages, and each
-  one passes eleven deterministic lint checks before it is called done. That lint is the reason quality
-  does not drift as volume rises.</p>
+<section id="s12">
+  <h2><span class="n">12</span> How a site actually gets built</h2>
+  <h3>Five hands, in order, with account management across all of them</h3>
+  <p>The strategy and the proposal are the cheap part. This is the part that consumes the studio, and it is
+  the reason intake rate and delivery capacity are the same conversation.</p>
+  <table>
+    <thead><tr><th>Stage</th><th>Who</th><th>What comes out of it</th></tr></thead>
+    <tbody>
+      <tr><td><b>Style tile</b></td><td>Design</td><td>Palette, type, components and tone agreed before any page is laid out. The cheapest round of revisions in the whole project happens here</td></tr>
+      <tr><td><b>Semi-custom design</b></td><td>Design</td><td>The tile applied and tuned to the client&#8217;s pages. Not a template, not a blank canvas</td></tr>
+      <tr><td><b>Build</b></td><td>Development</td><td>The design completed in FusionCMS, on efelle&#8217;s own platform</td></tr>
+      <tr><td><b>Content load</b></td><td>Content, from ContentPro</td><td>The binder becomes real pages</td></tr>
+      <tr><td><b>Launch</b></td><td>Account management</td><td>The site goes live, and the recurring program starts here rather than at signature</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Account management runs across the whole chain rather than sitting at the end of it.</strong>
+  That is the role that owns the client&#8217;s experience of a process which otherwise hands them between
+  four sets of people, and it is the one function in this document that does not automate.</p>
   <div class="callout">
-    <p><strong>The terminology traps travel with the export.</strong> Every trade has pairs of words that
-    look interchangeable and are not, and a content tool that does not know them will confidently produce
-    the wrong one at scale. Backwater valve and backflow preventer is the plumbing example. The strategy
-    engine already enforces the list; if it does not reach ContentPro, the errors the strategy was careful
-    to avoid come straight back in the copy.</p>
+    <p><strong>The style tile is the highest-leverage checkpoint in delivery.</strong> Agreement on color,
+    type and tone before layout starts is what keeps a semi-custom build semi-custom. Every project that
+    goes over does so because that agreement was assumed rather than signed.</p>
   </div>
-  <p>ContentPro writes nothing back. It is a building tool, and what it decides about page structure is not
-  a fact about the client. Corrections go through Command Center.</p>
+  <p>The upstream half of this document exists to make this chain start from a researched position. The
+  style tile inherits a palette the strategy already argued for; the pages inherit a sitemap the strategy
+  already justified; the content inherits a position rather than a brief. Nothing here starts blank, which
+  is where the hours normally go.</p>
 </section>
 
-<section id="s12">
-  <h2><span class="n">12</span> The recurring program</h2>
+<section id="s13">
+  <h2><span class="n">13</span> Launch is a marketing event</h2>
+  <h3>The one moment a client is proud of the work, and it is usually wasted</h3>
+  <p>A site goes live and nothing happens. The team moves to the next build, the client tells a few people,
+  and the single best piece of proof efelle produced that month never leaves the invoice.</p>
+  <p>The social image builder exists to close that. It takes a launched site and produces branded graphics
+  in four formats, launch, deck slide, stat and update, plus story carousels, screenshotting the live site
+  with Playwright and rendering video and animated versions through ffmpeg. It is a local Flask app today,
+  with a stock imagery integration and a handful of finishing items outstanding: a start script, an image
+  upload interface, faster preview, and API verification.</p>
+  <div class="callout">
+    <p><strong>Where it belongs in this pipeline:</strong> launch, triggered by account management, drawing
+    the client name, palette and site URL straight from the record. The record already holds every input
+    the builder needs, which means this is a small integration rather than a new tool.</p>
+  </div>
+  <p>What it produces feeds two audiences at once. The client gets something to post, which is the cheapest
+  goodwill available at exactly the moment goodwill is highest. And efelle gets a portfolio entry, a proof
+  point for the next proposal, and a piece of the case-study library that the strategy engine cites.</p>
+</section>
+
+<section id="s14">
+  <h2><span class="n">14</span> The recurring program</h2>
   <h3>The part of the business that is worth building</h3>
   <p>A website is a project. Projects end. The Revenue Growth Service is the part that does not, and it is
   the reason the whole motion at the front of this document is worth automating: a cheaper way to find one
@@ -957,9 +1156,11 @@ section ol li strong{color:var(--ink);}
   <p>The program is scoped and priced per client rather than sold from a rate card, because a one-truck
   plumber and a three-branch manufacturer need genuinely different work. What does not vary is the shape:
   local search, organic, paid, reviews, reporting, and a monthly conversation about what the numbers did.</p>
-  <p>Hosting and support sits alongside it at $145 a month, covering CMS updates and upgrades, server
-  maintenance and support. It is not a profit centre on its own. It is what keeps the site the program is
-  optimising from decaying underneath it.</p>
+  <p>Hosting and support sits alongside it at $145 a month today, covering CMS updates and upgrades, server
+  maintenance and support. It is not a profit center on its own. It is what keeps the site the program is
+  optimizing from decaying underneath it. <strong>The model later in this document reprices it to $65 and
+  the program to $2,250</strong>, on the argument that the money belongs on the line that does the growing
+  and hosting should be priced to be an easy yes. Those are a proposal, not today&#8217;s list.</p>
   <div class="callout">
     <p><strong>Recurring charges start at launch, not at signature.</strong> That single rule is written
     into the invoicing contract as a field rather than left to memory, because it is the most common
@@ -969,12 +1170,12 @@ section ol li strong{color:var(--ink);}
 
 <div class="part"><span class="part-n">Part Five</span><h2 class="part-t">Profit</h2><p class="part-s">Where the money is, where it is not, and the two numbers we cannot yet supply.</p></div>
 
-<section id="s13">
-  <h2><span class="n">13</span> What a client is worth</h2>
+<section id="s15">
+  <h2><span class="n">15</span> What a client is worth</h2>
   <h3>The build pays for the work. The program pays for the business</h3>
   <p>Everything before this section is cost. This is where it turns over.</p>
   <figure>
-    <svg viewBox="0 0 900 330" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Timeline of what efelle bills one client over thirty-six months. A deposit at signature, twenty-four interest-free instalments covering the rest of the build, and a monthly program that starts at launch and continues indefinitely. Advertising spend runs alongside but is paid directly to Google and is never efelle revenue. The build is finite and front-loaded; the recurring program is the part that compounds.">
+    <svg viewBox="0 0 900 330" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Timeline of what efelle bills one client over thirty-six months. A deposit at signature, twenty-four interest-free installments covering the rest of the build, and a monthly program that starts at launch and continues indefinitely. Advertising spend runs alongside but is paid directly to Google and is never efelle revenue. The build is finite and front-loaded; the recurring program is the part that compounds.">
 <line x1="78" y1="286" x2="872" y2="286" stroke="currentColor" stroke-opacity=".25"/>
 <line x1="78" y1="286" x2="78" y2="292" stroke="currentColor" stroke-opacity=".3"/>
 <text x="78" y="308" text-anchor="middle" font-size="11" fill="currentColor" opacity=".6">0</text>
@@ -995,18 +1196,18 @@ section ol li strong{color:var(--ink);}
 <text x="0" y="87" font-size="10.5" fill="currentColor" opacity=".5">finite</text>
 <rect x="78" y="56" width="26" height="42" rx="4" fill="var(--accent)" fill-opacity=".85"/>
 <rect x="108" y="64" width="499" height="26" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".55"/>
-<text x="118" y="81" font-size="11.5" fill="var(--accent)">24 interest-free instalments, then it stops</text>
+<text x="118" y="81" font-size="11.5" fill="var(--accent)">24 interest-free installments, then it stops</text>
 <text x="78" y="46" font-size="11" font-weight="600" fill="var(--accent)">deposit, 50%</text>
 <text x="0" y="154" font-size="11" font-weight="600" letter-spacing=".08em" fill="currentColor" opacity=".7">PROGRAM</text>
 <text x="0" y="169" font-size="10.5" fill="currentColor" opacity=".5">compounds</text>
 <rect x="100" y="146" width="754" height="30" rx="4" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".55"/>
-<text x="112" y="166" font-size="11.5" fill="var(--crm)">hosting and support $145, plus the revenue growth program, scoped per client</text>
+<text x="112" y="166" font-size="11.5" fill="var(--crm)">hosting and support, plus the revenue growth program, scoped per client</text>
 <path d="M 856 146 L 872 161 L 856 176 Z" fill="var(--crm)" fill-opacity=".55"/>
-<text x="100" y="136" font-size="11" font-weight="600" fill="var(--crm)">starts at launch, not at signature</text>
+<text x="112" y="136" font-size="11" font-weight="600" fill="var(--crm)">starts at launch, not at signature</text>
 <text x="0" y="226" font-size="11" font-weight="600" letter-spacing=".08em" fill="currentColor" opacity=".7">AD SPEND</text>
-<text x="0" y="241" font-size="10.5" fill="currentColor" opacity=".5">not ours</text>
+<text x="0" y="241" font-size="10.5" fill="currentColor" opacity=".5">never ours</text>
 <rect x="100" y="216" width="754" height="26" rx="4" fill="none" stroke="currentColor" stroke-opacity=".28" stroke-dasharray="4 3"/>
-<text x="112" y="233" font-size="11.5" fill="currentColor" opacity=".62">paid by the client directly to Google. Passes through efelle, never revenue</text>
+<text x="112" y="233" font-size="11.5" fill="currentColor" opacity=".62">paid by the client, directly to the channel. It never touches efelle</text>
 <line x1="100" y1="40" x2="100" y2="286" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 3"/>
 <text x="106" y="272" font-size="10.5" fill="currentColor" opacity=".55">launch, 2 to 4 weeks</text>
 </svg>
@@ -1021,9 +1222,10 @@ section ol li strong{color:var(--ink);}
   <p>Set against that, the recurring side is smaller every month and larger every year. It is also the only
   part that survives a project ending.</p>
   <div class="callout">
-    <p><strong>Ad spend is not revenue and should never be counted as it.</strong> It is the client&#8217;s
-    money, on the client&#8217;s card, going to Google. Agencies that let it sit in the top line flatter
-    themselves and then make capacity decisions from a number that is not theirs.</p>
+    <p><strong>Ad spend never touches efelle.</strong> The client pays the channel directly, on their own
+    card, on their own account. It is not revenue, it is not pass-through, and it does not appear anywhere
+    in efelle&#8217;s books. Agencies that route it and let it sit in the top line flatter themselves and
+    then make capacity decisions from a number that was never theirs.</p>
   </div>
   <p>Two numbers this document cannot yet supply, and they are the ones that decide how hard to push the
   engine: <strong>what it costs to acquire a client through this motion</strong>, and <strong>how long a
@@ -1032,12 +1234,12 @@ section ol li strong{color:var(--ink);}
   someone asks.</p>
 </section>
 
-<section id="s14">
-  <h2><span class="n">14</span> Getting paid</h2>
+<section id="s16">
+  <h2><span class="n">16</span> Getting paid</h2>
   <h3>Three systems, one field coming back</h3>
   <p>Billing is where the boundary rules earn their keep, because it is the place where a second source of
   truth is most tempting and most damaging.</p>
-  <p>The invoicing app reads the offer export and builds the schedule: deposit, instalments, recurring
+  <p>The invoicing app reads the offer export and builds the schedule: deposit, installments, recurring
   charges with their start rule. It matches or creates the QuickBooks customer. It raises the invoices.
   Then the A/R bot chases what has not been paid, which is a job nobody wants and which a small team will
   otherwise do late or not at all. Payments are moving to Stripe ACH, which lowers the cost of collecting
@@ -1052,8 +1254,8 @@ section ol li strong{color:var(--ink);}
   becomes the de facto client list within a quarter, because it is the one system that is always up to date
   about who is paying. At that point there are two client lists and they disagree.</p>
 </section>
-<section id="s15">
-  <h2><span class="n">15</span> Compounding</h2>
+<section id="s17">
+  <h2><span class="n">17</span> Compounding</h2>
   <h3>The tenth client in a market is nearly free</h3>
   <p>Every engagement produces research that is not client-specific. The census pull for Seattle ZIPs, the competitor set for plumbing in Queen Anne, the King County permit file: none of it belongs to one client, it belongs to the market. Treated as per-client work, the second plumber in Ballard costs the same to research as the first.</p>
   <p>Cache it under <code>data/markets/{metro}/</code> and only the client-specific parts stay fresh.</p>
@@ -1141,14 +1343,230 @@ section ol li strong{color:var(--ink);}
     <p><strong>Two rules keep it safe.</strong> Everything cached carries a vintage and a source, because a shared fact with no provenance becomes a liability the moment a client questions it. And client-specific interpretation never enters the cache: the census table is shared, but "98117 is the strongest fit for this brand" belongs to one client and stays in their record.</p>
   </div>
 </section>
+<section id="s18">
+  <h2><span class="n">18</span> The model</h2>
+  <h3>The value of scaling</h3>
+  <p>Every figure below is an assumption you can change. The project price and the deposit split are
+  efelle&#8217;s real terms. <strong>The contract term is one number for the whole engagement</strong>: the
+  balance is financed over it, hosting runs on it, and the program is sold on it, so nothing churns until
+  it ends. Today only the first two are true. The 24 months is the website payment plan with hosting
+  locked alongside it, and the program is month to month; putting it on the same term is the change the
+  next section argues for.</p>
+  <p>It opens on the planning case rather than today&#8217;s list: hosting repriced down to $65, the
+  program up to $2,250 and carrying the term, and churn at 10% a year afterward against a 25% agency
+  benchmark. Those are the proposal, not the present, and the section called Selling it prices what they
+  are worth.</p>
+  <p><strong>Current MRR is the legacy book</strong>, the recurring revenue efelle already bills before any
+  of this starts. It runs from month one alongside the new program and it decays at the churn rate above,
+  because none of it carries the term. It defaults to zero, so every figure in the valuation section is the new
+  program on its own; put the real number in and everything downstream moves with it.</p>
+
+  <div class="model" id="model">
+    <div class="ctrls">
+      <label><span class="lb">New clients / mo</span>
+        <span class="ctl rng"><input type="range" id="m-rate" min="1" max="32" step="1" value="8"><output id="m-rate-o">8</output></span></label>
+      <label><span class="lb">Project price</span>
+        <span class="ctl"><span class="pre">$</span><input type="number" id="m-price" value="7500" min="0" step="500"></span></label>
+      <label><span class="lb">Deposit</span>
+        <span class="ctl"><input type="number" id="m-dep" value="50" min="0" max="100" step="5"><span class="suf">%</span></span></label>
+      <label><span class="lb">Contract term</span>
+        <span class="ctl"><input type="number" id="m-term" value="24" min="1" max="60" step="1"><span class="suf">mo</span></span></label>
+      <label><span class="lb">Hosting</span>
+        <span class="ctl"><span class="pre">$</span><input type="number" id="m-host" value="65" min="0" step="5"></span></label>
+      <label><span class="lb">RGS program</span>
+        <span class="ctl"><span class="pre">$</span><input type="number" id="m-prog" value="2250" min="0" step="50"></span></label>
+      <label><span class="lb">Churn/yr after</span>
+        <span class="ctl"><input type="number" id="m-churn" value="10" min="0" max="80" step="1"><span class="suf">%</span></span></label>
+    </div>
+
+    <div class="per">
+      <span class="mrr">
+        <label class="per-h" for="m-mrr">Current MRR</label>
+        <span class="mrr-ctl"><span class="pre">$</span><input type="number" id="m-mrr" value="0" min="0" step="500"></span>
+      </span>
+      <span class="one">
+        <span class="per-h">One client</span>
+        <span class="per-i"><b id="p-dep">$0</b> deposit</span>
+        <span class="per-i"><b id="p-inst">$0</b>/mo <span id="p-term">&times; 24</span></span>
+        <span class="per-i"><b id="p-rec">$0</b>/mo at launch</span>
+        <span class="per-i"><b id="p-36">$0</b> over 36 mo</span>
+      </span>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><span class="tl">Cumulative 36 mo</span><span class="tv" id="o-cum">$0</span></div>
+      <div class="tile"><span class="tl">Run-rate / mo</span><span class="tv" id="o-run">$0</span></div>
+      <div class="tile"><span class="tl">Recurring share</span><span class="tv" id="o-share">0%</span></div>
+      <div class="tile"><span class="tl">Signed, 36 mo</span><span class="tv" id="o-signed">0</span></div>
+      <div class="tile"><span class="tl">On program</span><span class="tv" id="o-active">0</span></div>
+    </div>
+
+    <div class="years">
+      <table id="m-years"><thead><tr>
+        <th>Year</th><th>New / month</th><th>Deposits</th><th>Installments</th><th>Recurring</th><th>Total</th><th>Cumulative</th>
+      </tr></thead><tbody></tbody></table>
+      <p class="years-note">Year 1 follows the slider. Years 2 and 3 are a ramp, and you can change them.</p>
+    </div>
+
+    <figure class="chartfig">
+      <svg id="m-chart" viewBox="0 0 900 262" role="img" aria-labelledby="m-chart-t"></svg>
+      <p id="m-chart-t" class="sr">Monthly revenue over thirty-six months in three stacked bands: deposits,
+      installments and recurring. Deposits are flat at a constant intake rate. Installments ramp for the length
+      of the financing term and then plateau, because new installments start as fast as old ones finish.
+      Recurring climbs continuously and becomes the largest band.</p>
+      <div class="capline">
+        <figcaption id="m-cap">Monthly revenue, months 1 to 36.</figcaption>
+        <div class="legend">
+          <span><i class="sw sw-d"></i>Deposits</span>
+          <span><i class="sw sw-i"></i>Installments</span>
+          <span><i class="sw sw-r"></i>Recurring</span>
+        </div>
+      </div>
+    </figure>
+
+    <div class="cap-note" id="m-capacity"></div>
+
+    <details class="tbl">
+      <summary>Show every month</summary>
+      <div class="tbl-scroll"><table id="m-table"><thead><tr>
+        <th>Month</th><th>Active</th><th>Deposits</th><th>Installments</th><th>Recurring</th><th>Total</th><th>Cumulative</th>
+      </tr></thead><tbody></tbody></table></div>
+    </details>
+  </div>
+
+  <p>Two things the shape shows that a single number cannot. <strong>Deposits are flat</strong> at a steady
+  intake rate, and <strong>installments plateau</strong> rather than ending, because new ones begin as fast as
+  old ones finish. Together they set a ceiling that only moves when the intake rate or the price moves.
+  <strong>Recurring has no ceiling.</strong> It stops climbing only when churn cancels new starts.</p>
+  <div class="callout" id="m-churnnote"></div>
+</section>
+
+
+<section id="s19">
+  <h2><span class="n">19</span> What an investor would need to see</h2>
+  <h3>Almost none of the recurring book is contracted, and it is the cheap part that is</h3>
+  <p>The operating targets that a growth investor or a strategic buyer will test are recurring growth of 25
+  to 40 percent a year and net revenue retention of 110 to 120 percent. Growth is not the problem here.
+  Retention is, and the reason sits inside the recurring line. What all of it is finally worth is the
+  section called Selling it, near the end, on an EBITDA basis; this one is about the two operating numbers
+  that decide which bracket that lands in.</p>
+
+  <aside class="aside">
+    <p class="aside-h">The recurring book is two different assets</p>
+    <table>
+      <thead><tr><th>Component</th><th>Per client</th><th>Commitment</th><th>Share of exit ARR</th></tr></thead>
+      <tbody>
+        <tr><td><b>Hosting and support</b></td><td>$65</td><td>Locked 24 months</td><td class="ok">3%</td></tr>
+        <tr><td><b>Revenue Growth Service</b></td><td>$2,250</td><td>Month to month</td><td class="no">97%</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Effectively all of the recurring revenue can be cancelled with thirty days notice, and the
+    contracted three percent is the cheap end of it.</strong> Repricing hosting down and the program up made
+    this sharper, not softer: the locked line got smaller and the cancellable line got bigger. A buyer
+    underwriting recurring revenue is looking at a stream that, as currently sold, no client is obliged to
+    continue past next month.</p>
+    <p class="fineprint">The model in the previous section assumes this is fixed: it puts the program on the
+    same 24-month term as hosting and financing. This aside describes how it is sold today.</p>
+  </aside>
+
+  <h4>The trajectory, starting at eight a month</h4>
+  <p>Eight new clients a month in year one, ten in year two, twelve in year three. Hosting at $65 locked for
+  twenty-four months, the program at $2,250, no fee escalation assumed. The program sold month to month at
+  the 25% agency benchmark.</p>
+  <table class="traj">
+    <thead><tr><th>Year</th><th>New / month</th><th>On hosting</th><th>On the program</th><th>Exit ARR</th><th>ARR growth</th></tr></thead>
+    <tbody>
+      <tr><td>Year 1</td><td>8</td><td>88</td><td>78</td><td>$2,182,304</td><td>from zero</td></tr>
+      <tr><td>Year 2</td><td>10</td><td>206</td><td>163</td><td>$4,553,938</td><td>109%</td></tr>
+      <tr><td>Year 3</td><td>12</td><td>338</td><td>247</td><td>$6,936,714</td><td>52%</td></tr>
+    </tbody>
+  </table>
+  <p>By month 36, <strong>338 clients pay for hosting and 247 pay for the program</strong>. Ninety-one are
+  paying for a live site and nothing else. That gap is the churn, and it is visible rather than averaged
+  away. What a commitment is worth, on the same intake and the same prices:</p>
+  <table class="traj">
+    <thead><tr><th>Program sold as</th><th>Assumed churn</th><th>On the program, month 36</th><th>Exit ARR</th></tr></thead>
+    <tbody>
+      <tr class="no"><td>Month to month <span class="tag">today</span></td><td>25% a year</td><td>247</td><td>$6,936,714</td></tr>
+      <tr><td>Month to month</td><td>10% a year</td><td>305</td><td>$8,504,191</td></tr>
+      <tr class="ok"><td>12 month term</td><td>15% a year</td><td>322</td><td>$8,954,295</td></tr>
+      <tr class="ok"><td>24 month term</td><td>10% a year</td><td>344</td><td>$9,563,343</td></tr>
+    </tbody>
+  </table>
+  <p><strong>A term is worth more than a fifteen point improvement in churn.</strong> Putting the program on
+  twelve months at a 15% non-renewal rate beats holding month-to-month clients to 10% annual churn, because
+  the term removes the decision entirely for the first year rather than making it less likely every month.
+  That is the argument for the next part.</p>
+
+  <h4>Should the program carry a term, and how long</h4>
+  <p>Published benchmarks put annual churn for full-service digital agencies at about <strong>25%</strong>,
+  for standalone SEO at 38% and for PPC at 49%. Mid-market B2B software sits at 5 to 10%. The gap is not
+  about quality, it is structural: software embeds in workflows and is painful to leave, while agency
+  services can be paused or taken in-house on thirty days notice. efelle has more lock-in than most, because
+  the client&#8217;s site runs on efelle&#8217;s own platform, but 25% is the honest planning number for a
+  program sold month to month. The model defaults to 10% because it also assumes the program carries the
+  24-month term, and the term is what earns the lower number. Take the term away and 25% is what to
+  plan on.</p>
+  <p>The research names the mechanism behind SEO&#8217;s churn precisely, and it is the argument for a term:
+  <strong>clients expect rankings in 30 to 60 days when the work takes three to six months to show
+  return.</strong> A month-to-month program on a service with that lag is structurally selling people the
+  option to leave one month before it starts working.</p>
+  <table class="prose-tbl">
+    <thead><tr><th>Term</th><th>Verdict</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><b>3 months</b></td><td class="no">no</td>
+          <td>Shorter than time-to-value. It manufactures a cancellation decision in the exact month before the work pays. Worse than month to month, because it schedules the conversation</td></tr>
+      <tr><td><b>6 months</b></td><td>fallback</td>
+          <td>Covers minimum time-to-value. Offer it to clients who will not sign twelve</td></tr>
+      <tr><td><b>12 months</b></td><td class="ok">default</td>
+          <td>Covers a full seasonal cycle, which matters in trades whose peak and trough are months apart, and gives the compounding work time to land</td></tr>
+      <tr><td><b>24 months</b></td><td class="ok">worth asking for</td>
+          <td>Matches the website payment plan and hosting, so the client signs one term rather than two, and it is what the model and the valuation section assume. The cost is sales friction on a fee the client has not yet seen work, which is why 12 is the default and 24 is the ask</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><strong>Reward the term, but not with a lower monthly fee.</strong> On lifetime profit you could
+    discount up to 43% and still come out ahead, because a longer life is worth that much. On exit ARR the
+    break-even is only <b>12%</b>, and a 15% discount leaves you worse off than staying month to month. The
+    discount hits every client every month immediately; the retention benefit accrues slowly. If the goal is
+    a sale, those two objectives point in opposite directions and the sale objective is the binding one.</p>
+    <p>Pay for the commitment with one-time value instead: a build credit, waived setup, an extra service
+    for the first quarter, a higher ad-management allowance. Those cost once. The monthly fee is the number
+    that gets multiplied.</p>
+  </div>
+
+  <h4>Retention is where it is decided</h4>
+  <p>Net revenue retention is annual gross retention multiplied by expansion on the accounts that stay.</p>
+  <div class="nrr-tbl">
+  <table>
+    <thead><tr><th>Program churn</th><th>Gross retention</th><th>Expansion needed for 110%</th><th>For 120%</th></tr></thead>
+    <tbody>
+      <tr class="ok"><td>10% a year</td><td>90%</td><td>22%</td><td>33%</td></tr>
+      <tr class="ok"><td>15% a year  <span class="tag">with a term</span></td><td>85%</td><td>29%</td><td>41%</td></tr>
+      <tr><td>20% a year</td><td>80%</td><td>38%</td><td>50%</td></tr>
+      <tr class="no"><td>25% a year  <span class="tag">agency benchmark</span></td><td>75%</td><td>47%</td><td>60%</td></tr>
+      <tr class="no"><td>38% a year  <span class="tag">seo agencies</span></td><td>62%</td><td>77%</td><td>94%</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>At the benchmark 25%, holding NRR at 110% would need <strong>47% expansion every year</strong> on the
+  accounts that stay. That is not a plan. With a term at 15% it falls to 29%, which on a $2,315 recurring
+  package is about <strong>$8,200 more per client per year</strong>: demanding, and it says plainly that
+  expansion has to mean additional services rather than an annual escalator.</p>
+
+  <p class="fineprint">These are mechanics against targets and benchmarks you supplied, not a valuation and
+  not investment advice. Every figure follows from the assumptions stated beside it, and the answers move a
+  long way on small changes to churn, term or fee.</p>
+</section>
 
 <div class="part"><span class="part-n">Part Six</span><h2 class="part-t">The machine</h2><p class="part-s">What exists today, what breaks, and what to build next.</p></div>
 
-<section id="s16">
-  <h2><span class="n">16</span> The systems, and the state of each</h2>
+<section id="s20">
+  <h2><span class="n">20</span> The systems, and the state of each</h2>
   <h3>What exists, what is being built, and what is still a document</h3>
   <figure>
-    <svg viewBox="0 0 900 268" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="The eight systems and the state of each. Prospector, the contracts repo, ContentPro and FusionCMS are live. Command Center and the invoicing app are being built. The A/R bot is specced. The CRM choice between HubSpot and Seedly is still open. The top row sits inside the write boundary; the bottom row sits outside it and receives exports.">
+    <svg viewBox="0 0 900 400" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="The eight systems and the state of each. Prospector, the contracts repo, ContentPro and FusionCMS are live. Command Center and the invoicing app are being built. The A/R bot is specced. The CRM choice between HubSpot and Seedly is still open. The top row sits inside the write boundary; the bottom row sits outside it and receives exports.">
 <rect x="0" y="30" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".34"/>
 <text x="14" y="54" font-size="13" font-weight="600" fill="currentColor">Prospector</text>
 <rect x="14" y="62" width="45" height="17" rx="8.5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
@@ -1175,48 +1593,56 @@ section ol li strong{color:var(--ink);}
 <text x="704" y="94" font-size="10.5" fill="currentColor" opacity=".68">HubSpot today. Seedly under</text>
 <text x="704" y="107" font-size="10.5" fill="currentColor" opacity=".68">evaluation. Reached through</text>
 <text x="704" y="120" font-size="10.5" fill="currentColor" opacity=".68">one adapter</text>
-<rect x="0" y="148" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
-<text x="14" y="172" font-size="13" font-weight="600" fill="currentColor">ContentPro</text>
-<rect x="14" y="180" width="45" height="17" rx="8.5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
-<text x="22" y="192" font-size="10" font-weight="600" letter-spacing=".06em" fill="var(--crm)">LIVE</text>
-<text x="14" y="212" font-size="10.5" fill="currentColor" opacity=".68">Builds the binder, the sitemap</text>
-<text x="14" y="225" font-size="10.5" fill="currentColor" opacity=".68">and the pages. Reads an export</text>
-<rect x="230" y="148" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
-<text x="244" y="172" font-size="13" font-weight="600" fill="currentColor">Invoicing</text>
-<rect x="244" y="180" width="74" height="17" rx="8.5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".5"/>
-<text x="252" y="192" font-size="10" font-weight="600" letter-spacing=".06em" fill="var(--accent)">BUILDING</text>
-<text x="244" y="212" font-size="10.5" fill="currentColor" opacity=".68">Bills from the offer. Writes</text>
-<text x="244" y="225" font-size="10.5" fill="currentColor" opacity=".68">billing.status back</text>
-<rect x="460" y="148" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
-<text x="474" y="172" font-size="13" font-weight="600" fill="currentColor">A/R bot</text>
-<rect x="474" y="180" width="66" height="17" rx="8.5" fill="none" stroke="currentColor" stroke-opacity=".5"/>
-<text x="482" y="192" font-size="10" font-weight="600" letter-spacing=".06em" fill="currentColor">SPECCED</text>
-<text x="474" y="212" font-size="10.5" fill="currentColor" opacity=".68">Chases what invoicing sent.</text>
-<text x="474" y="225" font-size="10.5" fill="currentColor" opacity=".68">Requirements done, needs a</text>
-<text x="474" y="238" font-size="10.5" fill="currentColor" opacity=".68">webhook</text>
-<rect x="690" y="148" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
-<text x="704" y="172" font-size="13" font-weight="600" fill="currentColor">FusionCMS</text>
-<rect x="704" y="180" width="45" height="17" rx="8.5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
-<text x="712" y="192" font-size="10" font-weight="600" letter-spacing=".06em" fill="var(--crm)">LIVE</text>
-<text x="704" y="212" font-size="10.5" fill="currentColor" opacity=".68">The platform every client site</text>
-<text x="704" y="225" font-size="10.5" fill="currentColor" opacity=".68">is built on</text>
+<rect x="0" y="170" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
+<text x="14" y="194" font-size="13" font-weight="600" fill="currentColor">ContentPro</text>
+<rect x="14" y="202" width="45" height="17" rx="8.5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+<text x="22" y="214" font-size="10" font-weight="600" letter-spacing=".06em" fill="var(--crm)">LIVE</text>
+<text x="14" y="234" font-size="10.5" fill="currentColor" opacity=".68">Builds the binder, the sitemap</text>
+<text x="14" y="247" font-size="10.5" fill="currentColor" opacity=".68">and the pages. Reads an export</text>
+<rect x="230" y="170" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
+<text x="244" y="194" font-size="13" font-weight="600" fill="currentColor">Invoicing</text>
+<rect x="244" y="202" width="74" height="17" rx="8.5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".5"/>
+<text x="252" y="214" font-size="10" font-weight="600" letter-spacing=".06em" fill="var(--accent)">BUILDING</text>
+<text x="244" y="234" font-size="10.5" fill="currentColor" opacity=".68">Bills from the offer. Writes</text>
+<text x="244" y="247" font-size="10.5" fill="currentColor" opacity=".68">billing.status back</text>
+<rect x="460" y="170" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
+<text x="474" y="194" font-size="13" font-weight="600" fill="currentColor">A/R bot</text>
+<rect x="474" y="202" width="66" height="17" rx="8.5" fill="none" stroke="currentColor" stroke-opacity=".5"/>
+<text x="482" y="214" font-size="10" font-weight="600" letter-spacing=".06em" fill="currentColor">SPECCED</text>
+<text x="474" y="234" font-size="10.5" fill="currentColor" opacity=".68">Chases what invoicing sent.</text>
+<text x="474" y="247" font-size="10.5" fill="currentColor" opacity=".68">Requirements done, needs a</text>
+<text x="474" y="260" font-size="10.5" fill="currentColor" opacity=".68">webhook</text>
+<rect x="690" y="170" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
+<text x="704" y="194" font-size="13" font-weight="600" fill="currentColor">FusionCMS</text>
+<rect x="704" y="202" width="45" height="17" rx="8.5" fill="var(--crm-soft)" stroke="var(--crm)" stroke-opacity=".5"/>
+<text x="712" y="214" font-size="10" font-weight="600" letter-spacing=".06em" fill="var(--crm)">LIVE</text>
+<text x="704" y="234" font-size="10.5" fill="currentColor" opacity=".68">The platform every client site</text>
+<text x="704" y="247" font-size="10.5" fill="currentColor" opacity=".68">is built on</text>
+<rect x="0" y="310" width="210" height="96" rx="7" fill="var(--raise)" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 4"/>
+<text x="14" y="334" font-size="13" font-weight="600" fill="currentColor">Social builder</text>
+<rect x="14" y="342" width="81" height="17" rx="8.5" fill="none" stroke="var(--accent)" stroke-opacity=".5"/>
+<text x="22" y="354" font-size="10" font-weight="600" letter-spacing=".06em" fill="var(--accent)">PROTOTYPE</text>
+<text x="14" y="374" font-size="10.5" fill="currentColor" opacity=".68">Launch graphics from a live</text>
+<text x="14" y="387" font-size="10.5" fill="currentColor" opacity=".68">site. Proven, being made an</text>
+<text x="14" y="400" font-size="10.5" fill="currentColor" opacity=".68">app</text>
 <text x="0" y="14" font-size="10.5" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".45">INSIDE THE WRITE BOUNDARY</text>
-<text x="0" y="140" font-size="10.5" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".45">OUTSIDE IT: EXPORTS ONLY</text>
+<text x="0" y="156" font-size="10.5" font-weight="600" letter-spacing=".14em" fill="currentColor" opacity=".45">OUTSIDE IT: EXPORTS ONLY</text>
 </svg>
-    <figcaption>Four live, two in build, one specced, one decision outstanding. The dashed cards sit
-    outside the write boundary and receive exports rather than reaching into the record.</figcaption>
+    <figcaption>Four live, two in build, one specced, one working prototype, one decision
+    outstanding. The dashed cards sit outside the write boundary and receive exports rather than reaching
+    into the record.</figcaption>
   </figure>
   <p>The honest reading of this board is that the front of the motion is further along than the middle. The
   tools that find and warm a prospect are shipped. The record that is supposed to carry that prospect
   through to a paying client is still being built, and until it is, every handover between these systems is
   a human retyping something.</p>
-  <p>The CRM row is the one open decision. HubSpot is in place and about eighty per cent of the integration
+  <p>The CRM row is the one open decision. HubSpot is in place and about eighty percent of the integration
   work is already written. Seedly is bought and would remove a substantial monthly bill. The adapter exists
   so that this can be decided on cost and fit rather than on sunk integration work, which is the only
   sensible basis for it.</p>
 </section>
-<section id="s17">
-  <h2><span class="n">17</span> The states that are not a win</h2>
+<section id="s21">
+  <h2><span class="n">21</span> The states that are not a win</h2>
   <h3>Most prospects do not convert, and that is the pipeline</h3>
   <p>Everything so far describes forward motion. In an outbound engine the majority of records stop somewhere, and the ones that stop this quarter are next year's list. What makes them worth keeping is that the research is already done and can be refreshed rather than rebuilt.</p>
 
@@ -1288,17 +1714,18 @@ section ol li strong{color:var(--ink);}
         <path d="M680 92 C680 112 120 112 118 132" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#a8)"/>
       </g>
     </svg>
-    <figcaption><b>Loss reason is the most valuable field in the system.</b> Price, timing, went elsewhere, did it in-house, no longer trading. After fifty deals it says which trades, markets and project types actually close, and the sourcing score in section 03 should learn from it. Nothing else here produces that signal.</figcaption>
+    <figcaption><b>Loss reason is the most valuable field in the system.</b> Price, timing, went elsewhere, did it in-house, no longer trading. After fifty deals it says which trades, markets and project types actually close, and the sourcing score in section 02 should learn from it. Nothing else here produces that signal.</figcaption>
   </figure>
 
   <p><strong>Suppression is not deletion.</strong> A passed record keeps its research so a re-approach in two years costs a refresh, and so nobody emails them again by accident next quarter. A churned client is the warmest cold prospect in the database: they have read the reports, they know the work, and something changed.</p>
 </section>
 
-<section id="s18">
-  <h2><span class="n">18</span> When it ends</h2>
+<section id="s22">
+  <h2><span class="n">22</span> When it ends</h2>
   <h3>Churn is a normal event, so it needs a path rather than an improvisation</h3>
-  <p>The program runs month to month with thirty days notice. That is the right way to sell it and it means
-  clients will leave, some of them for reasons that have nothing to do with the work.</p>
+  <p>The program runs month to month with thirty days notice today, and the investor section argues for
+  putting a term on it. Either way clients leave, some of them for reasons that have nothing to do with the
+  work, and a term changes when that happens rather than whether it does.</p>
   <p>Five questions are worth answering once, in advance, rather than under pressure on the day. Which
   access transfers and which was ours: the Google profile, analytics, the ad accounts. Whether hosting hands
   over or stops. Who owns what ContentPro produced. What happens to the ad account history, which has real
@@ -1310,8 +1737,8 @@ section ol li strong{color:var(--ink);}
   </div>
 </section>
 
-<section id="s19">
-  <h2><span class="n">19</span> Measuring the engine, not just the clients</h2>
+<section id="s23">
+  <h2><span class="n">23</span> Measuring the engine, not just the clients</h2>
   <h3>The system produces measurement for everyone except itself</h3>
   <p>Every client gets a dashboard. The engine that acquires them gets nothing, which means the decision to
   keep running this motion is currently made on impression.</p>
@@ -1330,8 +1757,8 @@ section ol li strong{color:var(--ink);}
   <p><strong>Segment all of it by trade and by market.</strong> The likely finding is that this works far
   better for some trades than others, and knowing which is worth more than any improvement to the emails.</p>
 </section>
-<section id="s20">
-  <h2><span class="n">20</span> Sequence</h2>
+<section id="s24">
+  <h2><span class="n">24</span> Sequence</h2>
   <h3>What to build, and in what order</h3>
   <table>
     <thead><tr><th>Step</th><th>Why it comes here</th></tr></thead>
@@ -1352,16 +1779,275 @@ section ol li strong{color:var(--ink);}
     </tbody>
   </table>
 </section>
+<section id="s25">
+  <h2><span class="n">25</span> Potential FusionCMS future state</h2>
+  <h3>The build list that decides whether fulfillment is labor or software</h3>
+  <p>The platform already does more than a content management system: it reads the company, trade, market,
+  competitors and season, builds a content plan from that, drips it to the site, and reports on what moved.
+  The list below is what it could do next. It is a product roadmap, not a repackaging exercise, and the
+  reason to care about the order is in the next section: the difference between an agency multiple and a
+  tech-enabled one is decided by how much human labor sits between the client paying and the work
+  happening.</p>
 
-<section id="s21">
-  <h2><span class="n">21</span> What we do not know yet</h2>
+  <aside class="aside">
+    <p class="aside-h">The test for every item on this list</p>
+    <p><strong>Does a person touch it on the way to the client every month?</strong> Not whether it could in
+    principle be automated. Whether, in the month it is delivered, someone at efelle has to do something for
+    it to happen. Everything that clears that test lifts the margin and moves efelle toward the higher
+    bracket. Everything that does not is a service, and some of it should stay one.</p>
+  </aside>
+
+  <h4>The build list, sorted by what it does to the margin</h4>
+  <table class="prose-tbl cap-tbl">
+    <thead><tr><th>Capability</th><th>Marginal labor</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr><td><b>Phone to Google profile sync</b><br>photos, posts and updates pushed from the job site into
+          FusionCMS, then out to the Google Business Profile</td><td class="ok">none, and the best item on the list</td>
+          <td>The client does the work, the software distributes it. Zero marginal labor, and it changes a
+          daily habit, which is switching cost that agencies almost never have. A plumber who has been
+          posting job photos from his truck for two years does not casually cancel</td></tr>
+      <tr><td><b>Review requests and reputation monitoring</b></td><td class="ok">none</td>
+          <td>Triggered by job completion, no judgment required, and already a category clients understand
+          and pay for separately today</td></tr>
+      <tr><td><b>Reporting</b></td><td class="ok">none</td>
+          <td>The fastest labor to remove, and the one clients notice least when it goes. Manual monthly
+          reporting is the single largest recurring time sink in most agency programs</td></tr>
+      <tr><td><b>Scheduled publishing</b></td><td class="ok">none, once content is approved</td>
+          <td>The drip itself is a scheduled job. This is already close</td></tr>
+      <tr><td><b>Content generation</b></td><td>none once the approval gate is trusted</td>
+          <td>If a person reviews every piece before it publishes, this is labor wearing a software badge.
+          It clears the test the day routine work can publish without a reviewer, which is the workflow
+          below</td></tr>
+      <tr><td><b>Citation building</b></td><td>buy, do not build</td>
+          <td>A commodity with established vendors and no defensible advantage in doing it in-house.
+          Building it spends engineering on the least valuable thing available</td></tr>
+      <tr><td><b>PPC bid and budget adjustment</b></td><td class="no">careful</td>
+          <td>Reporting on spend, yes. Autonomous reallocation invites the question of why not use
+          Google&#8217;s own automation, which already does it, and a wrong decision spends the
+          client&#8217;s money rather than efelle&#8217;s. Highest risk on the list, least credit for
+          it</td></tr>
+      <tr><td><b>Strategy, creative and the monthly call</b></td><td>service, deliberately</td>
+          <td>Judgment and accountability. This is what the service fee buys, and automating the appearance
+          of it weakens both the service and the software claim</td></tr>
+    </tbody>
+  </table>
+
+  <h4>The approval workflow is the unlock</h4>
+  <p>Content generation is the item that decides how much of the program is software, and it turns entirely
+  on whether anything publishes without a person in the loop. The workable pattern is not
+  &#8220;approve everything&#8221; or &#8220;approve nothing&#8221;:</p>
+  <ol>
+    <li><strong>Classify at generation.</strong> Routine work, service pages, seasonal posts, job write-ups
+    and photo captions, goes in one bucket. Anything touching licensing, code compliance, safety,
+    guarantees, pricing or a competitor claim goes in the other.</li>
+    <li><strong>Routine work publishes on a timer.</strong> Notify the client, give a fixed window of five
+    business days to object, publish if nobody does. The client keeps control and almost never uses it,
+    which is the point.</li>
+    <li><strong>The second bucket always gets a human.</strong> A plumbing client is regulated, and a
+    confidently wrong sentence about permits or backflow certification is a real liability, not a typo.</li>
+  </ol>
+  <p><strong>The five day window is what converts a review queue into a publishing system.</strong> Without
+  it, every piece waits on a client who is on a roof, and the labor to chase them is the labor the software
+  was supposed to remove.</p>
+
+  <div class="callout">
+    <p><strong>Build the moat around the data and the habit, not around the writing.</strong> Content
+    generation is the most exposed item here: in three years a general purpose model will write a service
+    page as well as anything purpose-built, and a buyer doing diligence in 2029 will ask exactly that. What
+    is not replicable is the market data assembled per metro and per trade over years, the census pulls,
+    competitor sets, regulatory files and search history, and the phone-to-profile habit that puts efelle
+    inside a plumber&#8217;s working day. Vertical depth is the defensible part, and home services is about
+    as vertical as it gets.</p>
+  </div>
+
+  <h4>What has to be measured for any of this to count</h4>
+  <ol>
+    <li><strong>Cost per client per month to run the platform.</strong> API calls, hosting, storage, the
+    real number. Without it the margin claim in the next section is an assertion.</li>
+    <li><strong>Hours per client per month on the service side</strong>, tracked from now, not reconstructed
+    later. This is the number that moves as the list above gets built, and it is the evidence that
+    fulfillment is not labor-bound.</li>
+    <li><strong>A support path that is not the account manager.</strong> If platform questions land on the
+    person who runs the campaigns, the labor is still there and the margin improvement is fiction.</li>
+    <li><strong>Publish rate without human touch.</strong> The share of content that went live on the timer.
+    One number, tracked monthly, that says how far along this actually is.</li>
+  </ol>
+
+  <p class="fineprint">This is a roadmap of possibilities, not a commitment or a schedule. Sequencing should
+  follow what removes the most recurring labor per engineering week, which is why reporting and profile sync
+  sit at the top and citation building is a purchase rather than a project.</p>
+</section>
+<section id="s26">
+  <h2><span class="n">26</span> Selling it, and what it is worth</h2>
+  <h3>A tech-enabled service, priced on EBITDA, and the margin is the whole argument</h3>
+  <p>The plan is a sale roughly three years from the point efelle becomes a home-services recurring-revenue
+  business. That makes valuation an operating question now rather than a finance question later, because
+  everything that moves the number takes years to put in place.</p>
+
+  <aside class="aside">
+    <p class="aside-h">One basis, and it is not a revenue multiple</p>
+    <p><strong>efelle is a tech-enabled service and will be priced on EBITDA, not on ARR.</strong> The rule
+    buyers apply is explicit: where software delivery depends on manual agency labor, the recurring revenue
+    is stripped of any software multiple and priced as services, however faithfully it recurs. That is not a
+    reason to plan around a lower number. The tech-enabled bracket, eight to twelve times EBITDA on a
+    30% margin, gets to a higher answer than a revenue multiple on an agency margin does, and it gets there
+    without unbundling the offer into standalone software licenses that would have to be priced, supported
+    and sold on their own.</p>
+    <p>The whole question is therefore which of two brackets efelle lands in, and the thing that decides it
+    is whether fulfillment still runs on people. That is what the FusionCMS section before this one is a plan for.</p>
+  </aside>
+
+  <h4>The assumptions behind the numbers</h4>
+  <p>These are the settings in the model in Part Five, which opens on exactly this case. One point needs
+  saying plainly, because it is the assumption the whole table rests on. <strong>Today the 24 months is the
+  website payment plan.</strong> The balance of the build is financed over it and hosting is locked
+  alongside it, but the Revenue Growth Service is not on it: that is month to month with thirty days
+  notice. The model puts all three lines on the same term, which is the change the investor section argues
+  for and which the correction below prices. Four of the seven settings are changes from how the business
+  is sold today, and they are marked, because they are the ones the answer is most sensitive to.</p>
+  <table class="prose-tbl">
+    <thead><tr><th>Input</th><th>Setting</th><th>Against today</th></tr></thead>
+    <tbody>
+      <tr><td>New clients per month</td><td>8, then 10, then 12</td><td>a ramp, not a step</td></tr>
+      <tr><td>Project price</td><td>$7,500</td><td>the template build, half at signature</td></tr>
+      <tr><td>Contract term</td><td>24 months, all lines</td><td class="no">today, the website payment and hosting only</td></tr>
+      <tr><td>Hosting and support</td><td>$65 / month</td><td class="no">down from $145</td></tr>
+      <tr><td>Revenue Growth Service</td><td>$2,250 / month</td><td class="no">up from $1,500</td></tr>
+      <tr><td>Annual churn after the term</td><td>10%</td><td class="no">against a 25% agency benchmark</td></tr>
+    </tbody>
+  </table>
+  <p>That configuration produces <strong>$8.79 million of year-three revenue</strong>, 90% of it recurring,
+  a month-36 run-rate of <strong>$796,945 a month</strong>, and 360 clients signed over the three years
+  with 344 still live at the end.</p>
+
+  <h4>What that is worth, on both brackets</h4>
+  <div class="nrr-tbl">
+  <table>
+    <thead><tr><th>Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3 (TTM)</th><th>Year 3 (exit run-rate)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Total revenue</b></td><td>$1,664,820</td><td>$4,927,905</td><td>$8,785,284</td><td>$9,563,340</td></tr>
+      <tr><td>EBITDA at 20% margin</td><td>$332,964</td><td>$985,581</td><td>$1,757,057</td><td>$1,912,668</td></tr>
+      <tr><td><b>Standard agency</b><br>6x to 9x</td><td>$2.00M to $3.00M</td><td>$5.91M to $8.87M</td>
+          <td>$10.54M to $15.81M</td><td>$11.48M to $17.21M</td></tr>
+      <tr><td>EBITDA at 30% margin</td><td>$499,446</td><td>$1,478,372</td><td>$2,635,585</td><td>$2,869,002</td></tr>
+      <tr class="ok"><td><b>Tech-enabled service</b><br>8x to 12x</td><td>$4.00M to $5.99M</td>
+          <td>$11.83M to $17.74M</td><td>$21.08M to $31.63M</td><td>$22.95M to $34.43M</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>The gap between the two rows is the entire prize, and it is roughly $10 million to $16 million
+  on the same revenue.</strong> It is bought with two things and only two: a 30% margin instead of 20%, and
+  a delivery story a buyer believes is software-led. Both are the same work, which is removing labor from
+  the monthly delivery. Neither is bought with a pitch deck.</p>
+
+  <p>The exit run-rate column is the strongest one in the table and worth reading separately. It annualizes
+  the month-36 recurring line rather than looking back over a year that included the build revenue, and it
+  is the number a buyer of a recurring business actually underwrites: $9.56 million of revenue that is
+  almost entirely subscription, with no project work in it.</p>
+
+  <h4>The one correction to the table above</h4>
+  <p>The figures assume the Revenue Growth Service carries the same 24-month term as hosting and financing.
+  <strong>It does not today. It is month to month, and that gap is worth real money.</strong> The model has
+  one term across the engagement, so the first row below is computed separately, with the program churning
+  from launch and hosting still locked.</p>
+  <div class="nrr-tbl">
+  <table>
+    <thead><tr><th>Program sold as</th><th>Year 3 (TTM)</th><th>Exit run-rate</th><th>Tech-enabled, year 3 TTM</th><th>On the program, mo 36</th></tr></thead>
+    <tbody>
+      <tr><td>Month to month <span class="tag">today</span></td><td>$8,000,712</td><td>$8,504,191</td>
+          <td>$19.20M to $28.80M</td><td>305</td></tr>
+      <tr class="ok"><td>On a 24 month term</td><td>$8,785,284</td><td>$9,563,340</td>
+          <td>$21.08M to $31.63M</td><td>344</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Same price, same clients, same churn rate applied after the term. <strong>The commitment alone is worth
+  about $1.9 million to $2.8 million of enterprise value</strong>, and it costs nothing to grant except the
+  sales friction of asking for it. This is the term question from the investor section arriving with a
+  number attached.</p>
+
+  <h4>How sensitive the answer is</h4>
+  <p>The two marked assumptions that carry real money are the program fee and the churn rate after the
+  term. Year-three revenue and the tech-enabled range at each combination, everything else held:</p>
+  <table class="prose-tbl">
+    <thead><tr><th>Program fee</th><th>Churn / yr after term</th><th>Year 3 revenue</th><th>Tech-enabled range</th></tr></thead>
+    <tbody>
+      <tr class="ok"><td>$2,250</td><td>10%</td><td>$8,785,284</td><td>$21.08M to $31.63M</td></tr>
+      <tr><td>$2,250</td><td>25% <span class="tag">benchmark</span></td><td>$8,728,648</td><td>$20.95M to $31.42M</td></tr>
+      <tr><td>$1,500</td><td>10%</td><td>$6,258,599</td><td>$15.02M to $22.53M</td></tr>
+      <tr class="no"><td>$1,500</td><td>25%</td><td>$6,220,312</td><td>$14.93M to $22.39M</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Inside this window the program fee is worth about $6 million of enterprise value and the churn
+  rate is worth about $140,000.</strong> Going from $1,500 to $2,250 moves the answer forty times more than
+  cutting churn from the benchmark 25% to 10% does. Raise the price. It is a packaging decision available
+  immediately, and it is the single largest lever in this document.</p>
+  <div class="callout">
+    <p><strong>Do not read that as churn being harmless.</strong> A 24-month term means the first cohorts
+    only reach their renewal in month 25, so a 36-month window sees barely a year of churn on the earliest
+    clients and none at all on the rest. The term protects the numbers a buyer looks back at, which is
+    convenient, and a competent buyer knows it. They will underwrite forward, ask what happens in years four
+    and five, and discount the answer unless there is renewal evidence to point at. That is why the renewal
+    record matters more than the churn assumption.</p>
+  </div>
+
+  <h4>The four things that decide the bracket</h4>
+  <table class="prose-tbl">
+    <thead><tr><th>Factor</th><th>What buyers want</th><th>Where efelle stands</th></tr></thead>
+    <tbody>
+      <tr><td><b>Recurring mix</b></td><td>70%+ recurring</td><td class="ok">90% in year 3</td></tr>
+      <tr><td><b>Customer concentration</b></td><td>no client above 15 to 20%</td>
+          <td class="ok">under half a percent each</td></tr>
+      <tr><td><b>Labor per client</b></td><td>flat or falling as the book grows</td>
+          <td>unmeasured, and it is the whole argument</td></tr>
+      <tr><td><b>Owner independence</b></td><td>relationships held by a management tier</td>
+          <td>the work in this document</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Two of the four are already strong, and one of those is unusually so.</strong> Customer
+  concentration is the silent deal-killer in agency transactions, and a book of 344 home-services clients at
+  roughly $2,300 a month has effectively none. That is a structural advantage of selling to small trades
+  rather than to a handful of large accounts, and it is easy to overlook while wishing for bigger
+  clients.</p>
+  <p>Labor per client is the one that is not just unproven but unmeasured, and it is the exact number a
+  buyer will ask for first. Hours per client per month, tracked from now, falling as the platform takes
+  work over, is the evidence for the 30% margin and the tech-enabled bracket. Reconstructed later from
+  memory it is worth nothing.</p>
+
+  <h4>What to have in place by the sale</h4>
+  <ol>
+    <li><strong>Three years of clean, separated financials</strong> showing recurring and project revenue
+    apart, with the margin on each. Start now; it cannot be reconstructed.</li>
+    <li><strong>A renewal rate you can evidence</strong>, which means a term, an anniversary, and a recorded
+    decision at each one. Month to month produces no renewal data at all, which is a second and quieter cost
+    of selling it that way.</li>
+    <li><strong>Time tracking per client per month</strong>, from now, as the proof that delivery is not
+    labor-bound.</li>
+    <li><strong>Client relationships held by named people who are not the founder</strong>, recorded in the
+    client record rather than in anyone&#8217;s head.</li>
+    <li><strong>The engine demonstrably running without you</strong>, with the metrics from the measurement
+    section to prove it.</li>
+    <li><strong>The loss-reason data.</strong> Fifty recorded losses with reasons is a defensible answer to
+    the first hard question in diligence, which is always why clients leave.</li>
+  </ol>
+
+  <p class="fineprint">Margins of 20% and 30% are assumptions supplied for the comparison, not measurements
+  of efelle. Multiple ranges are benchmarks and they move with the market, the buyer and the deal structure;
+  buyers also discount project revenue relative to recurring, which this table does not do. Nothing here is
+  a valuation, a solicitation or investment advice, and I am not a valuation advisor. Before planning
+  against any of it, get efelle&#8217;s actual EBITDA margin measured and have a broker or an M&amp;A
+  advisor with agency transaction experience mark the range.</p>
+</section>
+
+<section id="s27">
+  <h2><span class="n">27</span> What we do not know yet</h2>
   <h3>The questions that should be answered by evidence rather than by argument</h3>
   <ol>
     <li><strong>What does a client acquired through this motion actually cost?</strong> Until the engine is
     instrumented, every claim about its efficiency is a guess.</li>
     <li><strong>How long does a program client stay?</strong> This is the multiplier on everything else, and
     the business has the history to answer it before the engine produces a single new client.</li>
-    <li><strong>HubSpot or Seedly.</strong> Decide on cost and fit. Eighty per cent of an integration being
+    <li><strong>HubSpot or Seedly.</strong> Decide on cost and fit. Eighty percent of an integration being
     finished is not a reason to keep paying for the other system.</li>
     <li><strong>Does Prospector become a module inside Command Center, or does Command Center wrap it?</strong>
     The record lives at the Command Center level either way.</li>
@@ -1372,12 +2058,280 @@ section ol li strong{color:var(--ink);}
     <li><strong>Multi-location clients break the service area model.</strong> Out of scope today. Worth
     naming as a decision rather than discovering as a surprise mid-build.</li>
   </ol>
-</section>
+</section><script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var M = 36, PAD = {l:62, r:14, t:16, b:30}, W = 900, H = 262;
+  var svg = $('m-chart'); if (!svg) return;
+  var money = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
+  var short = function(n){
+    if (n >= 1e6) return '$' + (n/1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M';
+    if (n >= 1e3) return '$' + Math.round(n/1e3) + 'k';
+    return '$' + Math.round(n);
+  };
+  var RAMP = [null, 10, 12];                     // years 2 and 3 start as a ramp
+
+  function rates(){
+    var base = +$('m-rate').value;
+    return [0,1,2].map(function(k){
+      if (k === 0) return base;
+      var el = $('y-rate-' + k);
+      if (el) return Math.max(0, +el.value);      // whatever is in the box wins
+      return RAMP[k] == null ? base : RAMP[k];
+    });
+  }
+
+  function compute(rs, churnPc){
+    var price = +$('m-price').value,
+        dep   = +$('m-dep').value / 100,
+        term  = Math.max(1, +$('m-term').value),
+        host  = +$('m-host').value,
+        prog  = +$('m-prog').value,
+        mrr   = Math.max(0, +$('m-mrr').value),   // the legacy book, running from month one
+        free  = term,                            // one term: financing, hosting and program
+        annual = (churnPc === undefined ? +$('m-churn').value : churnPc) / 100;
+    // annual is what people can reason about; the model needs the monthly equivalent
+    var cm = annual >= 1 ? 1 : 1 - Math.pow(1 - annual, 1/12);
+    // one contract across the engagement: nothing churns until the term ends
+    var surviveHost = function(m){ return m <= free ? 1 : Math.pow(1 - cm, m - free); };
+    var surviveProg = surviveHost;
+    var rateAt = function(t){ return rs[Math.min(2, Math.floor((t-1)/12))]; };
+    var rows = [], cum = 0;
+    for (var t = 1; t <= M; t++){
+      var deposits = rateAt(t) * price * dep;
+      var inst = 0;
+      for (var c = 1; c <= t; c++){
+        var age = t - c;
+        if (age >= 1 && age <= term) inst += rateAt(c) * (price * (1 - dep)) / term;
+      }
+      var onHost = 0, onProg = 0;                  // launch lags signature by a month
+      for (var k = 1; k <= t; k++){
+        var months = t - k;
+        if (months >= 1){
+          onHost += rateAt(k) * surviveHost(months - 1);
+          onProg += rateAt(k) * surviveProg(months - 1);
+        }
+      }
+      // the legacy book has no term, so it churns from the first month
+      var legacy = mrr * Math.pow(1 - cm, t - 1);
+      var recur = onHost * host + onProg * prog + legacy, total = deposits + inst + recur;
+      cum += total;
+      rows.push({m:t, active:onProg, onHost:onHost, dep:deposits, inst:inst, rec:recur,
+                 legacy:legacy, contracted:onHost * host, total:total, cum:cum});
+    }
+    return rows;
+  }
+
+  var yearTotal = function(rows, k){
+    return rows.slice(k*12, k*12+12).reduce(function(a,r){ return a + r.total; }, 0);
+  };
+
+  function render(){
+    var rs = rates(), rows = compute(rs), last = rows[M-1];
+
+    // per client
+    var price = +$('m-price').value, depPc = +$('m-dep').value / 100,
+        term = Math.max(1, +$('m-term').value),
+        recM = (+$('m-host').value) + (+$('m-prog').value);
+    var inst = term ? (price * (1 - depPc)) / term : 0;
+    $('p-dep').textContent  = money(price * depPc);
+    $('p-inst').textContent = '$' + inst.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+    $('p-term').textContent = '× ' + term;
+    $('p-rec').textContent  = money(recM);
+    $('p-36').textContent   = money(price + recM * 35);
+
+    // tiles
+    $('o-cum').textContent    = money(last.cum);
+    $('o-run').textContent    = money(last.rec) + '/mo';
+    $('o-share').textContent  = Math.round(last.rec / last.total * 100) + '%';
+    $('o-signed').textContent = rows.reduce(function(a,r,i){ return a + rs[Math.min(2, Math.floor(i/12))]; }, 0);
+    $('o-active').textContent = Math.round(last.active);
+
+    // year table, with the per-year intake control
+    var tb = document.querySelector('#m-years tbody');
+    tb.innerHTML = [0,1,2].map(function(k){
+      var s = rows.slice(k*12, k*12+12);
+      var sum = function(f){ return s.reduce(function(a,r){ return a + r[f]; }, 0); };
+      var ctl = k === 0
+        ? '<input id="y-rate-0" type="number" value="' + rs[0] + '" readonly tabindex="-1">'
+        : '<input id="y-rate-' + k + '" type="number" min="0" step="1" value="' + rs[k] + '">';
+      var tot = sum('total');
+      var prev = k === 0 ? 0 : rows.slice((k-1)*12, k*12).reduce(function(a,r){ return a + r.total; }, 0);
+      var yoy = (k > 0 && prev > 0)
+        ? '+' + Math.round((tot / prev - 1) * 100) + '%'
+        : '';
+      return '<tr><td>Year ' + (k+1) + '</td><td>' + ctl + '</td><td>' + money(sum('dep')) +
+             '</td><td>' + money(sum('inst')) + '</td><td>' + money(sum('rec')) +
+             '</td><td class="tot">' + money(tot) + '<span class="yoy">' + yoy + '</span></td><td>' +
+             money(s[s.length-1].cum) + '</td></tr>';
+    }).join('');
+    [1,2].forEach(function(k){
+      var el = $('y-rate-' + k);
+      el.addEventListener('input', function(){ render(); });
+    });
+
+    // chart
+    var raw = 0; rows.forEach(function(r){ if (r.total > raw) raw = r.total; });
+    raw = Math.max(raw, 1);
+    // a fine ladder: a coarse one doubles the axis on a small change and makes
+    // growth look like shrinkage
+    var need = raw / 4, mag = Math.pow(10, Math.floor(Math.log10(need)));
+    var mults = [1,1.25,1.5,2,2.5,3,4,5,6,8,10];
+    var step = null;
+    [mag/10, mag, mag*10].forEach(function(m){
+      mults.forEach(function(k){
+        var c = k * m;
+        if (c >= need && (step === null || c < step)) step = c;
+      });
+    });
+    var max = step * 4;
+    var x = function(m){ return PAD.l + (m - 1) * (W - PAD.l - PAD.r) / (M - 1); };
+    var y = function(v){ return H - PAD.b - (v / max) * (H - PAD.t - PAD.b); };
+    var base = H - PAD.b, p = [];
+
+    for (var g = 0; g <= 4; g++){
+      var v = max * g / 4, gy = y(v);
+      p.push('<line x1="'+PAD.l+'" y1="'+gy.toFixed(1)+'" x2="'+(W-PAD.r)+'" y2="'+gy.toFixed(1)+
+             '" stroke="currentColor" stroke-opacity="'+(g?'.09':'.22')+'"/>');
+      p.push('<text x="'+(PAD.l-9)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="10.5" '+
+             'fill="currentColor" opacity=".55">'+short(v)+'</text>');
+    }
+    [1,6,12,18,24,30,36].forEach(function(m){
+      p.push('<text x="'+x(m).toFixed(1)+'" y="'+(base+17)+'" text-anchor="middle" font-size="10.5" '+
+             'fill="currentColor" opacity=".55">'+m+'</text>');
+    });
+    // year boundaries, because the intake rate can change at them
+    [13,25].forEach(function(m){
+      p.push('<line x1="'+x(m).toFixed(1)+'" y1="'+PAD.t+'" x2="'+x(m).toFixed(1)+'" y2="'+base+
+             '" stroke="currentColor" stroke-opacity=".16" stroke-dasharray="3 4"/>');
+    });
+
+    var l1 = [], l2 = [], l3 = [];
+    rows.forEach(function(r,i){
+      var xx = x(i+1).toFixed(1);
+      l1.push(xx+','+y(r.dep).toFixed(1));
+      l2.push(xx+','+y(r.dep + r.inst).toFixed(1));
+      l3.push(xx+','+y(r.total).toFixed(1));
+    });
+    p.push('<polygon points="'+x(1).toFixed(1)+','+base+' '+l1.join(' ')+' '+x(M).toFixed(1)+','+base+
+           '" fill="var(--viz-dep)" fill-opacity=".2"/>');
+    p.push('<polygon points="'+l1.join(' ')+' '+l2.slice().reverse().join(' ')+
+           '" fill="var(--viz-inst)" fill-opacity=".2"/>');
+    p.push('<polygon points="'+l2.join(' ')+' '+l3.slice().reverse().join(' ')+
+           '" fill="var(--viz-recur)" fill-opacity=".18"/>');
+    p.push('<polyline points="'+l1.join(' ')+'" fill="none" stroke="var(--viz-dep)" stroke-width="2"/>');
+    p.push('<polyline points="'+l2.join(' ')+'" fill="none" stroke="var(--viz-inst)" stroke-width="2"/>');
+    p.push('<polyline points="'+l3.join(' ')+'" fill="none" stroke="var(--viz-recur)" stroke-width="2"/>');
+
+    var clampY = function(v){ return Math.max(PAD.t + 10, v - 7); };
+    [['deposits', y(last.dep), 'var(--viz-dep)'],
+     ['installments', y(last.dep + last.inst), 'var(--viz-inst)'],
+     ['recurring', y(last.total), 'var(--viz-recur)']].forEach(function(L){
+      p.push('<text x="'+(x(M)-6)+'" y="'+clampY(L[1]).toFixed(1)+'" text-anchor="end" font-size="10.5" '+
+             'font-weight="600" fill="'+L[2]+'">'+L[0]+'</text>');
+    });
+
+    p.push('<g id="m-tip" style="pointer-events:none;opacity:0">'+
+      '<rect rx="6" width="168" height="92" fill="var(--raise)" stroke="currentColor" stroke-opacity=".25"/>'+
+      '<text class="t-m" font-size="11" font-weight="700" fill="currentColor"></text>'+
+      '<text class="t-d" font-size="11" fill="var(--viz-dep)"></text>'+
+      '<text class="t-i" font-size="11" fill="var(--viz-inst)"></text>'+
+      '<text class="t-r" font-size="11" fill="var(--viz-recur)"></text>'+
+      '<text class="t-t" font-size="11.5" font-weight="700" fill="currentColor"></text></g>');
+    p.push('<g id="m-hover" style="pointer-events:none;opacity:0">'+
+      '<line y1="'+PAD.t+'" y2="'+base+'" stroke="currentColor" stroke-opacity=".35"/>'+
+      '<circle r="4" fill="var(--viz-recur)" stroke="var(--raise)" stroke-width="2"/>'+
+      '<circle r="4" fill="var(--viz-inst)" stroke="var(--raise)" stroke-width="2"/>'+
+      '<circle r="4" fill="var(--viz-dep)" stroke="var(--raise)" stroke-width="2"/></g>');
+    p.push('<rect id="m-hit" x="'+PAD.l+'" y="'+PAD.t+'" width="'+(W-PAD.l-PAD.r)+'" height="'+
+           (base-PAD.t)+'" fill="transparent"/>');
+    svg.innerHTML = p.join('');
+
+    // capacity, from the highest year the model is running
+    var peak = Math.max(rs[0], rs[1], rs[2]);
+    var note = $('m-capacity'), hot = peak > 6;
+    note.className = 'cap-note' + (hot ? ' warn' : '');
+    note.innerHTML = 'At the peak intake here, <b>' + peak + ' new clients a month</b>, that is about <b>' +
+      (Math.round(peak * 0.7 * 10) / 10) + ' sites in build at once</b>, ' + (peak * 12) +
+      ' launches a year, and <b>' + Math.round(last.active) + ' live programs</b> to service by month 36. ' +
+      (hot ? 'A delivery and account management problem long before it is a sales problem. The model does not know your capacity; you do.'
+           : 'Check that against who is available to design, build and service them.');
+
+    // the churn note, recomputed against the settings actually on screen
+    var churnNow = +$('m-churn').value, freeNow = Math.max(1, +$('m-term').value);
+    var y3 = yearTotal(rows, 2);
+    var y3Churn = yearTotal(compute(rs, churnNow * 2), 2);
+    var y3Less  = yearTotal(compute(rs.map(function(r){ return Math.max(0, r - 1); })), 2);
+    var cmNow = churnNow >= 100 ? 100 : (1 - Math.pow(1 - churnNow/100, 1/12)) * 100;
+    var shielded = freeNow >= 36
+      ? '<b>Nothing churns inside this window at all</b>, because the contracted period covers all thirty-six months. ' +
+        'Shorten it below 36 to see what happens when the first cohorts come off contract. '
+      : 'Only clients past month ' + freeNow + ' of their own relationship can leave, which in a 36 month window is ' +
+        'the early cohorts only. ';
+    $('m-churnnote').innerHTML = '<p><strong>Churn barely bites inside the contracted period, and that is the trap.</strong> ' +
+      shielded + 'At ' + churnNow + '% a year (' + cmNow.toFixed(2) + '% a month) beginning at month ' + freeNow +
+      ', doubling the churn rate costs <b>' + money(y3 - y3Churn) + '</b> of year-three revenue, while losing one new ' +
+      'client a month costs <b>' + money(y3 - y3Less) + '</b>. The retention question is real, it is just deferred: ' +
+      'it lands in year three and after, which is exactly when someone is valuing the business.</p>';
+
+    // month table
+    document.querySelector('#m-table tbody').innerHTML = rows.map(function(r){
+      return '<tr><td>'+r.m+'</td><td>'+Math.round(r.active)+'</td><td>'+money(r.dep)+'</td><td>'+
+             money(r.inst)+'</td><td>'+money(r.rec)+'</td><td>'+money(r.total)+'</td><td>'+money(r.cum)+'</td></tr>';
+    }).join('');
+
+    // hover
+    var hit = $('m-hit'), hov = $('m-hover'), tip = $('m-tip'), cap = $('m-cap');
+    var capDefault = 'Monthly revenue, months 1 to 36. Move across the chart to read any month.';
+    cap.textContent = capDefault;
+    var tset = function(cls, txt, dx, dy, tx, ty){
+      var el = tip.querySelector(cls);
+      el.textContent = txt; el.setAttribute('x', tx + dx); el.setAttribute('y', ty + dy);
+    };
+    hit.addEventListener('mousemove', function(ev){
+      var b = svg.getBoundingClientRect();
+      var px = (ev.clientX - b.left) / b.width * W;
+      var m = Math.min(M, Math.max(1, Math.round((px - PAD.l) / (W - PAD.l - PAD.r) * (M - 1)) + 1));
+      var r = rows[m-1];
+      hov.style.opacity = 1;
+      hov.children[0].setAttribute('x1', x(m)); hov.children[0].setAttribute('x2', x(m));
+      hov.children[1].setAttribute('cx', x(m)); hov.children[1].setAttribute('cy', y(r.total));
+      hov.children[2].setAttribute('cx', x(m)); hov.children[2].setAttribute('cy', y(r.dep + r.inst));
+      hov.children[3].setAttribute('cx', x(m)); hov.children[3].setAttribute('cy', y(r.dep));
+      cap.textContent = 'Month ' + m + ': deposits ' + money(r.dep) + ', installments ' + money(r.inst) +
+                        ', recurring ' + money(r.rec) + '. Total ' + money(r.total) + '.';
+      // readout, flipped to the inside near the right edge
+      var tx = x(m) + 14, ty = Math.min(base - 100, Math.max(PAD.t, y(r.total) - 46));
+      if (tx + 168 > W - PAD.r) tx = x(m) - 182;
+      tip.querySelector('rect').setAttribute('x', tx);
+      tip.querySelector('rect').setAttribute('y', ty);
+      tset('.t-m', 'Month ' + m,                12, 18, tx, ty);
+      tset('.t-d', 'deposits ' + money(r.dep),  12, 36, tx, ty);
+      tset('.t-i', 'installments ' + money(r.inst), 12, 51, tx, ty);
+      tset('.t-r', 'recurring ' + money(r.rec), 12, 66, tx, ty);
+      tset('.t-t', 'Total ' + money(r.total),   12, 84, tx, ty);
+      tip.style.opacity = 1;
+    });
+    hit.addEventListener('mouseleave', function(){
+      hov.style.opacity = 0; tip.style.opacity = 0; cap.textContent = capDefault;
+    });
+  }
+
+  ['m-rate','m-price','m-dep','m-term','m-host','m-prog','m-churn','m-mrr'].forEach(function(id){
+    $(id).addEventListener('input', function(){
+      if (id === 'm-rate'){ $('m-rate-o').textContent = $(id).value; }
+      render();
+    });
+  });
+  render();
+})();
+</script>
 
 <footer>
   <span>efelle creative &middot; Prospector systems architecture</span>
   <span class="mono">v1 &middot; August 2026</span>
 </footer>
 </div>
+
 </body>
 </html>
