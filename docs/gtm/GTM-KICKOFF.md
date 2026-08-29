@@ -13,7 +13,7 @@ Read these first, in order:
   3. docs/gtm/GTM-PIPELINE.md        how it fits with the other engines
   4. docs/gtm/GTM-BUILD-SPEC.md      the implementation spec, files, contracts, QA gate
   5. docs/gtm/GTM-OWNER-BRIEF.md     the second deliverable, and how it stays in sync
-  6. docs/gtm/GTM-CLIENT-RECORD.md   the shared client record and CRM boundary
+  6. ../efelle-contracts/client-record/BOUNDARIES.md   the shared client record contract
   7. public/js/verticals/_schema.json and plumbing.json   the trade pack format
 
 For the visual version of the whole pathway, open docs/gtm/prospecting-engine.html
@@ -63,7 +63,8 @@ Do not push to main until I have reviewed. Push triggers a production deploy.
 | `docs/gtm/GTM-BRIEFING.md` | Architecture and rationale |
 | `docs/gtm/GTM-PIPELINE.md` | System flow, industry gates, ContentPro handoff |
 | `docs/gtm/GTM-BUILD-SPEC.md` | Implementation spec |
-| `docs/gtm/GTM-CLIENT-RECORD.md` | Client record, CRM adapter, HubSpot to Seedly assessment |
+| `docs/gtm/GTM-CLIENT-RECORD.md` | Pointer. The contract itself moved to the `efelle-contracts` repo |
+| `docs/gtm/CLIENT-RECORD-HANDOFF.md` | How to hand the architecture to a session in another repo |
 | `docs/gtm/GTM-OWNER-BRIEF.md` | The owner's brief: section map, voice rules, QA rules, render |
 | `docs/gtm/prospecting-engine.html` | Visual walkthrough of the full pathway, 8 diagrams |
 | `docs/gtm/GTM-KICKOFF.md` | This file |
