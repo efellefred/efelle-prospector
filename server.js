@@ -546,7 +546,7 @@ function writePublished(rec) {
 
 // Publish (or republish to the same token → stable URL)
 app.post('/api/publish', requireAuth, (req, res) => {
-  const { html, company, token, contactEmail, contactEmails } = req.body;
+  const { html, company, token, contactEmail, contactEmails, reportId } = req.body;
   if (!html || typeof html !== 'string') return res.status(400).json({ error: 'html is required' });
   if (html.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Document too large' });
   // Accept an array (current client) or a single string (older client); validate each
@@ -585,6 +585,14 @@ app.post('/api/publish', requireAuth, (req, res) => {
   }
   try {
     writePublished(rec);
+    // Link the hosted copy to its Library report so the report list can show live views
+    if (reportId && typeof reportId === 'string') {
+      try {
+        const index = readIndex();
+        const entry = index.find(r => r.id === reportId);
+        if (entry && entry.publishToken !== rec.token) { entry.publishToken = rec.token; writeIndex(index); }
+      } catch (e) { /* non-fatal */ }
+    }
     res.json({ token: rec.token, url: '/p/' + rec.token, views: rec.views.length, accepted: rec.accepted, hubspot: hubspotEmailsFor(rec).join(', ') || null });
   } catch (err) {
     console.error('Publish error:', err.message);
@@ -614,6 +622,9 @@ function hubspotEmailsFor(rec) {
   if (Array.isArray(rec.contactEmails) && rec.contactEmails.length) return rec.contactEmails;
   return rec.contactEmail ? [rec.contactEmail] : [];
 }
+
+// ─── Command Center handoff (signed offer → the Client Record) ───────
+const { ccPublishSignedOffer } = require('./lib/command-center');
 
 // ─── HubSpot sync (opens + acceptances → notes on the contact) ───────
 // Fire-and-forget: never blocks or breaks proposal viewing/signing.
@@ -907,6 +918,9 @@ app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
       + (monthlyTotal > 0 ? ' — Monthly total: $' + monthlyTotal.toLocaleString('en-US') + '/mo' : '')
       + ' — signed ' + new Date(rec.accepted.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
       + ' PT — https://prospector.efelle.com/p/' + rec.token);
+    // Publish the signed offer to the Command Center's client record —
+    // fire-and-forget, same rule as the HubSpot note above.
+    ccPublishSignedOffer(rec);
     res.json({ ok: true, accepted: rec.accepted });
   } catch (err) {
     res.status(500).json({ error: 'Failed to record acceptance' });
@@ -1621,10 +1635,36 @@ app.get('/api/reports', requireAuth, (req, res) => {
     const index = readIndex();
     const type = req.query.type;
     const filtered = type ? index.filter(r => r.type === type) : index;
-    res.json(filtered);
+    // Join live view counts from the hosted-link store (proposals that were published)
+    const enriched = filtered.map(r => {
+      if (!r.publishToken) return Object.assign({ views: 0 }, r);
+      const rec = readPublished(r.publishToken);
+      return Object.assign({}, r, {
+        views: rec ? rec.views.length : 0,
+        lastViewedAt: rec && rec.views.length ? rec.views[rec.views.length - 1].t : null,
+      });
+    });
+    res.json(enriched);
   } catch (err) {
     console.error('Report list error:', err.message);
     res.json([]); // Return empty array instead of crashing
+  }
+});
+
+// Mark a report as sent (an email to the client was composed)
+app.post('/api/reports/:id/sent', requireAuth, (req, res) => {
+  try {
+    const index = readIndex();
+    const entry = index.find(r => r.id === req.params.id);
+    if (!entry) return res.status(404).json({ error: 'Report not found' });
+    entry.sentAt = Date.now();
+    const sentTo = (req.body && req.body.sentTo ? String(req.body.sentTo) : '').slice(0, 200);
+    if (sentTo) entry.sentTo = sentTo;
+    writeIndex(index);
+    res.json({ ok: true, sentAt: entry.sentAt, sentTo: entry.sentTo || '' });
+  } catch (err) {
+    console.error('Report sent-mark error:', err.message);
+    res.status(500).json({ error: 'Failed to record send' });
   }
 });
 

@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.27.0 — 2026-08-30 — Signed Proposals Feed Invoicing
+
+- When a client signs a hosted proposal, the signed offer now **publishes automatically to the Command Center's shared client record**: company, signer, contact email, service address, and the exact price, payment structure, hosting and RGS programs they selected
+- The signed deal then appears in the Command Center under **A/R > Invoices > Import a signed proposal**, where one click prefills the whole billing form exactly as signed
+- Generated proposals embed the client and payment details in the document itself (`efelle-offer-data`), so the handoff always reflects the version the client actually signed, even after AI edits — amounts are read from the same doc-derived checkbox data the acceptance endpoint already trusts
+- The handoff is fire-and-forget like the HubSpot sync: if the Command Center is unreachable the acceptance still records exactly as before, and the miss is logged server-side
+- Setup: two Railway variables — `COMMAND_CENTER_RECORD_TOKEN` (the shared bearer, same value as the Command Center's `PROSPECTOR_RECORD_TOKEN`) and optionally `COMMAND_CENTER_URL`
+
 ## 4.26.0 — 2026-08-24 — Workflow View
 
 - New **Workflow** view on the home screen: a left-to-right flowchart of all 10 programs across the 7 pipeline phases, with branch and converge connectors showing what feeds what

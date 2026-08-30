@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/layout.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/semantic.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/base.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/styles.css">
+  <script src="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--white); }
+  .st-input { height: 44px; border: 1px solid var(--gray-4); border-radius: 8px; padding: 0 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--black); background: var(--white); outline: none; box-sizing: border-box; }
+  .st-input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(245,99,0,0.12); }
+  .st-input::placeholder { color: var(--gray-3); }</style>
+</helmet>
+<div data-screen-label="Settings" style="font-family: 'Plus Jakarta Sans', sans-serif; color: var(--black); zoom: 0.595;">
+  <div style="background: linear-gradient(160deg, #0a0a0a 0%, #1D1D1F 55%, #2a1500 100%); color: var(--white); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -160px; right: -120px; width: 720px; height: 720px; border-radius: 999px; background: radial-gradient(circle, rgba(245,99,0,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 20px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.10);">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative" style="width: 30px; height: 30px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">prospector</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.10); border-radius: 999px; padding: 3px 10px; white-space: nowrap;">v4.21.0 // 2026-08-23</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; font-weight: 600;">
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Home</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Library</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Guide</a>
+        <a href="#" style="color: var(--orange); text-decoration: none;">Settings</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Log out</a>
+      </div>
+    </div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 56px 52px 64px;">
+      <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 16px;">Admin</div>
+      <h1 style="font-size: 48px; line-height: 1.06; letter-spacing: -0.025em; font-weight: 800; margin: 0;">Settings.</h1>
+      <p style="font-size: 18px; line-height: 1.7; color: #B0B0B5; max-width: 560px; margin: 14px 0 0;">Keys, portfolios, and case studies. Changes take effect immediately and persist to Railway.</p>
+    </div>
+  </div>
+
+  <div style="max-width: 880px; margin: 0 auto; padding: 48px 52px 96px; display: flex; flex-direction: column; gap: 40px;">
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; border: 1px solid rgba(50,215,75,0.35); background: rgba(50,215,75,0.06); border-radius: 12px; padding: 18px 22px;">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: var(--green); color: var(--white); font-size: 12px; font-weight: 800; flex-shrink: 0; margin-top: 1px;">&#10003;</span>
+      <div>
+        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+          <span style="font-size: 14px; font-weight: 700;">Railway persistence connected</span>
+          <span style="font-size: 13px; color: var(--gray-2);">Key updates persist across deploys.</span>
+        </div>
+        <p style="font-size: 13px; color: var(--gray-2); margin: 6px 0 0; line-height: 1.6;">Without Railway, keys reset on the next deploy and must be updated in the Railway dashboard.</p>
+      </div>
+    </div>
+
+    <div style="border: 1px solid var(--gray-4); border-radius: 12px; overflow: hidden;">
+      <button onClick="{{ togglePortfolio }}" style="appearance: none; cursor: pointer; width: 100%; border: none; background: var(--white); display: flex; align-items: center; gap: 14px; padding: 20px 24px; text-align: left; transition: background 150ms ease-out;" style-hover="background: var(--gray-5);">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Portfolios</span>
+        <span style="font-size: 13px; color: var(--gray-2);">Portfolio graphics shown on proposals, matched by industry.</span>
+        <span style="flex: 1;"></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-3); white-space: nowrap;">{{ portfolioCount }} items</span>
+        <span style="font-size: 13px; color: var(--gray-2);">{{ portfolioChevron }}</span>
+      </button>
+      <sc-if value="{{ portfolioOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="border-top: 1px solid var(--gray-4); padding: 20px 24px 24px;">
+          <p style="font-size: 13px; color: var(--gray-2); margin: 0 0 16px; line-height: 1.6;">Paste image URLs (upload graphics to the web server first). The proposal pulls the portfolio matching the selected vertical. Changes apply to newly generated proposals.</p>
+          <sc-for list="{{ portfolios }}" as="p" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 64px minmax(0,1fr) 170px auto; gap: 12px; align-items: center; padding: 8px 0;">
+              <span style="width: 64px; height: 40px; border: 1px dashed var(--gray-4); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--gray-3);">img</span>
+              <input class="st-input" value="{{ p.url }}" style="width: 100%;">
+              <input class="st-input" value="{{ p.industry }}" style="width: 100%; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600;">
+              <span style="display: flex; align-items: center; gap: 6px;">
+                <button title="Move up" style="appearance: none; cursor: pointer; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); color: var(--gray-1); font-size: 13px; padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--black);">&#8593;</button>
+                <button title="Move down" style="appearance: none; cursor: pointer; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); color: var(--gray-1); font-size: 13px; padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--black);">&#8595;</button>
+                <button title="Remove" style="appearance: none; cursor: pointer; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); color: var(--red); font-size: 13px; padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--red);">&#215;</button>
+              </span>
+            </div>
+          </sc-for>
+          <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+            <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="secondary" size="sm" hint-size="auto,40px">+ Add portfolio</x-import>
+            <div style="flex: 1;"></div>
+            <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="dark" size="sm" hint-size="auto,40px">Save portfolios</x-import>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="border: 1px solid var(--gray-4); border-radius: 12px; overflow: hidden;">
+      <button onClick="{{ toggleRgs }}" style="appearance: none; cursor: pointer; width: 100%; border: none; background: var(--white); display: flex; align-items: center; gap: 14px; padding: 20px 24px; text-align: left; transition: background 150ms ease-out;" style-hover="background: var(--gray-5);">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">RGS case studies</span>
+        <span style="font-size: 13px; color: var(--gray-2);">Case-study graphics shown on RGS Only proposals, two per page in order.</span>
+        <span style="flex: 1;"></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-3); white-space: nowrap;">{{ rgsCount }} items</span>
+        <span style="font-size: 13px; color: var(--gray-2);">{{ rgsChevron }}</span>
+      </button>
+      <sc-if value="{{ rgsOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="border-top: 1px solid var(--gray-4); padding: 20px 24px 24px;">
+          <p style="font-size: 13px; color: var(--gray-2); margin: 0 0 16px; line-height: 1.6;">Paste image URLs (upload graphics to the web server first). Changes apply to newly generated proposals.</p>
+          <sc-for list="{{ caseStudies }}" as="c" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 64px minmax(0,1fr) 170px auto; gap: 12px; align-items: center; padding: 8px 0;">
+              <span style="width: 64px; height: 40px; border: 1px dashed var(--gray-4); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--gray-3);">img</span>
+              <input class="st-input" value="{{ c.url }}" style="width: 100%;">
+              <input class="st-input" value="{{ c.name }}" style="width: 100%; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600;">
+              <span style="display: flex; align-items: center; gap: 6px;">
+                <button title="Move up" style="appearance: none; cursor: pointer; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); color: var(--gray-1); font-size: 13px; padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--black);">&#8593;</button>
+                <button title="Move down" style="appearance: none; cursor: pointer; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); color: var(--gray-1); font-size: 13px; padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--black);">&#8595;</button>
+                <button title="Remove" style="appearance: none; cursor: pointer; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); color: var(--red); font-size: 13px; padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--red);">&#215;</button>
+              </span>
+            </div>
+          </sc-for>
+          <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+            <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="secondary" size="sm" hint-size="auto,40px">+ Add case study</x-import>
+            <div style="flex: 1;"></div>
+            <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="dark" size="sm" hint-size="auto,40px">Save case studies</x-import>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">API keys</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="background: var(--gray-5); border-radius: 12px; padding: 22px 24px;">
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+            <span style="font-size: 13px; font-weight: 700;">Anthropic (Claude)</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-2);">Current: sk-ant-...aC0gAA</span>
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <input class="st-input" placeholder="sk-ant-api03-..." style="flex: 1;">
+            <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="secondary" size="sm" hint-size="auto,44px">Test the key</x-import>
+          </div>
+        </div>
+        <div style="background: var(--gray-5); border-radius: 12px; padding: 22px 24px;">
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+            <span style="font-size: 13px; font-weight: 700;">Google Gemini</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-2);">Current: ...zNRFUw</span>
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <input class="st-input" placeholder="AIza..." style="flex: 1;">
+            <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="secondary" size="sm" hint-size="auto,44px">Test the key</x-import>
+          </div>
+        </div>
+        <div style="display: flex;">
+          <div style="flex: 1;"></div>
+          <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="primary" hint-size="auto,52px">Save the keys</x-import>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="border-top: 1px solid var(--gray-4);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 24px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: 13px; color: var(--gray-2);">
+      <div>efelle creative // prospector // internal sales tools</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-sonnet-4-6 // api</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { portfolioOpen: true, rgsOpen: false };
+  renderVals() {
+    const portfolios = [
+      { url: 'https://www.seattlewebdesign.com/uploads/portfolio-roofing.png', industry: 'Roofing' },
+      { url: 'https://www.seattlewebdesign.com/uploads/portfolio-hvac.png', industry: 'HVAC' },
+      { url: 'https://www.seattlewebdesign.com/uploads/portfolio-plumbing.png', industry: 'Plumbing' },
+      { url: 'https://www.seattlewebdesign.com/uploads/portfolio-electrical.png', industry: 'Electrical' }
+    ];
+    const caseStudies = [
+      { url: 'https://www.seattlewebdesign.com/uploads/cs-skr.png', name: 'SKR' },
+      { url: 'https://www.seattlewebdesign.com/uploads/cs-kryptek.png', name: 'Kryptek' },
+      { url: 'https://www.seattlewebdesign.com/uploads/cs-copendium.png', name: 'Copendium' },
+      { url: 'https://www.seattlewebdesign.com/uploads/cs-humble.png', name: 'Humble' }
+    ];
+    return {
+      portfolios, caseStudies,
+      portfolioCount: portfolios.length, rgsCount: caseStudies.length,
+      portfolioOpen: this.state.portfolioOpen,
+      rgsOpen: this.state.rgsOpen,
+      portfolioChevron: this.state.portfolioOpen ? '\u25B4' : '\u25BE',
+      rgsChevron: this.state.rgsOpen ? '\u25B4' : '\u25BE',
+      togglePortfolio: () => this.setState((s) => ({ portfolioOpen: !s.portfolioOpen })),
+      toggleRgs: () => this.setState((s) => ({ rgsOpen: !s.rgsOpen }))
+    };
+  }
+}
+</script>
+</body>
+</html>

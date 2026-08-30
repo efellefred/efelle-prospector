@@ -471,6 +471,7 @@ function propGoStage1() {
 function propReset() {
   propGoStage1();
   propReportHtml = '';
+  propSavedReportId = null;
   propClientData = {};
   propLogoInfo = null;
   propVertical = '';
@@ -1317,6 +1318,31 @@ function propBuildHTML(clientName) {
     // add-ons + ROI band to the next page so the ROI band isn't stranded alone.
     html = html.replace('</style>', '@media print { #rgs-addons { break-before:page; page-break-before:always; } }\n</style>');
   }
+
+  // ── Structured client + payment terms for the Command Center handoff ──
+  // Dollar amounts are NOT stored here — the server reads them from the
+  // signed doc's own option checkboxes at accept time (data-oprice /
+  // data-mprice, which syncPricingData keeps true through AI edits). This
+  // marker carries only what the doc lacks in structured form: who the
+  // client is and the payment structure of the build.
+  const ccOffer = {
+    v: 1,
+    type: propType,
+    depositPct: 50,
+    installments: (isWO || isRGS) ? 0 : 24,
+    hours: hours,
+    contact: contact,
+    email: (document.getElementById('prop-contact-email').value.split(/[,;\s]+/)[0] || '').trim().toLowerCase(),
+    street: propAddrVal('prop-address'),
+    city: propAddrVal('prop-city'),
+    state: propAddrVal('prop-state').toUpperCase(),
+    zip: propAddrVal('prop-zip'),
+    phone: phone,
+    website: website,
+  };
+  const ccMarker = '<div id="efelle-offer-data" style="display:none" data-offer="'
+    + JSON.stringify(ccOffer).replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"></div>';
+  html = html.includes('</body>') ? html.replace('</body>', () => ccMarker + '</body>') : html + ccMarker;
   return html;
 }
 
@@ -1416,7 +1442,9 @@ async function propGenerate() {
             hours: document.getElementById('price-hours').value,
             rgs: document.getElementById('price-rgs').value,
           },
-        }, propClientData, propReportHtml);
+        }, propClientData, propReportHtml).then(saved => {
+          if (saved && saved.id) propSavedReportId = saved.id;
+        });
       } catch (e) { console.warn('Auto-save failed:', e.message); }
 
     } catch(e) {
@@ -1854,7 +1882,7 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: getApiHeaders(),
-      body: JSON.stringify({ html: propReportHtml, company, contactEmails: pubContactEmails(), token: existingToken }),
+      body: JSON.stringify({ html: propReportHtml, company, contactEmails: pubContactEmails(), token: existingToken, reportId: propSavedReportId || undefined }),
     });
     const d = await res.json();
     if (res.ok) {
@@ -1876,6 +1904,16 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
     + 'efelle creative\n'
     + 'efelle.com | 206.384.4909';
   window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  // Record the send on the Library report (date + recipients power the Sent column)
+  if (propSavedReportId) {
+    try {
+      await fetch('/api/reports/' + encodeURIComponent(propSavedReportId) + '/sent', {
+        method: 'POST',
+        headers: getApiHeaders(),
+        body: JSON.stringify({ sentTo: pubContactEmails().join(', ') }),
+      });
+    } catch (e) { /* non-fatal */ }
+  }
   btn.innerHTML = orig; btn.disabled = false;
 });
 
@@ -1895,6 +1933,11 @@ function pubContactEmails() {
 // Auto-republish: once a link exists for this company, every edit (AI editor,
 // logo changes, regeneration) silently updates the live copy — until the client
 // signs, at which point the server locks the published version (409).
+// The Library report backing this proposal (set on save / library load) so
+// publishes link the hosted copy to it and sends get recorded on it.
+let propSavedReportId = null;
+window.setPropSavedReportId = function(id) { propSavedReportId = id || null; };
+
 let autoRepubTimer = null;
 function autoRepublish() {
   const token = localStorage.getItem('prospector_pub_' + pubSlug());
@@ -1910,6 +1953,7 @@ function autoRepublish() {
           company: document.getElementById('prop-name').value.trim(),
           contactEmails: pubContactEmails(),
           token,
+          reportId: propSavedReportId || undefined,
         }),
       });
       const d = await res.json();
@@ -1984,6 +2028,7 @@ document.getElementById('prop-publish-btn').addEventListener('click', async () =
         company: document.getElementById('prop-name').value.trim(),
         contactEmails: pubContactEmails(),
         token: existingToken,
+        reportId: propSavedReportId || undefined,
       }),
     });
     const d = await res.json();

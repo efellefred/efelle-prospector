@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.27.0',
+    date: '2026-08-30',
+    title: 'Signed Proposals Feed Invoicing',
+    changes: [
+      'When a client signs a hosted proposal, the signed offer now publishes automatically to the Command Center’s shared client record: company, signer, contact email, service address, and the exact price, payment structure, hosting and RGS programs they selected',
+      'The signed deal then appears in the Command Center under A/R › Invoices › Import a signed proposal, where one click prefills the whole billing form exactly as signed',
+      'Generated proposals embed the client and payment details in the document itself, so the handoff always reflects the version the client actually signed, even after AI edits',
+      'The handoff never blocks signing: if the Command Center is unreachable, the acceptance still records exactly as before',
+    ]
+  },
+  {
     version: '4.26.0',
     date: '2026-08-24',
     title: 'Workflow View',

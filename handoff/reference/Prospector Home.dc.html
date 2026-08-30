@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/layout.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/semantic.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/base.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/styles.css">
+  <script src="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--white); } .cta-slide { display: inline-block; transition: transform 150ms ease-out; } a:hover > .cta-slide, a:hover .cta-slide { transform: translateX(6px); } @media (prefers-reduced-motion: reduce) { .cta-slide { transition: none; } a:hover .cta-slide { transform: none; } }</style>
+</helmet>
+<div data-screen-label="Prospector home" style="font-family: 'Plus Jakarta Sans', sans-serif; color: var(--black); zoom: 0.7;">
+  <div style="position: relative; overflow: hidden; background: linear-gradient(160deg, #0a0a0a 0%, #1D1D1F 55%, #2a1500 100%); color: var(--white);">
+    <div style="position: absolute; top: -160px; right: -120px; width: 720px; height: 720px; border-radius: 999px; background: radial-gradient(circle, rgba(245,99,0,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 20px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.10);">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative" style="width: 30px; height: 30px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">prospector</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.10); border-radius: 999px; padding: 3px 10px; white-space: nowrap;">v4.19.1 // 2026-08-21</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; font-weight: 600;">
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Library</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Guide</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Updates</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Settings</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Log out</a>
+      </div>
+    </div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 88px 52px 96px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 16px;">efelle creative // prospector</div>
+      <h1 style="font-size: 64px; line-height: 1.02; letter-spacing: -0.03em; font-weight: 800; margin: 0;">Let's sell something<br><em style="font-style: normal; color: var(--orange);">today.</em></h1>
+      <p style="font-size: 18px; line-height: 1.7; color: #B0B0B5; max-width: 560px; margin: 20px auto 0;">Prospect, pitch, close &amp; build. Repeat.</p>
+    </div>
+  </div>
+  <div style="max-width: 1200px; margin: 0 auto; padding: 48px 52px 96px;">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 32px;">
+      <div style="display: inline-flex; background: var(--gray-5); border: 1px solid var(--gray-4); border-radius: 8px; padding: 3px; gap: 2px;">
+        <button onClick="{{ setTable }}" style="{{ tableBtnStyle }}">Table</button>
+        <button onClick="{{ setCards }}" style="{{ cardsBtnStyle }}">Cards</button>
+      </div>
+    </div>
+    <sc-if value="{{ isCards }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 48px;">
+      <sc-for list="{{ cardGroups }}" as="g" hint-placeholder-count="3">
+      <div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 20px;">
+        <sc-for list="{{ g.cols }}" as="l" hint-placeholder-count="3">
+          <span style="display: flex; align-items: center; min-width: 0;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--gray-3); white-space: nowrap; margin-right: {{ l.m }}px;">{{ l.num }}</span>
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap; margin-right: {{ l.m }}px;">{{ l.label }}</span>
+            <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+          </span>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+        <sc-for list="{{ g.tools }}" as="t" hint-placeholder-count="3">
+          <a href="#" style="display: flex; flex-direction: column; background: var(--gray-5); border-radius: 12px; padding: 28px; color: inherit; text-decoration: none; cursor: pointer; transition: background 150ms ease-out;" style-hover="background: #ECECF0;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="{{ t.icon }}"></path></svg>
+              <h3 style="font-size: 20px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 800; margin: 0; white-space: nowrap;">{{ t.title }}</h3>
+            </div>
+            <p style="font-size: 14px; line-height: 1.6; color: var(--gray-1); margin: 8px 0 20px 34px; flex: 1;">{{ t.body }}</p>
+            <span style="color: var(--orange); font-size: 14px; font-weight: 700; white-space: nowrap; margin-left: 34px;"><span class="cta-slide">{{ t.action }} &#8594;</span></span>
+          </a>
+        </sc-for>
+      </div>
+      </div>
+      </sc-for>
+      </div>
+    </sc-if>
+    <div style="display: flex; flex-direction: column; gap: 48px;">
+      <sc-for list="{{ tableStages }}" as="s" hint-placeholder-count="6">
+        <div>
+          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--gray-3);">{{ s.num }}</span>
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">{{ s.label }}</span>
+            <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+          </div>
+          <sc-if value="{{ isTable }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <sc-for list="{{ s.tools }}" as="t" hint-placeholder-count="2">
+                <a href="#" style="display: grid; grid-template-columns: 48px 240px minmax(0,1fr) 200px; gap: 24px; align-items: center; padding: 18px 16px 18px 32px; border-bottom: 1px solid var(--gray-5); border-radius: 8px; color: inherit; text-decoration: none; cursor: pointer; transition: background 150ms ease-out;" style-hover="background: var(--gray-5);">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 999px; background: var(--orange);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg></span>
+                  <h3 style="font-size: 18px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 800; margin: 0;">{{ t.title }}</h3>
+                  <p style="font-size: 14px; line-height: 1.6; color: var(--gray-1); margin: 0;">{{ t.body }}</p>
+                  <span style="color: var(--orange); font-size: 14px; font-weight: 700; white-space: nowrap; text-align: right;"><span class="cta-slide">{{ t.action }} &#8594;</span></span>
+                </a>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="border-top: 1px solid var(--gray-4);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 24px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: 13px; color: var(--gray-2);">
+      <div>efelle creative // prospector // internal sales tools</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-sonnet-4-6 // api</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;layout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;table&quot;,&quot;options&quot;:[&quot;table&quot;,&quot;cards&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;columns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;3&quot;,&quot;options&quot;:[&quot;2&quot;,&quot;3&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const cols = this.props.columns ?? '3';
+    const tools = [
+        { kind: 'Prospect', title: 'Prospect Finder', body: 'Find potential clients using Google Business data & RB2B visitor intelligence; surface strong opportunities based on location, industry, website quality & buying signals.', action: 'Prospect', icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12z M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4z' },
+        { kind: 'Audit', title: 'WAR Report', body: 'Complete website audit and recommendations covering SEO, UX, performance, conversion opportunities, and AI search readiness.', action: 'Analyze', icon: 'M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.35-4.35' },
+        { kind: 'Audit', title: 'Competitor Analysis', body: 'Analyze three suggested local competitors side by side, including keyword gaps, positioning, visibility, and opportunities to outperform them.', action: 'Compare', icon: 'M12 20V10 M18 20V4 M6 20v-4' },
+        { kind: 'Pitch', title: 'Growth Strategy', body: 'Build a pitch-ready growth strategy combining client research, competitive analysis, opportunities, recommendations, and supporting data in one branded document.', action: 'Generate', icon: 'M22 7l-8.5 8.5-5-5L2 17 M16 7h6v6' },
+        { kind: 'Pitch', title: 'Client Action Plan', body: 'Create a standalone 12-month roadmap with prioritized recommendations, the top 10 quick wins, and an updated homepage messaging direction.', action: 'Plan', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
+        { kind: 'Close', title: 'Proposal Builder', body: 'Create a client-specific website proposal using their industry, recommended scope, pricing, RGS options, research, and supporting sales strategy.', action: 'Build', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8' },
+        { kind: 'Handoff', title: 'Sales Handoff', body: 'Turn discovery files and sales notes into a clean internal handoff covering client goals, priorities, requirements, opportunities, and key context.', action: 'Generate', icon: 'M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2 M12 11h4 M12 16h4 M8 11h0.01 M8 16h0.01' },
+        { kind: 'Handoff', title: 'Client Onboarding', body: 'Build the kickoff plan from the signed proposal, including scope, timeline, staging schedule, responsibilities, required assets, and first-week action items.', action: 'Onboard', icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75' },
+        { kind: 'Build', title: 'Site Blueprint', body: 'Build the complete site structure, sitemap, page plan, and content binder directly from the approved scope and project strategy.', action: 'Build', icon: 'M9 2h6v6H9z M2 16h6v6H2z M16 16h6v6h-6z M5 16v-3h14v3 M12 12V8' }
+      ];
+    const order = ['Prospect', 'Audit', 'Pitch', 'Close', 'Handoff', 'Build'];
+    const layout = this.state.layoutOverride ?? this.props.layout ?? 'table';
+    const btn = (active) => ({
+      appearance: 'none', border: 'none', cursor: 'pointer', borderRadius: 6,
+      padding: '6px 16px', fontSize: 13, fontWeight: 700,
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      background: active ? 'var(--white)' : 'transparent',
+      color: active ? 'var(--black)' : 'var(--gray-2)',
+      boxShadow: active ? '0 1px 2px rgba(0,0,0,0.04)' : 'none'
+    });
+    const withStep = (t) => Object.assign({}, t, { step: '0' + tools.indexOf(t) + ' // ' + t.kind.toUpperCase() });
+    return {
+      isCards: layout === 'cards',
+      isTable: layout === 'table',
+      cardGroups: [['Prospect', 'Audit'], ['Pitch', 'Close'], ['Handoff', 'Build']].map((pair) => {
+        const groupTools = tools.filter((t) => pair.includes(t.kind)).map(withStep);
+        const cols = groupTools.map((t, c) => {
+          const isStart = c === 0 || groupTools[c - 1].kind !== t.kind;
+          return isStart
+            ? { num: '0' + order.indexOf(t.kind), label: t.kind.toUpperCase(), m: 14 }
+            : { num: '', label: '', m: 0 };
+        });
+        return { cols, tools: groupTools };
+      }),
+      tableStages: layout === 'table' ? order.map((label, i) => ({
+        label,
+        num: '0' + i,
+        tools: tools.filter((t) => t.kind === label).map(withStep)
+      })) : [],
+      setTable: () => this.setState({ layoutOverride: 'table' }),
+      setCards: () => this.setState({ layoutOverride: 'cards' }),
+      tableBtnStyle: btn(layout === 'table'),
+      cardsBtnStyle: btn(layout === 'cards'),
+      gridColumns: cols === '2' ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+      stages: order.map((label, i) => ({
+        label,
+        num: '0' + i,
+        tools: tools.filter((t) => t.kind === label).map((t) => Object.assign({}, t, {
+          step: '0' + tools.indexOf(t) + ' // ' + t.kind.toUpperCase()
+        }))
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

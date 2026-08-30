@@ -65,6 +65,13 @@ window.librarySort = function(key) {
   renderRows();
 };
 
+function sortValue(r) {
+  if (sortKey === 'name') return (r.clientName || '').toLowerCase();
+  if (sortKey === 'sent') return r.sentAt ? new Date(r.sentAt).getTime() : null;
+  if (sortKey === 'views') return typeof r.views === 'number' ? r.views : 0;
+  return new Date(r.createdAt).getTime() || 0;
+}
+
 window.libMenuToggle = function(ev, id) {
   ev.stopPropagation();
   const menu = document.getElementById(id);
@@ -94,6 +101,8 @@ function headHtml() {
     + '<span class="lbx-thstatic">Type</span>'
     + '<button class="' + cls('name') + '" onclick="librarySort(\'name\')">Name' + arrow('name') + '</button>'
     + '<button class="' + cls('created') + '" onclick="librarySort(\'created\')">Created' + arrow('created') + '</button>'
+    + '<button class="' + cls('sent') + '" onclick="librarySort(\'sent\')">Sent' + arrow('sent') + '</button>'
+    + '<button class="' + cls('views') + ' lbx-center" onclick="librarySort(\'views\')">Views' + arrow('views') + '</button>'
     + '<span></span>'
     + '</div>';
 }
@@ -103,8 +112,10 @@ function renderRows() {
   if (!container) return;
   let rows = libraryRows.slice();
   rows.sort((a, b) => {
-    const va = sortKey === 'name' ? (a.clientName || '').toLowerCase() : new Date(a.createdAt).getTime() || 0;
-    const vb = sortKey === 'name' ? (b.clientName || '').toLowerCase() : new Date(b.createdAt).getTime() || 0;
+    const va = sortValue(a), vb = sortValue(b);
+    if (va === null && vb === null) return 0;
+    if (va === null) return 1;   // "Not sent" always sorts last
+    if (vb === null) return -1;
     return (va < vb ? -1 : va > vb ? 1 : 0) * sortDir;
   });
 
@@ -131,6 +142,11 @@ function renderRows() {
       +   '<div class="lbx-meta">' + esc(meta.join(' // ')) + '</div>'
       + '</div>'
       + '<span class="lbx-date">' + fmtDate(r.createdAt) + '</span>'
+      + '<div class="lbx-sentcell">'
+      +   '<span class="lbx-date">' + (r.sentAt ? fmtDate(r.sentAt) : 'Not sent') + '</span>'
+      +   (r.sentAt && r.sentTo ? '<span class="lbx-sentto">' + esc(r.sentTo) + '</span>' : '')
+      + '</div>'
+      + '<span class="lbx-views">' + (typeof r.views === 'number' ? r.views : 0) + '</span>'
       + '<div class="lbx-actions">'
       +   '<span style="position:relative;display:inline-block;">'
       +     '<button class="lbx-actbtn" onclick="libMenuToggle(event, \'lbx-am-' + i + '\')">Actions \u25BE</button>'
@@ -196,6 +212,7 @@ async function libraryEditReport(id, type) {
       // Restore engine state (vertical/type/market) + client form fields so
       // Edit → Update Address / Details and re-generation work from the Library
       if (typeof window.restorePropState === 'function') window.restorePropState(report);
+      if (typeof window.setPropSavedReportId === 'function') window.setPropSavedReportId(id);
       if (typeof window.loadPropClient === 'function') window.loadPropClient(id);
 
       const frame = document.getElementById('prop-report-frame');

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/layout.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/semantic.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/base.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/styles.css">
+  <script src="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--white); }</style>
+</helmet>
+<div data-screen-label="Report library" style="font-family: 'Plus Jakarta Sans', sans-serif; color: var(--black); zoom: 0.595;">
+  <div style="background: linear-gradient(160deg, #0a0a0a 0%, #1D1D1F 55%, #2a1500 100%); color: var(--white); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -160px; right: -120px; width: 720px; height: 720px; border-radius: 999px; background: radial-gradient(circle, rgba(245,99,0,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 20px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.10);">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative" style="width: 30px; height: 30px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">prospector</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.10); border-radius: 999px; padding: 3px 10px; white-space: nowrap;">v4.21.0 // 2026-08-23</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; font-weight: 600;">
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Home</a>
+        <a href="#" style="color: var(--orange); text-decoration: none;">Library</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Guide</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Settings</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Log out</a>
+      </div>
+    </div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 56px 52px 64px;">
+      <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 16px;">efelle creative // prospector</div>
+      <h1 style="font-size: 48px; line-height: 1.06; letter-spacing: -0.025em; font-weight: 800; margin: 0;">Library.</h1>
+      <p style="font-size: 18px; line-height: 1.7; color: #B0B0B5; max-width: 560px; margin: 14px 0 0;">Every report, proposal, and plan the team has generated, in one place.</p>
+    </div>
+  </div>
+
+  <div style="max-width: 1200px; margin: 0 auto; padding: 48px 52px 96px;">
+
+    <div style="display: flex; align-items: center; gap: 24px; flex-wrap: nowrap; margin-bottom: 32px;">
+      <input value="{{ query }}" onChange="{{ setQuery }}" placeholder="Search by company" style="height: 40px; width: 220px; flex-shrink: 0; border: 1px solid var(--gray-4); border-radius: 8px; padding: 0 16px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; color: var(--black); background: var(--white); outline: none;" style-focus="border-color: var(--orange); box-shadow: 0 0 0 3px rgba(245,99,0,0.12);">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2); white-space: nowrap;">Type</span>
+        <sc-for list="{{ typeChips }}" as="c" hint-placeholder-count="6">
+          <button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button>
+        </sc-for>
+      </div>
+      <div style="flex: 1;"></div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2); white-space: nowrap;">Created by</span>
+        <sc-for list="{{ creatorChips }}" as="c" hint-placeholder-count="3">
+          <button onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <div style="display: grid; grid-template-columns: 95px minmax(0,1fr) 100px 240px 60px 150px; gap: 18px; align-items: center; padding: 0 16px 10px; border-bottom: 1px solid var(--gray-4);">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-3);">Type</span>
+        <button onClick="{{ sortByName }}" style="appearance: none; cursor: pointer; border: none; background: transparent; padding: 0; text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: {{ nameHeadColor }}; white-space: nowrap; transition: color 150ms ease-out;" style-hover="color: var(--orange);">Name {{ nameArrow }}</button>
+        <button onClick="{{ sortByCreated }}" style="appearance: none; cursor: pointer; border: none; background: transparent; padding: 0; text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: {{ createdHeadColor }}; white-space: nowrap; transition: color 150ms ease-out;" style-hover="color: var(--orange);">Created {{ createdArrow }}</button>
+        <button onClick="{{ sortBySent }}" style="appearance: none; cursor: pointer; border: none; background: transparent; padding: 0; text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: {{ sentHeadColor }}; white-space: nowrap; transition: color 150ms ease-out;" style-hover="color: var(--orange);">Sent {{ sentArrow }}</button>
+        <button onClick="{{ sortByViews }}" style="appearance: none; cursor: pointer; border: none; background: transparent; padding: 0; text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: {{ viewsHeadColor }}; white-space: nowrap; transition: color 150ms ease-out; text-align: center;" style-hover="color: var(--orange);">Views {{ viewsArrow }}</button>
+        <span></span>
+      </div>
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
+        <div style="display: grid; grid-template-columns: 95px minmax(0,1fr) 100px 240px 60px 150px; gap: 18px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--gray-5); border-radius: 8px; transition: background 150ms ease-out;" style-hover="background: var(--gray-5);">
+          <span><span style="display: inline-flex; align-items: center; justify-content: center; height: 20px; padding: 0 10px; border-radius: 999px; background: {{ r.pillBg }}; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: {{ r.pillColor }}; white-space: nowrap;">{{ r.type }}</span></span>
+          <div style="min-width: 0;">
+            <div style="font-size: 17px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.company }}</div>
+            <div style="font-size: 13px; color: var(--gray-2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.meta }}</div>
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gray-1); white-space: nowrap;">{{ r.created }}</span>
+          <div style="display: flex; align-items: baseline; gap: 10px; min-width: 0;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gray-1); white-space: nowrap;">{{ r.sent }}</span>
+            <span style="font-size: 12px; color: var(--gray-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.sentTo }}</span>
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gray-1); font-variant-numeric: tabular-nums; text-align: center;">{{ r.views }}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="position: relative; display: inline-block;">
+              <button onClick="{{ r.toggleActions }}" style="appearance: none; cursor: pointer; height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--gray-4); background: var(--white); color: var(--gray-1); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; white-space: nowrap; transition: border-color 150ms ease-out, color 150ms ease-out;" style-hover="border-color: var(--black); color: var(--black);">Actions &#9662;</button>
+              <sc-if value="{{ r.actionsOpen }}" hint-placeholder-val="{{ false }}">
+                <span style="position: absolute; top: 42px; right: 0; z-index: 20; display: flex; flex-direction: column; min-width: 150px; background: var(--white); border: 1px solid var(--gray-4); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); padding: 6px;">
+                  <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">View</a>
+                  <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Download</a>
+                  <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Email</a>
+                </span>
+              </sc-if>
+            </span>
+            <span style="position: relative; display: inline-block;">
+              <button onClick="{{ r.toggleMenu }}" title="Settings" style="appearance: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--gray-4); background: var(--white); padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--black);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gray-1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+              <sc-if value="{{ r.menuOpen }}" hint-placeholder-val="{{ false }}">
+                <span style="position: absolute; top: 42px; right: 0; z-index: 20; display: flex; flex-direction: column; min-width: 150px; background: var(--white); border: 1px solid var(--gray-4); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); padding: 6px;">
+                  <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Edit</a>
+                  <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Archive</a>
+                </span>
+              </sc-if>
+            </span>
+          </div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 48px 16px; text-align: center; font-size: 15px; color: var(--gray-2);">No reports match. Clear a filter or run a new audit from the home screen.</div>
+      </sc-if>
+    </div>
+
+  </div>
+
+  <div style="border-top: 1px solid var(--gray-4);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 24px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: 13px; color: var(--gray-2);">
+      <div>efelle creative // prospector // internal sales tools</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-sonnet-4-6 // api</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { type: 'All', creator: 'All', query: '', openMenu: null, sortKey: 'created', sortDir: -1 };
+  renderVals() {
+    const chip = (active) => ({
+      appearance: 'none', cursor: 'pointer', height: 32, padding: '0 14px', borderRadius: 999,
+      fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: active ? 700 : 600,
+      whiteSpace: 'nowrap',
+      border: active ? '1px solid var(--orange)' : '1px solid var(--gray-4)',
+      background: active ? 'rgba(245,99,0,0.06)' : 'var(--white)',
+      color: active ? 'var(--black)' : 'var(--gray-1)',
+      boxShadow: active ? 'inset 0 0 0 1px var(--orange)' : 'none',
+      transition: 'background 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out'
+    });
+    const data = [
+      { type: 'Proposal', company: 'Mt Baker Roofing', meta: 'Roofing // new website // by Fred', created: '08/23/26', sent: '08/23/26', sentTo: 'info@mtbakerroofing.com', views: 2 },
+      { type: 'Proposal', company: 'Mt Baker Roofing', meta: 'Roofing // website updates WO // by Fred', created: '08/21/26', sent: '08/21/26', sentTo: 'info@mtbakerroofing.com', views: 5 },
+      { type: 'Proposal', company: 'IMS Legal Strategies', meta: 'Other // new website // by Fred', created: '08/13/26', sent: '08/14/26', sentTo: 'ops@imslegal.com', views: 11 },
+      { type: 'Proposal', company: 'efelle creative', meta: 'Plumbing // new website // by Fred', created: '08/13/26', sent: 'Not sent', sentTo: '', views: 0 },
+      { type: 'Proposal', company: 'Premier Heating & Cooling', meta: 'HVAC // new website // by Doug', created: '08/11/26', sent: '08/12/26', sentTo: 'dan@premierhvac.com', views: 7 },
+      { type: 'Proposal', company: 'On The Go Mobile Detailing', meta: 'Other // RGS only // by Fred', created: '07/30/26', sent: '07/30/26', sentTo: 'hello@onthegodetail.com', views: 3 },
+      { type: 'Proposal', company: 'Watchmaker Marketing', meta: 'Other // new website // by Christian', created: '07/28/26', sent: 'Not sent', sentTo: '', views: 0 },
+      { type: 'Proposal', company: 'Emerald City Smoothie', meta: 'Other // RGS only // by Fred', created: '07/28/26', sent: '07/29/26', sentTo: 'owner@ecsmoothie.com', views: 9 },
+      { type: 'WAR', company: 'Northway Construction Inc.', meta: 'By Fred', created: '06/19/26', sent: '06/20/26', sentTo: 'mike@northwayinc.com', views: 4 },
+      { type: 'WAR', company: 'Provident Electric', meta: 'By Doug', created: '06/12/26', sent: 'Not sent', sentTo: '', views: 0 },
+      { type: 'Strategy', company: 'Premier Heating & Cooling', meta: 'By Doug', created: '06/08/26', sent: '06/09/26', sentTo: 'dan@premierhvac.com', views: 6 },
+      { type: 'Action plan', company: 'Northway Construction Inc.', meta: 'By Fred', created: '06/02/26', sent: '06/02/26', sentTo: 'mike@northwayinc.com', views: 8 },
+      { type: 'Competitor', company: 'Provident Electric', meta: 'Vs. 3 local competitors // by Christian', created: '05/27/26', sent: 'Not sent', sentTo: '', views: 0 }
+    ];
+    const q = this.state.query.trim().toLowerCase();
+    let rows = data.filter((r) =>
+      (this.state.type === 'All' || r.type === this.state.type) &&
+      (this.state.creator === 'All' || r.meta.toLowerCase().includes('by ' + this.state.creator.toLowerCase())) &&
+      (!q || r.company.toLowerCase().includes(q))
+    );
+    const pill = {
+      'Proposal': { pillBg: 'rgba(245,99,0,0.12)', pillColor: '#D65600' },
+      'WAR': { pillBg: 'rgba(50,215,75,0.14)', pillColor: '#1D8A38' },
+      'Strategy': { pillBg: 'rgba(50,138,146,0.12)', pillColor: '#328A92' },
+      'Action plan': { pillBg: 'rgba(46,86,101,0.10)', pillColor: '#2E5665' },
+      'Competitor': { pillBg: 'rgba(217,48,37,0.08)', pillColor: '#D93025' }
+    };
+    const dateVal = (s) => {
+      if (!s || s === 'Not sent') return -Infinity;
+      const [m, d, y] = s.split('/').map(Number);
+      return y * 10000 + m * 100 + d;
+    };
+    const keyVal = (r) => this.state.sortKey === 'name' ? r.company.toLowerCase()
+      : this.state.sortKey === 'created' ? dateVal(r.created)
+      : this.state.sortKey === 'sent' ? dateVal(r.sent)
+      : r.views;
+    rows = rows.slice().sort((a, b) => {
+      const va = keyVal(a), vb = keyVal(b);
+      return (va < vb ? -1 : va > vb ? 1 : 0) * this.state.sortDir;
+    });
+    rows = rows.map((r, i) => Object.assign({}, r, pill[r.type], {
+      menuOpen: this.state.openMenu === 'g' + i,
+      toggleMenu: () => this.setState((s) => ({ openMenu: s.openMenu === 'g' + i ? null : 'g' + i })),
+      actionsOpen: this.state.openMenu === 'a' + i,
+      toggleActions: () => this.setState((s) => ({ openMenu: s.openMenu === 'a' + i ? null : 'a' + i }))
+    }));
+    const sortBy = (key) => () => this.setState((s) => ({
+      sortKey: key,
+      sortDir: s.sortKey === key ? -s.sortDir : (key === 'name' ? 1 : -1)
+    }));
+    const arrow = (key) => this.state.sortKey === key ? (this.state.sortDir === 1 ? '\u2191' : '\u2193') : '';
+    const headColor = (key) => this.state.sortKey === key ? 'var(--black)' : 'var(--gray-3)';
+    return {
+      rows,
+      empty: rows.length === 0,
+      sortByName: sortBy('name'), sortByCreated: sortBy('created'), sortBySent: sortBy('sent'), sortByViews: sortBy('views'),
+      nameArrow: arrow('name'), createdArrow: arrow('created'), sentArrow: arrow('sent'), viewsArrow: arrow('views'),
+      nameHeadColor: headColor('name'), createdHeadColor: headColor('created'), sentHeadColor: headColor('sent'), viewsHeadColor: headColor('views'),
+      query: this.state.query,
+      setQuery: (e) => this.setState({ query: e.target.value }),
+      typeChips: ['All', 'WAR', 'Strategy', 'Action plan', 'Proposal', 'Competitor'].map((label) => ({
+        label, pick: () => this.setState({ type: label }), style: chip(this.state.type === label)
+      })),
+      creatorChips: ['All', 'Fred', 'Doug'].map((label) => ({
+        label, pick: () => this.setState({ creator: label }), style: chip(this.state.creator === label)
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

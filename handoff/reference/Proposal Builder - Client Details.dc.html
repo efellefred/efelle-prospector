@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/layout.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/semantic.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/base.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/styles.css">
+  <script src="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--white); }
+  .pb-input { height: 52px; border: 1px solid var(--gray-4); border-radius: 8px; padding: 0 16px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; color: var(--black); background: var(--white); outline: none; width: 100%; box-sizing: border-box; }
+  .pb-input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(245,99,0,0.12); }
+  .pb-input::placeholder { color: var(--gray-3); }
+  textarea.pb-input { height: auto; min-height: 84px; padding: 14px 16px; line-height: 1.6; resize: vertical; }</style>
+</helmet>
+<div data-screen-label="Proposal builder – client details" style="font-family: 'Plus Jakarta Sans', sans-serif; color: var(--black); zoom: 0.595;">
+  <div style="background: linear-gradient(160deg, #0a0a0a 0%, #1D1D1F 55%, #2a1500 100%); color: var(--white); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -160px; right: -120px; width: 720px; height: 720px; border-radius: 999px; background: radial-gradient(circle, rgba(245,99,0,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 20px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.10);">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative" style="width: 30px; height: 30px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">prospector</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.10); border-radius: 999px; padding: 3px 10px; white-space: nowrap;">v4.20.0 // 2026-08-23</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; font-weight: 600;">
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Home</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Library</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Guide</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Settings</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Log out</a>
+      </div>
+    </div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 56px 52px 64px;">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+        <a href="Proposal Builder.dc.html" style="color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap;" style-hover="color: var(--orange);">&#8592; Setup</a>
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange);">03 // Close &middot; Proposal Builder &middot; Step 2 of 2</span>
+      </div>
+      <h1 style="font-size: 48px; line-height: 1.06; letter-spacing: -0.025em; font-weight: 800; margin: 0;">Client details.</h1>
+      <p style="font-size: 18px; line-height: 1.7; color: #B0B0B5; max-width: 560px; margin: 14px 0 0;">Research the client or fill the fields by hand. Everything here lands in the proposal.</p>
+    </div>
+  </div>
+
+  <div style="max-width: 880px; margin: 0 auto; padding: 64px 52px 96px; display: flex; flex-direction: column; gap: 48px;">
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Research client</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+        <sc-for list="{{ siteOptions }}" as="o" hint-placeholder-count="2">
+          <button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ hasWebsite }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; gap: 12px;">
+          <input class="pb-input" placeholder="https://clientwebsite.com" style="flex: 1;">
+          <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="primary" hint-size="auto,52px">Research client</x-import>
+        </div>
+        <p style="font-size: 13px; color: var(--gray-2); margin: 10px 0 0;">Company name, location, services, address, phone, and logo URL are pulled automatically after Research client runs.</p>
+      </sc-if>
+      <sc-if value="{{ pullWar }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; gap: 12px;">
+          <input class="pb-input" placeholder="Search WAR reports by company name" style="flex: 1;">
+          <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="primary" hint-size="auto,52px">Pull the report</x-import>
+        </div>
+        <p style="font-size: 13px; color: var(--gray-2); margin: 10px 0 0;">Client details load from the most recent WAR report for the company.</p>
+      </sc-if>
+      <sc-if value="{{ noWebsite }}" hint-placeholder-val="{{ false }}">
+        <p style="font-size: 13px; color: var(--gray-2); margin: 0;">Claude researches the business online from the company name and city below.</p>
+      </sc-if>
+    </div>
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Company</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 24px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 24px; grid-column: 1 / -1;">
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Company name</span>
+            <input class="pb-input" placeholder="Valley Plumbing Co.">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Contact name</span>
+            <input class="pb-input" placeholder="Mike Johnson">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Contact email(s)</span>
+            <input class="pb-input" placeholder="mike@valleyplumbing.com, sarah@…">
+            <span style="font-size: 12px; color: var(--gray-3);">Commas separate. Opens &amp; acceptance log to HubSpot.</span>
+          </label>
+        </div>
+        <div style="display: grid; grid-template-columns: 2.2fr 1.2fr 0.6fr 0.8fr 1.2fr; gap: 16px; grid-column: 1 / -1;">
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Street address</span>
+            <input class="pb-input" placeholder="1234 Main St">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">City</span>
+            <input class="pb-input" placeholder="Everett">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">State</span>
+            <input class="pb-input" placeholder="WA" maxLength="2">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Zip</span>
+            <input class="pb-input" placeholder="98201">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Phone</span>
+            <input class="pb-input" placeholder="(425) 555-0100">
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Positioning</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 24px;">
+        <label style="display: flex; flex-direction: column; gap: 8px; grid-column: 1 / -1;">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Services</span>
+          <input class="pb-input" placeholder="Drain cleaning | Water heater installation | Emergency plumbing">
+          <span style="font-size: 12px; color: var(--gray-3);">Pipe-separated.</span>
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 8px; grid-column: 1 / -1;">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Service area</span>
+          <input class="pb-input" placeholder="Greater Seattle and Eastside communities">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 8px; grid-column: 1 / -1;">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Key differentiators</span>
+          <textarea class="pb-input" placeholder="4.9 stars on Google (340+ reviews), family-owned since 2008, same-day service guarantee"></textarea>
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Founded year</span>
+          <input class="pb-input" placeholder="2008">
+        </label>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2);">Logo URL (optional)</span>
+            <input class="pb-input" placeholder="https://example.com/logo.png">
+          </label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2); white-space: nowrap;">Logo background</span>
+            <div style="display: flex; gap: 6px;">
+              <sc-for list="{{ logoOptions }}" as="o" hint-placeholder-count="3">
+                <button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
+              </sc-for>
+            </div>
+            <div style="flex: 1;"></div>
+            <div style="width: 44px; height: 44px; border: 1px dashed var(--gray-4); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gray-3); flex-shrink: 0;">logo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--gray-4); padding-top: 32px;">
+      <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="secondary" hint-size="auto,52px">&#8592; Back to setup</x-import>
+      <div style="flex: 1;"></div>
+      <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="primary" hint-size="auto,52px">Build the proposal &#8594;</x-import>
+    </div>
+
+  </div>
+
+  <div style="border-top: 1px solid var(--gray-4);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 24px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: 13px; color: var(--gray-2);">
+      <div>efelle creative // prospector // internal sales tools</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-sonnet-4-6 // api</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { site: 'Enter website URL', logo: 'Auto' };
+  renderVals() {
+    const seg = (active, small) => ({
+      appearance: 'none', cursor: 'pointer', height: small ? 32 : 52, borderRadius: small ? 6 : 8,
+      padding: small ? '0 14px' : undefined,
+      fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: small ? 13 : 15, fontWeight: active ? 700 : 600,
+      border: active ? '1px solid var(--orange)' : '1px solid var(--gray-4)',
+      background: active ? 'rgba(245,99,0,0.06)' : 'var(--white)',
+      color: active ? 'var(--black)' : 'var(--gray-1)',
+      boxShadow: active ? 'inset 0 0 0 1px var(--orange)' : 'none',
+      transition: 'background 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out'
+    });
+    return {
+      hasWebsite: this.state.site === 'Enter website URL',
+      pullWar: this.state.site === 'Pull WAR report',
+      noWebsite: this.state.site === 'No website, research online',
+      siteOptions: ['Enter website URL', 'Pull WAR report', 'No website, research online'].map((label) => ({
+        label, pick: () => this.setState({ site: label }), style: seg(this.state.site === label)
+      })),
+      logoOptions: ['Auto', 'Light', 'Dark'].map((label) => ({
+        label, pick: () => this.setState({ logo: label }), style: seg(this.state.logo === label, true)
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

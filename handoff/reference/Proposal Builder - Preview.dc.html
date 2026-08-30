@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/layout.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/semantic.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/base.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/styles.css">
+  <script src="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--white); }</style>
+</helmet>
+<div data-screen-label="Proposal builder – preview" style="font-family: 'Plus Jakarta Sans', sans-serif; color: var(--black); zoom: 0.595;">
+  <div style="background: linear-gradient(160deg, #0a0a0a 0%, #1D1D1F 55%, #2a1500 100%); color: var(--white); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -160px; right: -120px; width: 720px; height: 720px; border-radius: 999px; background: radial-gradient(circle, rgba(245,99,0,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 20px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.10);">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative" style="width: 30px; height: 30px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">prospector</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.10); border-radius: 999px; padding: 3px 10px; white-space: nowrap;">v4.21.0 // 2026-08-23</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; font-weight: 600;">
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Home</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Library</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Guide</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Settings</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Log out</a>
+      </div>
+    </div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 44px 52px 48px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <a href="Proposal Builder – Client Details.dc.html" style="color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap;" style-hover="color: var(--orange);">&#8592; Client details</a>
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange);">03 // Close &middot; Proposal Builder &middot; Proposal ready</span>
+        </div>
+        <h1 style="font-size: 40px; line-height: 1.06; letter-spacing: -0.025em; font-weight: 800; margin: 0;">Mt Baker Roofing.</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="position: relative; display: inline-block;">
+          <button onClick="{{ toggleEdit }}" style="appearance: none; cursor: pointer; height: 40px; padding: 0 18px; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.85); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap; transition: border-color 150ms ease-out, color 150ms ease-out;" style-hover="border-color: var(--white); color: var(--white);">Edit &#9662;</button>
+          <sc-if value="{{ editOpen }}" hint-placeholder-val="{{ false }}">
+            <span style="position: absolute; top: 46px; left: 0; z-index: 20; display: flex; flex-direction: column; min-width: 220px; background: var(--white); border: 1px solid var(--gray-4); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); padding: 6px; color: var(--black);">
+              <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Add logo</a>
+              <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Edit with AI</a>
+              <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Update address / details</a>
+            </span>
+          </sc-if>
+        </span>
+        <span style="position: relative; display: inline-block;">
+          <button onClick="{{ toggleDownload }}" style="appearance: none; cursor: pointer; height: 40px; padding: 0 18px; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.85); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap; transition: border-color 150ms ease-out, color 150ms ease-out;" style-hover="border-color: var(--white); color: var(--white);">Download &#9662;</button>
+          <sc-if value="{{ downloadOpen }}" hint-placeholder-val="{{ false }}">
+            <span style="position: absolute; top: 46px; left: 0; z-index: 20; display: flex; flex-direction: column; min-width: 190px; background: var(--white); border: 1px solid var(--gray-4); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); padding: 6px; color: var(--black);">
+              <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Download PDF</a>
+              <a href="#" style="padding: 10px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--gray-1); text-decoration: none; white-space: nowrap;" style-hover="background: var(--gray-5); color: var(--black);">Download HTML</a>
+            </span>
+          </sc-if>
+        </span>
+        <button style="appearance: none; cursor: pointer; height: 40px; padding: 0 18px; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.85); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap; transition: border-color 150ms ease-out, color 150ms ease-out;" style-hover="border-color: var(--white); color: var(--white);">Print / save as PDF</button>
+        <button style="appearance: none; cursor: pointer; height: 40px; padding: 0 18px; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.85); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap; transition: border-color 150ms ease-out, color 150ms ease-out;" style-hover="border-color: var(--white); color: var(--white);">Publish link</button>
+        <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="primary" size="sm" hint-size="auto,40px">Email the proposal</x-import>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width: 1000px; margin: 0 auto; padding: 40px 52px 96px;">
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; border: 1px solid rgba(50,215,75,0.35); background: rgba(50,215,75,0.06); border-radius: 12px; padding: 18px 22px; margin-bottom: 40px;">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: var(--green); color: var(--white); font-size: 12px; font-weight: 800; flex-shrink: 0; margin-top: 1px;">&#10003;</span>
+      <div style="min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <span style="font-size: 14px; font-weight: 700;">Published</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-2); white-space: nowrap;">08/23/26 2:41 pm</span>
+          <a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--orange); text-decoration: none; white-space: nowrap;" style-hover="text-decoration: underline;">r8E2khSQCjqWdYXP</a>
+          <button title="Copy link" style="appearance: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--black);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h11v11H9z M5 15H4V4h11v1"></path></svg></button>
+          <span title="Views include your own opens. Edits update the live link until the client signs." style="font-size: 13px; color: var(--gray-2); white-space: nowrap; cursor: help; text-decoration: underline dotted; text-underline-offset: 3px;">2 views</span>
+          <span title="Views include your own opens. Edits update the live link until the client signs." style="font-size: 13px; color: var(--gray-2); white-space: nowrap; cursor: help; text-decoration: underline dotted; text-underline-offset: 3px;">Last opened 2 h ago</span>
+          <button title="Refresh stats" style="appearance: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--gray-4); background: var(--white); padding: 0; transition: border-color 150ms ease-out;" style-hover="border-color: var(--black);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36 M21 3v6h-6"></path></svg></button>
+          <span style="font-size: 13px; color: var(--gray-2); white-space: nowrap;">HubSpot: info@mtbakerroofing.com</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Preview</span>
+      <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-3); white-space: nowrap;">Proposal // 2026-0231</span>
+    </div>
+
+    <div style="border: 1px solid var(--gray-4); border-radius: 12px; overflow: hidden;">
+      <div style="max-width: 780px; margin: 0 auto; background: var(--white);">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 24px 36px;">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;">efelle creative</span>
+          <span style="font-size: 12px; color: var(--gray-2);">efelle.com &nbsp;|&nbsp; 206.384.4909</span>
+        </div>
+        <div style="position: relative; overflow: hidden; background: linear-gradient(160deg, #0a0a0a 0%, #1D1D1F 55%, #2a1500 100%); color: var(--white); padding: 52px;">
+          <div style="position: absolute; top: -160px; right: -120px; width: 720px; height: 720px; border-radius: 999px; background: radial-gradient(circle, rgba(245,99,0,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+          <div style="position: relative; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 28px;">
+            <span style="display: inline-flex; align-items: center; height: 26px; padding: 0 12px; border-radius: 999px; background: rgba(245,99,0,0.15); border: 1px solid rgba(245,99,0,0.3); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Mt Baker Roofing</span>
+            <span style="font-size: 12px; color: rgba(255,255,255,0.55);">August 23, 2026</span>
+          </div>
+          <h2 style="position: relative; font-size: 26px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 800; margin: 0; max-width: 480px;">Homeowners are searching for roofing services online. <em style="font-style: normal; color: var(--orange);">Let's make sure they find you.</em></h2>
+          <p style="position: relative; font-size: 14px; line-height: 1.75; color: #B0B0B5; max-width: 460px; margin: 16px 0 0;">We build professional, conversion-optimized websites for home services companies, backed by 21 years of effective, award-winning work. We handle the complete process so you can focus on your jobs.</p>
+          <div style="position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; border-top: 1px solid rgba(255,255,255,0.10); margin-top: 28px; padding-top: 24px;">
+            <div><div style="font-size: 42px; font-weight: 800; letter-spacing: -0.02em; line-height: 1;">21</div><div style="font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 8px; line-height: 1.5;">Years building our clients' revenue</div></div>
+            <div><div style="font-size: 42px; font-weight: 800; letter-spacing: -0.02em; line-height: 1;">150+</div><div style="font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 8px; line-height: 1.5;">International UX design awards</div></div>
+            <div><div style="font-size: 42px; font-weight: 800; letter-spacing: -0.02em; line-height: 1;">4.7&#9733;</div><div style="font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 8px; line-height: 1.5;">Rating on Google &amp; 5&#9733; on Clutch</div></div>
+            <div><div style="font-size: 42px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; color: var(--orange);">223%</div><div style="font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 8px; line-height: 1.5;">Avg. client revenue growth over 24 mo.</div></div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; padding: 44px 52px 52px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px;">About Mt Baker Roofing</div>
+            <p style="font-size: 13px; line-height: 1.75; color: var(--gray-1); margin: 0;">Mt Baker Roofing is a roofing company based in Bellingham, WA. Whatcom, Skagit, Island, and Snohomish Counties, including Bellingham, Mount Vernon, and Everett. Services include Roof Replacement, Roof Repair, New Construction Roofing, Metal Roofing, Gutter Installation, Commercial Roofing.</p>
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px;">Scope of work overview</div>
+            <p style="font-size: 13px; line-height: 1.75; color: var(--gray-1); margin: 0 0 14px;">Mt Baker Roofing will engage efelle to design and develop a new website that modernizes the brand, improves usability, and supports marketing performance. The project begins with discovery to define goals, messaging, and target audiences.</p>
+            <p style="font-size: 13px; line-height: 1.75; color: var(--gray-1); margin: 0;">efelle will review analytics, content, and SEO, analyze competitors, and develop a sitemap, user journey framework, and feature set.</p>
+          </div>
+        </div>
+        <div style="border-top: 1px solid var(--gray-4); padding: 20px 52px; display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 12px; color: var(--gray-3);">Page 1 of 9 &middot; full document continues in the live preview</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 14px; margin: 48px 0 20px;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Model</span>
+      <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <span style="display: flex; align-items: center; height: 52px; border: 1px solid var(--gray-4); border-radius: 8px; padding: 0 16px; flex: 1;">
+        <input value="claude-sonnet-4-6" style="border: none; outline: none; width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--black); background: transparent;">
+      </span>
+      <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="secondary" hint-size="auto,52px">Apply model</x-import>
+    </div>
+    <p style="font-size: 13px; color: var(--gray-2); margin: 10px 0 0;">API model string used for edits and regeneration on this proposal.</p>
+
+  </div>
+
+  <div style="border-top: 1px solid var(--gray-4);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 24px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: 13px; color: var(--gray-2);">
+      <div>efelle creative // prospector // internal sales tools</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-sonnet-4-6 // api</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { menu: null };
+  renderVals() {
+    return {
+      editOpen: this.state.menu === 'edit',
+      downloadOpen: this.state.menu === 'download',
+      toggleEdit: () => this.setState((s) => ({ menu: s.menu === 'edit' ? null : 'edit' })),
+      toggleDownload: () => this.setState((s) => ({ menu: s.menu === 'download' ? null : 'download' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

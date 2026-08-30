@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/layout.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/semantic.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/tokens/base.css">
+  <link rel="stylesheet" href="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/styles.css">
+  <script src="_ds/efelle-creative-design-system-bf52fb9d-c1d0-49db-831c-5d569a4595a8/_ds_bundle.js"></script>
+  <style>body { margin: 0; background: var(--white); } input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; } input[type="number"] { -moz-appearance: textfield; }</style>
+</helmet>
+<div data-screen-label="Proposal builder" style="font-family: 'Plus Jakarta Sans', sans-serif; color: var(--black); zoom: 0.595;">
+  <div style="background: linear-gradient(160deg, #0a0a0a 0%, #1D1D1F 55%, #2a1500 100%); color: var(--white); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -160px; right: -120px; width: 720px; height: 720px; border-radius: 999px; background: radial-gradient(circle, rgba(245,99,0,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 20px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.10);">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative" style="width: 30px; height: 30px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">prospector</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.10); border-radius: 999px; padding: 3px 10px; white-space: nowrap;">v4.19.1 // 2026-08-21</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; font-weight: 600;">
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Home</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Library</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Guide</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Settings</a>
+        <a href="#" style="color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="color: var(--orange);">Log out</a>
+      </div>
+    </div>
+    <div style="position: relative; max-width: 1200px; margin: 0 auto; padding: 56px 52px 64px;">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+        <a href="#" style="color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap;" style-hover="color: var(--orange);">&#8592; Home</a>
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange);">03 // Close &middot; Proposal Builder</span>
+      </div>
+      <h1 style="font-size: 48px; line-height: 1.06; letter-spacing: -0.025em; font-weight: 800; margin: 0;">Build the proposal.</h1>
+      <p style="font-size: 18px; line-height: 1.7; color: #B0B0B5; max-width: 560px; margin: 14px 0 0;">Pick the type, vertical, and pricing. Claude researches the client and writes the document.</p>
+    </div>
+  </div>
+
+  <div style="max-width: 880px; margin: 0 auto; padding: 64px 52px 96px; display: flex; flex-direction: column; gap: 48px;">
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Proposal type</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <sc-for list="{{ typeOptions }}" as="o" hint-placeholder-count="3">
+          <button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Select vertical</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+        <sc-for list="{{ verticals }}" as="v" hint-placeholder-count="9">
+          <button onClick="{{ v.pick }}" style="{{ v.style }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="{{ v.icon }}"></path></svg>
+            <span style="font-size: 16px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">{{ v.name }}</span>
+            <span style="font-size: 13px; color: var(--gray-2); text-align: left; line-height: 1.5;">{{ v.desc }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Market type</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <sc-for list="{{ marketOptions }}" as="o" hint-placeholder-count="3">
+          <button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">RGS mode</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+        <sc-for list="{{ rgsOptions }}" as="o" hint-placeholder-count="2">
+          <button onClick="{{ o.pick }}" style="{{ o.style }}">
+            <span style="font-size: 15px; font-weight: 700;">{{ o.label }}</span>
+            <span style="font-size: 13px; color: var(--gray-2); line-height: 1.5;">{{ o.desc }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); white-space: nowrap;">Pricing</span>
+        <span style="flex: 1; height: 1px; background: var(--gray-4);"></span>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
+        <sc-for list="{{ priceFields }}" as="f" hint-placeholder-count="3">
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-2); white-space: nowrap;">{{ f.label }}</span>
+            <span style="display: flex; align-items: center; height: 52px; border: 1px solid var(--gray-4); border-radius: 8px; padding: 0 16px; gap: 8px; background: var(--white);">
+              <span style="color: var(--gray-3); font-size: 15px;">{{ f.prefix }}</span>
+              <input type="number" value="{{ f.value }}" onChange="{{ f.set }}" style="{{ f.inputStyle }}">
+            </span>
+            <sc-if value="{{ f.isRateHint }}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{ editingRate }}" hint-placeholder-val="{{ false }}">
+                <span style="display: inline-flex; align-items: center; gap: 2px; font-size: 12px; color: var(--gray-2); white-space: nowrap; min-height: 15px;">$<input type="number" value="{{ woRate }}" onChange="{{ setRate }}" onBlur="{{ stopEditRate }}" autoFocus="{{ true }}" style="border: none; outline: none; border-bottom: 1px solid var(--orange); width: 42px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--black); background: transparent; padding: 0;">/hr</span>
+              </sc-if>
+              <sc-if value="{{ notEditingRate }}" hint-placeholder-val="{{ false }}">
+                <span onClick="{{ startEditRate }}" style="font-size: 12px; color: var(--gray-3); white-space: nowrap; min-height: 15px; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px;" style-hover="color: var(--orange);">{{ rateLabel }}</span>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{ f.isPlainHint }}" hint-placeholder-val="{{ true }}">
+              <span style="font-size: 12px; color: var(--gray-3); white-space: nowrap; min-height: 15px;">{{ f.hint }}</span>
+            </sc-if>
+          </label>
+        </sc-for>
+        <div style="flex: 1;"></div>
+        <div style="padding-top: 23px;">
+        <x-import component-from-global-scope="EfelleCreativeDesignSystem_bf52fb.Button" variant="primary" hint-size="auto,52px">Next: client details &#8594;</x-import>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="border-top: 1px solid var(--gray-4);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 24px 52px; display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: 13px; color: var(--gray-2);">
+      <div>efelle creative // prospector // internal sales tools</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-sonnet-4-6 // api</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { type: 'New website', vertical: 'Home services', market: 'Residential', rgs: 'Included',
+    sitePrice: 7500, hosting: 85, rgsMonthly: 2500, woHours: 10, woPrice: 1500, woRate: 150, editingRate: false };
+  renderVals() {
+    const seg = (active) => ({
+      appearance: 'none', cursor: 'pointer', height: 52, borderRadius: 8,
+      fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 15, fontWeight: active ? 700 : 600,
+      border: active ? '1px solid var(--orange)' : '1px solid var(--gray-4)',
+      background: active ? 'rgba(245,99,0,0.06)' : 'var(--white)',
+      color: active ? 'var(--black)' : 'var(--gray-1)',
+      boxShadow: active ? 'inset 0 0 0 1px var(--orange)' : 'none',
+      transition: 'background 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out'
+    });
+    const card = (active) => ({
+      appearance: 'none', cursor: 'pointer', borderRadius: 12, padding: '18px 20px',
+      display: 'grid', gridTemplateColumns: '20px auto 1fr', alignItems: 'center', columnGap: 14,
+      fontFamily: "'Plus Jakarta Sans', sans-serif", textAlign: 'left', color: 'var(--black)',
+      border: active ? '1px solid var(--orange)' : '1px solid var(--gray-4)',
+      background: active ? 'rgba(245,99,0,0.06)' : 'var(--gray-5)',
+      boxShadow: active ? 'inset 0 0 0 1px var(--orange)' : 'none',
+      transition: 'background 150ms ease-out, border-color 150ms ease-out'
+    });
+    const stack = (active) => Object.assign({}, card(active), { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6, padding: '18px 20px' });
+    const opts = (list, key) => list.map((label) => ({
+      label,
+      pick: () => this.setState({ [key]: label }),
+      style: seg(this.state[key] === label)
+    }));
+    const verticals = [
+      { name: 'Home services', desc: 'General contractor / multi-service', icon: 'M3 10.5L12 3l9 7.5 M5 9.5V21h14V9.5' },
+      { name: 'Plumbing', desc: 'Plumbing, drain, water heater', icon: 'M14.7 6.3a5 5 0 0 0-6.6 6.6L3 18v3h3l5.1-5.1a5 5 0 0 0 6.6-6.6L14 13l-3-3 3.7-3.7z' },
+      { name: 'Roofing', desc: 'Roofing, gutters, siding', icon: 'M2 14L12 4l10 10 M6 10v10h12V10' },
+      { name: 'HVAC', desc: 'Heating, cooling, air quality', icon: 'M12 2v20 M2 12h20 M4.9 4.9l14.2 14.2 M19.1 4.9L4.9 19.1' },
+      { name: 'Landscaping', desc: 'Landscaping, lawn care, outdoor', icon: 'M12 22V10 M12 10a6 6 0 0 0-6-6 6 6 0 0 0 6 6z M12 14a6 6 0 0 1 6-6 6 6 0 0 1-6 6z' },
+      { name: 'Electrical', desc: 'Electrician, wiring, panels', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
+      { name: 'Construction', desc: 'General contractor, builds, remodels', icon: 'M2 20h20 M4 20V8l8-5 8 5v12 M9 20v-6h6v6' },
+      { name: 'eCommerce', desc: 'Online retail, DTC, product brands', icon: 'M6 6h15l-1.5 9h-12L5 3H2 M9 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2z M18 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2z' },
+      { name: 'Misc', desc: 'Other home services, neutral copy, & verbiage', icon: 'M14.7 6.3a5 5 0 0 0-6.6 6.6L3 18v3h3l5.1-5.1a5 5 0 0 0 6.6-6.6z' },
+      { name: 'Other', desc: 'Any business, no home-services verbiage', icon: 'M4 7h16v13H4z M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' }
+    ].map((v) => ({
+      name: v.name, desc: v.desc, icon: v.icon,
+      pick: () => this.setState({ vertical: v.name }),
+      style: card(this.state.vertical === v.name)
+    }));
+    const rgsOptions = [
+      { label: 'Included', desc: 'Shown early, after The Offer section' },
+      { label: 'Optional', desc: 'Shown near the end, before signature' }
+    ].map((o) => ({
+      label: o.label, desc: o.desc,
+      pick: () => this.setState({ rgs: o.label }),
+      style: stack(this.state.rgs === o.label)
+    }));
+    const num = (key, extra) => (e) => {
+      const raw = e.target.value;
+      const v = parseFloat(raw) || 0;
+      this.setState(Object.assign({ [key]: raw }, extra ? extra(v) : null));
+    };
+    const F = (label, key, prefix, hint, extra, width) => ({
+      label, prefix: prefix ?? '$', hint: hint ?? '',
+      value: this.state[key], set: num(key, extra),
+      inputStyle: { border: 'none', outline: 'none', width: width ?? 100, fontFamily: "'JetBrains Mono', monospace", fontSize: 16, color: 'var(--black)', background: 'transparent' }
+    });
+    const rgsField = F('RGS monthly ($)', 'rgsMonthly');
+    const hostField = F('Monthly hosting ($)', 'hosting', '$', '$0 hides hosting in the proposal');
+    let priceFields;
+    if (this.state.type === 'RGS only') {
+      priceFields = [rgsField];
+    } else if (this.state.type === 'Website updates WO') {
+      priceFields = [
+        F('WO hours', 'woHours', '#', 'rate', (v) => ({ woPrice: v * (parseFloat(this.state.woRate) || 0) }), 60),
+        F('WO price ($)', 'woPrice', '$', '', null, 70),
+        F('Monthly hosting ($)', 'hosting', '$', '$0 hides hosting', null, 50),
+        F('RGS monthly ($)', 'rgsMonthly', '$', '', null, 70)
+      ];
+    } else {
+      priceFields = [F('Website price ($)', 'sitePrice'), hostField, rgsField];
+    }
+    priceFields = priceFields.map((f) => Object.assign({}, f, {
+      isRateHint: f.hint === 'rate',
+      isPlainHint: f.hint !== 'rate'
+    }));
+    return {
+      priceFields,
+      editingRate: this.state.editingRate,
+      notEditingRate: !this.state.editingRate,
+      woRate: this.state.woRate,
+      rateLabel: '$' + (parseFloat(this.state.woRate) || 0) + '/hr',
+      startEditRate: () => this.setState({ editingRate: true }),
+      stopEditRate: () => this.setState({ editingRate: false }),
+      setRate: (e) => {
+        const raw = e.target.value;
+        const r = parseFloat(raw) || 0;
+        this.setState({ woRate: raw, woPrice: (parseFloat(this.state.woHours) || 0) * r });
+      },
+      typeOptions: opts(['New website', 'Website updates WO', 'RGS only'], 'type'),
+      marketOptions: opts(['Residential', 'Commercial', 'Both'], 'market'),
+      verticals,
+      rgsOptions
+    };
+  }
+}
+</script>
+</body>
+</html>
