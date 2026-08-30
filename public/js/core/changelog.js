@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.28.0',
+    date: '2026-08-30',
+    title: 'Unpublish a Hosted Proposal',
+    changes: [
+      'The published-link panel now has an Unpublish (trash) button that permanently deletes the hosted /p/ link and its record — use it to clean up test proposals or retire dead links',
+      'It confirms first, and warns explicitly when the proposal has already been signed (deleting the link also removes the signed acceptance record)',
+      'Unpublishing also unlinks the hosted copy from its Library report',
+    ]
+  },
+  {
     version: '4.27.0',
     date: '2026-08-30',
     title: 'Signed Proposals Feed Invoicing',

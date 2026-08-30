@@ -2,6 +2,12 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.28.0 — 2026-08-30 — Unpublish a Hosted Proposal
+
+- The published-link panel has an **Unpublish** (trash) button that permanently deletes the hosted `/p/<token>` link and its record (`DELETE /api/publish/:token`) — for cleaning up test proposals and retiring dead links
+- Confirms first, and warns explicitly when the proposal is already signed, since deleting the link removes the signed acceptance record too
+- Unpublishing also clears the `publishToken` link on any Library report that pointed at it
+
 ## 4.27.0 — 2026-08-30 — Signed Proposals Feed Invoicing
 
 - When a client signs a hosted proposal, the signed offer now **publishes automatically to the Command Center's shared client record**: company, signer, contact email, service address, and the exact price, payment structure, hosting and RGS programs they selected

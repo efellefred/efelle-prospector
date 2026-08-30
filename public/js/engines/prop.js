@@ -1990,6 +1990,7 @@ function renderPublishPanel(token, status, flash) {
     + '<span class="pbx-pub-stat" title="' + tip + '">' + views + ' view' + (views === 1 ? '' : 's') + '</span>'
     + (last ? '<span class="pbx-pub-stat" title="' + tip + '">Last opened ' + last + '</span>' : '')
     + '<button class="pbx-iconbtn" title="Refresh views and acceptance" onclick="refreshPublishStatus()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36 M21 3v6h-6"/></svg></button>'
+    + '<button class="pbx-iconbtn" title="Unpublish — permanently delete this link" onclick="unpublishProposal(\'' + token + '\',' + (accepted ? 'true' : 'false') + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v6 M14 11v6"/></svg></button>'
     + (accepted
         ? '<span class="pbx-pub-accept">\u2713 Accepted by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString()
           + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + (accepted.monthlyTotal > 0 ? ', $' + Number(accepted.monthlyTotal).toLocaleString('en-US') + '/mo' : '') + ')' : '')
@@ -2010,6 +2011,27 @@ window.refreshPublishStatus = async function() {
     if (!res.ok) return;
     renderPublishPanel(token, await res.json());
   } catch (e) { /* panel keeps last state */ }
+};
+
+// Unpublish — permanently deletes the hosted /p/<token> link and its record.
+window.unpublishProposal = async function(token, signed) {
+  const warn = signed
+    ? 'This proposal is SIGNED. Deleting the link also removes the signed acceptance record. '
+    : '';
+  if (!confirm(warn + 'Permanently delete the hosted link /p/' + token + '? This cannot be undone.')) return;
+  try {
+    const res = await fetch('/api/publish/' + token, { method: 'DELETE', headers: getApiHeaders() });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      alert('Could not unpublish: ' + (d.error || res.status));
+      return;
+    }
+    localStorage.removeItem('prospector_pub_' + pubSlug());
+    const panel = document.getElementById('prop-publish-panel');
+    if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
+  } catch (e) {
+    alert('Could not unpublish: ' + e.message);
+  }
 };
 
 document.getElementById('prop-publish-btn').addEventListener('click', async () => {

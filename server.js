@@ -600,6 +600,29 @@ app.post('/api/publish', requireAuth, (req, res) => {
   }
 });
 
+// Unpublish (delete) a hosted proposal — removes the public /p/<token> link
+// and its record entirely. Used to clean up test proposals and retire dead
+// links. Any authenticated user may unpublish; a signed proposal can be
+// removed too (the acceptance record goes with it), so the UI confirms first.
+app.delete('/api/publish/:token', requireAuth, (req, res) => {
+  const rec = readPublished(req.params.token);
+  if (!rec) return res.status(404).json({ error: 'Not found' });
+  try {
+    fs.unlinkSync(path.join(PUBLISHED_DIR, req.params.token + '.json'));
+  } catch (e) {
+    return res.status(500).json({ error: 'Delete failed: ' + e.message });
+  }
+  // Unlink from any Library report that pointed at this token
+  try {
+    const index = readIndex();
+    let changed = false;
+    for (const entry of index) { if (entry.publishToken === req.params.token) { delete entry.publishToken; changed = true; } }
+    if (changed) writeIndex(index);
+  } catch (e) { /* non-fatal */ }
+  console.log('Proposal UNPUBLISHED: "' + (rec.company || '') + '" (' + req.params.token + ')');
+  res.json({ deleted: true });
+});
+
 // Status for the app UI (views + acceptance)
 app.get('/api/publish/:token/status', requireAuth, (req, res) => {
   const rec = readPublished(req.params.token);
