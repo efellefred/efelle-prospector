@@ -2,6 +2,13 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.30.0 — 2026-09-05 — On-Page Editing + Dropdown Menus Un-Clipped
+
+- **Fixed clipped dropdowns**: `.pbx-hero` carried `overflow:hidden` (to contain the orange bloom), which cut the Edit ▾ / Download ▾ menus at the band's bottom edge — only "Add logo" was visible. The bloom now clips itself via an `inset:0` wrapper with an oversized `::before`, and the hero no longer clips descendants
+- **Edit Text on Page** (Edit ▾ menu): the preview iframe switches to `designMode`, with a Save / Discard bar above it. Save serializes the edited document, strips editing artifacts, re-runs `syncPricingData` (hand-edited prices get correct data attributes), rewrites the preview, and auto-pushes to the live link
+- **Library copy stays current**: new `PUT /api/reports/:id` (auth-required) updates a report's HTML/metadata in place; the auto-republish debounce now also persists the working document to its Library report — AI edits, on-page edits, logo changes, and add-on pre-selection all survive reopening from the Library
+- Verified by a new 8-check on-page-editing e2e plus full regression of the publish-identity (13) and builder (12) suites
+
 ## 4.29.0 — 2026-09-05 — Every Proposal Gets Its Own Link + Pre-Select Services in the Builder
 
 - **Fixed the shared-link bug**: publishing was keyed per company (localStorage slug), so three Mt Baker proposals overwrote one URL. Identity now lives with the Library report — the server resolves `reportId → token` as the authority, a token belonging to a different report is never reused, and unowned legacy links are claimed by the first report that republishes to them (emailed links keep updating)

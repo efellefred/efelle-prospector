@@ -117,7 +117,7 @@
         <img class="nav-logo-img" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative">
         <span class="nav-wordmark">prospector</span>
       </button>
-      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.29.0 // 2026-09-05</span>
+      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.30.0 // 2026-09-05</span>
     </div>
     <div class="header-right">
       <div class="header-btns">
@@ -1265,6 +1265,7 @@
               <div class="dl-menu" id="prop-edit-menu">
                 <button class="dl-menu-item" id="prop-logo-btn">Add logo</button>
                 <button class="dl-menu-item" id="prop-chat-toggle-btn" title="Edit proposal with AI chat">Edit with AI</button>
+                <button class="dl-menu-item" id="prop-inline-edit-btn" title="Click into the proposal and edit the text directly">Edit text on page</button>
                 <button class="dl-menu-item" onclick="propGoStage2()">Update address &amp; details</button>
               </div>
             </span>
@@ -1282,6 +1283,14 @@
         </div>
       </div>
       <div class="pbx-body"><div class="pbx-container pbx-wide">
+
+        <!-- On-page editing bar -->
+        <div id="prop-inline-bar" class="pbx-panel" style="display:none;align-items:center;gap:14px;">
+          <span style="font-weight:700;color:var(--black);white-space:nowrap;">&#9998; On-page editing</span>
+          <span style="color:var(--gray-2);font-size:13px;flex:1;min-width:200px;">Click any text in the proposal below and type your changes. Edited prices are re-synced on save.</span>
+          <button class="pbx-darkbtn" id="prop-inline-discard">Discard</button>
+          <button class="pbx-primary pbx-primary-sm" id="prop-inline-save">Save changes</button>
+        </div>
 
         <!-- Logo panel (inline, no rebuild) -->
         <div id="prop-logo-panel" class="pbx-panel" style="display:none;">

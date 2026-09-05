@@ -77,8 +77,11 @@
 #screen-prop .prop-stage{display:none}
 #screen-prop .prop-stage.active{display:block}
 /* hero band per stage */
-.pbx-hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#0a0a0a 0%,#1D1D1F 55%,#2a1500 100%);color:#fff}
-.pbx-bloom{position:absolute;top:-160px;right:-120px;width:720px;height:720px;border-radius:999px;background:radial-gradient(circle,rgba(245,99,0,0.15) 0%,transparent 70%);pointer-events:none}
+/* No overflow:hidden here — it clipped the Edit/Download dropdowns at the band's
+   bottom edge. The bloom clips itself via an inset wrapper instead. */
+.pbx-hero{position:relative;background:linear-gradient(160deg,#0a0a0a 0%,#1D1D1F 55%,#2a1500 100%);color:#fff}
+.pbx-bloom{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.pbx-bloom::before{content:'';position:absolute;top:-160px;right:-120px;width:720px;height:720px;border-radius:999px;background:radial-gradient(circle,rgba(245,99,0,0.15) 0%,transparent 70%)}
 .pbx-hero-inner{position:relative;max-width:1200px;margin:0 auto;padding:56px 52px 64px}
 .pbx-hero-slim .pbx-hero-inner{padding:44px 52px 48px}
 .pbx-hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}

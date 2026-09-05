@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.30.0',
+    date: '2026-09-05',
+    title: 'On-Page Editing + Dropdown Menus Un-Clipped',
+    changes: [
+      'FIXED: the Edit ▾ / Download ▾ dropdowns were clipped by the dark header band — only the first item ("Add logo") was visible. All items now show',
+      'NEW: Edit ▾ → Edit Text on Page — click any text in the proposal preview and type your changes directly, then Save. Edited prices are re-synced automatically (same engine as AI edits)',
+      'On-page saves, AI edits, logo changes, and pre-selected add-ons now also update the Library copy — reopening a proposal from the Library shows your latest version, not the original generation',
+      'Discard reverts the preview to the last saved state',
+    ]
+  },
+  {
     version: '4.29.0',
     date: '2026-09-05',
     title: 'Every Proposal Gets Its Own Link + Pre-Select Services in the Builder',

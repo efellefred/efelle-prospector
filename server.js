@@ -1667,6 +1667,30 @@ app.post('/api/reports', requireAuth, (req, res) => {
   }
 });
 
+// Update a report in place — used by the builder to keep the Library copy
+// current after AI edits, on-page edits, logo changes, and add-on selection
+app.put('/api/reports/:id', requireAuth, (req, res) => {
+  try {
+    const index = readIndex();
+    const entry = index.find(r => r.id === req.params.id);
+    if (!entry) return res.status(404).json({ error: 'Report not found' });
+    const { html, metadata } = req.body || {};
+    if (html && typeof html === 'string') {
+      if (html.length > 10 * 1024 * 1024) return res.status(413).json({ error: 'Document too large' });
+      fs.writeFileSync(path.join(REPORTS_DIR, entry.htmlFile), html);
+    }
+    if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
+      entry.metadata = { ...(entry.metadata || {}), ...metadata };
+    }
+    entry.updatedAt = new Date().toISOString();
+    writeIndex(index);
+    res.json({ id: entry.id, saved: true });
+  } catch (err) {
+    console.error('Report update error:', err.message);
+    res.status(500).json({ error: 'Failed to update report: ' + err.message });
+  }
+});
+
 // List all reports (optional ?type= filter)
 app.get('/api/reports', requireAuth, (req, res) => {
   try {

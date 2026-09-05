@@ -1961,6 +1961,46 @@ function bindPreviewDoc(frame) {
 }
 window.bindPreviewPricing = bindPreviewPricing;
 
+// ─── On-page editing ─────────────────────────────────────────────────
+// "Edit text on page": the preview becomes directly editable (designMode).
+// Save serializes the edited document, re-syncs pricing attributes from any
+// hand-edited prices, and pushes to the live link + Library copy.
+function setInlineEditing(on) {
+  const frame = document.getElementById('prop-report-frame');
+  const fdoc = frame && frame.contentDocument;
+  const bar = document.getElementById('prop-inline-bar');
+  if (!fdoc || !bar) return;
+  try { fdoc.designMode = on ? 'on' : 'off'; } catch (e) { return; }
+  bar.style.display = on ? 'flex' : 'none';
+  if (on) bar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+document.getElementById('prop-inline-edit-btn').addEventListener('click', () => {
+  if (!propReportHtml) return;
+  setInlineEditing(true);
+});
+document.getElementById('prop-inline-save').addEventListener('click', async () => {
+  const frame = document.getElementById('prop-report-frame');
+  const fdoc = frame && frame.contentDocument;
+  if (!fdoc) return;
+  const btn = document.getElementById('prop-inline-save');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try { fdoc.designMode = 'off'; } catch (e) {}
+  fdoc.documentElement.removeAttribute('data-pricing-bound');
+  const edited = '<!DOCTYPE html>\n' + fdoc.documentElement.outerHTML;
+  propReportHtml = syncPricingData(edited);
+  await writeToFrame(frame, propReportHtml);
+  bindPreviewPricing();
+  autoRepublish();
+  setInlineEditing(false);
+  btn.disabled = false; btn.textContent = 'Save changes';
+});
+document.getElementById('prop-inline-discard').addEventListener('click', async () => {
+  const frame = document.getElementById('prop-report-frame');
+  if (frame && frame.contentDocument) { try { frame.contentDocument.designMode = 'off'; } catch (e) {} }
+  setInlineEditing(false);
+  if (propReportHtml) { await writeToFrame(frame, propReportHtml); bindPreviewPricing(); }
+});
+
 // ─── Toolbar dropdown menus (Edit ▾ / Download ▾) ────────────────────
 function setupToolbarMenu(btnId, menuId) {
   const btn = document.getElementById(btnId);
@@ -2062,10 +2102,22 @@ let propNumber = null;
 
 let autoRepubTimer = null;
 function autoRepublish() {
-  const token = propPubToken;
-  if (!token || !propReportHtml) return;
+  if (!propReportHtml) return;
   clearTimeout(autoRepubTimer);
   autoRepubTimer = setTimeout(async () => {
+    // Keep the Library copy current too — AI edits, logo changes, on-page
+    // edits, and pre-selected add-ons all land on the saved report
+    if (propSavedReportId) {
+      try {
+        await fetch('/api/reports/' + encodeURIComponent(propSavedReportId), {
+          method: 'PUT',
+          headers: getApiHeaders(),
+          body: JSON.stringify({ html: propReportHtml }),
+        });
+      } catch (e) { /* non-fatal */ }
+    }
+    const token = propPubToken;
+    if (!token) return;
     try {
       const res = await fetch('/api/publish', {
         method: 'POST',
