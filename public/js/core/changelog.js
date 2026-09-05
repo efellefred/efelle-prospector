@@ -4,6 +4,21 @@
 
 const CHANGELOG = [
   {
+    version: '4.29.0',
+    date: '2026-09-05',
+    title: 'Every Proposal Gets Its Own Link + Pre-Select Services in the Builder',
+    changes: [
+      'FIXED: publishing was keyed per company, so multiple proposals for the same client silently overwrote ONE shared link (the Mt Baker three-proposals-one-URL bug). Links are now tied to each proposal — republishing a proposal updates its own link, and a different proposal always mints a fresh one',
+      'Add-ons are now clickable IN THE BUILDER PREVIEW with live price updates — pre-select services before publishing, and the selection (with updated prices) carries into the published link, PDF, and downloads',
+      'Reopening a proposal from the Library restores its published-link panel (views, HubSpot status, unpublish) — no more losing track of which link belongs to which proposal',
+      'Every proposal now has a proposal number (e.g. 2026-0905-K4TQ) stamped on the cover under the date and shown in the builder header — the three same-day variants are finally tellable apart',
+      'The (e) brand mark now sits top-left on the cover',
+      'Address formatting: street on its own line, then "City, ST ZIP" — in the logo block and the signature block. Stray phone fragments and duplicated city names from research autofill are cleaned automatically',
+      'Signature block: the signature/date lines and captions moved down to align with the company text block',
+      'All monthly amounts now display as /m instead of /mo',
+    ]
+  },
+  {
     version: '4.28.0',
     date: '2026-08-30',
     title: 'Unpublish a Hosted Proposal',

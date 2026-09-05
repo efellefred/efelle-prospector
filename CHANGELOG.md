@@ -2,6 +2,17 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.29.0 — 2026-09-05 — Every Proposal Gets Its Own Link + Pre-Select Services in the Builder
+
+- **Fixed the shared-link bug**: publishing was keyed per company (localStorage slug), so three Mt Baker proposals overwrote one URL. Identity now lives with the Library report — the server resolves `reportId → token` as the authority, a token belonging to a different report is never reused, and unowned legacy links are claimed by the first report that republishes to them (emailed links keep updating)
+- **Builder preview pricing**: add-on checkboxes are live in the preview (same math as the hosted page, bound through the iframe's load event so srcdoc rewrites can't orphan the handler); every toggle is persisted into the document — checked state plus recomputed listed prices — so pre-selected services carry into Publish, PDF, and Download, and the hosted page's sticky totals start from the pre-selection
+- **Library restore shows the published panel**: reopening a proposal restores its link, views, and HubSpot status (`publishToken` rides on the report record)
+- **Proposal number** (`YYYY-MMDD-XXXX`) minted at generation, kept across regenerations/restores, stamped on the hero cover under the date, and shown in the builder header
+- **(e) brand mark** added top-left on the hero cover
+- **Address renders as two lines** (street / City, ST ZIP) in the logo and signature blocks, with defensive cleanup of research-autofill junk (leading phone fragments matching the phone field, trailing duplicated city)
+- **Signature alignment**: signature/date rules are taller flex boxes (content bottom-aligned) so the lines + captions align with the company text block
+- **/mo → /m** on all displayed monthly amounts (doc labels, sticky bar, options rows, verification line, agreement, user guide)
+
 ## 4.28.0 — 2026-08-30 — Unpublish a Hosted Proposal
 
 - The published-link panel has an **Unpublish** (trash) button that permanently deletes the hosted `/p/<token>` link and its record (`DELETE /api/publish/:token`) — for cleaning up test proposals and retiring dead links

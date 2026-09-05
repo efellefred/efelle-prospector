@@ -48,7 +48,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
   .rgs-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .rgs-card { background:var(--black); border-radius:12px; padding:20px 22px; display:flex; flex-direction:column; gap:6px; }
   .addon-row:last-child { border-bottom:none !important; }
-  .sig-rule { border-bottom:1px solid #1D1D1F; height:36px; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  .sig-rule { border-bottom:1px solid #1D1D1F; height:62px; display:flex; align-items:flex-end; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
   .sig-caption { font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#6E6E73; margin-top:6px; }
   .sig-eyebrow { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--orange); margin-bottom:6px; }
   .rgs-card-title { font-size:12px; font-weight:700; color:var(--white); }
@@ -136,7 +136,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
            options card share the page with the agreement text ── */
     #sec-auth div[style*="max-width:620px"] p { font-size:11px !important; line-height:1.6 !important; margin-bottom:6px !important; }
     #sec-auth .lead { margin-bottom:12px !important; }
-    .sig-rule { height:28px; }
+    .sig-rule { height:54px; }
     .sig-atomic > div:first-child { margin-bottom:24px !important; }
     .sig-atomic > div[style*="background:var(--black)"] { margin-top:24px !important; }
     /* The @page counter footer brands every printed page — the HTML footer line
@@ -257,8 +257,14 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
 <!-- HERO -->
 <div class="hero">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-    <div class="hero-badge" style="margin-bottom:0;">[[HERO_ICON]] [[HERO_BADGE_TEXT]]</div>
-    <div style="font-size:11px; font-weight:600; color:rgba(255,255,255,0.5); letter-spacing:0.06em;">[[DATE]]</div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <img src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative" style="height:30px; width:auto; display:block;">
+      <div class="hero-badge" style="margin-bottom:0;">[[HERO_ICON]] [[HERO_BADGE_TEXT]]</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:11px; font-weight:600; color:rgba(255,255,255,0.5); letter-spacing:0.06em;">[[DATE]]</div>
+      <div style="font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); letter-spacing:0.1em; margin-top:3px;">PROPOSAL [[PROPOSAL_NO]]</div>
+    </div>
   </div>
   <h1>[[HERO_H1]]</h1>
   <p class="hero-sub">[[HERO_SUB]]</p>

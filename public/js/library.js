@@ -214,9 +214,12 @@ async function libraryEditReport(id, type) {
       if (typeof window.restorePropState === 'function') window.restorePropState(report);
       if (typeof window.setPropSavedReportId === 'function') window.setPropSavedReportId(id);
       if (typeof window.loadPropClient === 'function') window.loadPropClient(id);
+      // Show THIS proposal's published-link panel (or hide the previous one's)
+      if (typeof window.restorePublishPanel === 'function') window.restorePublishPanel(report.publishToken || null);
 
       const frame = document.getElementById('prop-report-frame');
       await writeToFrame(frame, html);
+      if (typeof window.bindPreviewPricing === 'function') window.bindPreviewPricing();
 
     } else if (type === 'notes') {
       if (typeof showEngine === 'function') showEngine('notes');

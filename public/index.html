@@ -117,7 +117,7 @@
         <img class="nav-logo-img" src="https://www.seattlewebdesign.com/uploads/_proposal/e-logo-white.png" alt="efelle creative">
         <span class="nav-wordmark">prospector</span>
       </button>
-      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.28.0 // 2026-08-30</span>
+      <span id="version-badge" title="efelle Prospector version" onclick="toggleDebug()">v4.29.0 // 2026-09-05</span>
     </div>
     <div class="header-right">
       <div class="header-btns">
@@ -1398,7 +1398,7 @@
         var d = new Date();
         var mm = String(d.getMonth() + 1).padStart(2, '0');
         var dd = String(d.getDate()).padStart(2, '0');
-        document.getElementById('prop-preview-label').textContent = 'Proposal // ' + d.getFullYear() + '-' + mm + dd;
+        document.getElementById('prop-preview-label').textContent = 'Proposal // ' + (window.propProposalNumber || (d.getFullYear() + '-' + mm + dd));
       }
       new MutationObserver(syncStage3).observe(stage3, { attributes: true, attributeFilter: ['class'] });
     })();

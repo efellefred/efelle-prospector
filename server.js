@@ -555,7 +555,23 @@ app.post('/api/publish', requireAuth, (req, res) => {
     .filter(e => typeof e === 'string')
     .map(e => e.trim().toLowerCase())
     .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)))].slice(0, 5);
+  // Resolve which hosted record this publish updates. The Library report is
+  // the identity: a report with its own live link updates that link, and a
+  // token that belongs to a DIFFERENT report is never reused — publishing was
+  // once keyed per company in localStorage, which made every proposal for one
+  // company overwrite a single shared URL.
   let rec = token ? readPublished(token) : null;
+  if (reportId && typeof reportId === 'string') {
+    try {
+      const entry = readIndex().find(r => r.id === reportId);
+      const ownRec = entry && entry.publishToken ? readPublished(entry.publishToken) : null;
+      if (ownRec && (!ownRec.reportId || ownRec.reportId === reportId)) {
+        rec = ownRec;
+      } else if (rec && rec.reportId && rec.reportId !== reportId) {
+        rec = null; // another proposal's link — mint a fresh one
+      }
+    } catch (e) { /* fall back to token/new */ }
+  }
   // A signed proposal is a contract record — its published version is frozen
   if (rec && rec.accepted) {
     return res.status(409).json({
@@ -583,6 +599,9 @@ app.post('/api/publish', requireAuth, (req, res) => {
       accepted: null,
     };
   }
+  // Claim: a record without an owner (legacy) is claimed by the first report
+  // that publishes to it; after that the reportId on the record is permanent
+  if (reportId && typeof reportId === 'string' && !rec.reportId) rec.reportId = reportId;
   try {
     writePublished(rec);
     // Link the hosted copy to its Library report so the report list can show live views
@@ -715,7 +734,7 @@ function injectSignature(html, rec) {
   const optionsSuffix = ((Array.isArray(a.options) && a.options.length)
     ? ' &nbsp;&middot;&nbsp; Selected: ' + a.options.map(o => escapeHtmlText(o.label || o.key)).join(' + ')
     : '')
-    + (a.monthlyTotal > 0 ? ' &nbsp;&middot;&nbsp; Monthly total: $' + Number(a.monthlyTotal).toLocaleString('en-US') + '/mo' : '');
+    + (a.monthlyTotal > 0 ? ' &nbsp;&middot;&nbsp; Monthly total: $' + Number(a.monthlyTotal).toLocaleString('en-US') + '/m' : '');
   const verification = '<div style="margin-top:10px; font-size:9px; color:#636366; line-height:1.6; letter-spacing:0.02em;">'
     + '&#10003; Digitally accepted by ' + name
     + ' &nbsp;&middot;&nbsp; ' + escapeHtmlText(whenFull)
@@ -795,7 +814,7 @@ function acceptUiHtml(rec) {
     + 'var mStr = "$" + total.toLocaleString("en-US");'
     + 'if (totalEl && ' + (rec.accepted ? 'false' : 'true') + ') totalEl.textContent = mStr;'
     + 'if (stickyO) stickyO.textContent = oneTime > 0 ? ("$" + oneTime.toLocaleString("en-US") + " one-time + ") : "";'
-    + 'if (stickyM) stickyM.textContent = mStr + "/mo";'
+    + 'if (stickyM) stickyM.textContent = mStr + "/m";'
     // The listed RGS program prices update in place: base program + checked add-ons
     + 'document.querySelectorAll(".live-rgs-monthly").forEach(function(s) { var b = parseInt(s.getAttribute("data-base") || "0", 10) || 0; s.textContent = "$" + (b + addonSum).toLocaleString("en-US"); });'
     + '}'
@@ -809,7 +828,7 @@ function acceptUiHtml(rec) {
       + new Date(rec.accepted.t).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
       + ((Array.isArray(rec.accepted.options) && rec.accepted.options.length)
           ? ' (' + rec.accepted.options.map(o => escapeHtmlText(o.label || o.key)).join(' + ')
-            + (rec.accepted.monthlyTotal > 0 ? ' — $' + Number(rec.accepted.monthlyTotal).toLocaleString('en-US') + '/mo' : '')
+            + (rec.accepted.monthlyTotal > 0 ? ' — $' + Number(rec.accepted.monthlyTotal).toLocaleString('en-US') + '/m' : '')
             + ')'
           : '')
       + ' &mdash; the efelle team will reach out shortly to schedule your kickoff call.'
@@ -938,7 +957,7 @@ app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
     const noteSafe = (s) => String(s).replace(/</g, '‹').replace(/>/g, '›');
     hubspotLogNote(rec, '✅ efelle proposal ACCEPTED by ' + noteSafe(name) + ' — "' + noteSafe(rec.company) + '"'
       + (options.length ? ' — Selected: ' + options.map(o => noteSafe(o.label)).join(' + ') : '')
-      + (monthlyTotal > 0 ? ' — Monthly total: $' + monthlyTotal.toLocaleString('en-US') + '/mo' : '')
+      + (monthlyTotal > 0 ? ' — Monthly total: $' + monthlyTotal.toLocaleString('en-US') + '/m' : '')
       + ' — signed ' + new Date(rec.accepted.t).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
       + ' PT — https://prospector.efelle.com/p/' + rec.token);
     // Publish the signed offer to the Command Center's client record —

@@ -396,6 +396,27 @@ function propFullAddress() {
   return out;
 }
 
+// Display form of the address: street on its own line, then "City, ST ZIP" —
+// used by the logo block and the signature block (single-line reads as a run-on)
+function propAddressLines() {
+  let street = propAddrVal('prop-address');
+  const city = propAddrVal('prop-city');
+  const cs = propCityState();
+  const zip = propAddrVal('prop-zip');
+  // Research autofill sometimes jams phone fragments and the city into the
+  // street field ("733 0191 928 Thomas Road Bellingham") — clean both ends.
+  const phoneDigits = (document.getElementById('prop-phone') ? document.getElementById('prop-phone').value : '').replace(/\D/g, '');
+  const lead = street.match(/^((?:\d{3,4}[\s.\-]+){1,3})(?=\d)/);
+  if (lead && phoneDigits && lead[1].replace(/\D/g, '').length >= 6 && phoneDigits.includes(lead[1].replace(/\D/g, ''))) {
+    street = street.slice(lead[1].length).trim();
+  }
+  if (street && city && street.toLowerCase().endsWith(city.toLowerCase()) && street.length > city.length) {
+    street = street.slice(0, street.length - city.length).replace(/[,\s]+$/, '');
+  }
+  const line2 = cs ? (zip ? cs + ' ' + zip : cs) : zip;
+  return [street, line2].filter(Boolean);
+}
+
 function selectVertical(el) {
   document.querySelectorAll('.vertical-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
@@ -459,6 +480,13 @@ window.restorePropState = function(report) {
     setPrice('price-hours', m.prices.hours);
     setPrice('price-rgs', m.prices.rgs);
   }
+  // Restore this proposal's number so the label and any regeneration keep it
+  if (m.number) {
+    propNumber = m.number;
+    window.propProposalNumber = m.number;
+    const lbl = document.getElementById('prop-preview-label');
+    if (lbl) lbl.textContent = 'Proposal // ' + m.number;
+  }
 };
 
 function propGoStage1() {
@@ -472,6 +500,9 @@ function propReset() {
   propGoStage1();
   propReportHtml = '';
   propSavedReportId = null;
+  propNumber = null;
+  window.propProposalNumber = null;
+  propPubToken = null;
   propClientData = {};
   propLogoInfo = null;
   propVertical = '';
@@ -749,6 +780,15 @@ function propBuildHTML(clientName) {
   const expDate = new Date(today); expDate.setDate(expDate.getDate() + 14);
   const expiry  = expDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+  // Proposal number: minted once per proposal (kept across regenerations and
+  // Library restores), stamped on the hero cover and shown in the builder
+  if (!propNumber) {
+    const mmN = String(today.getMonth() + 1).padStart(2, '0');
+    const ddN = String(today.getDate()).padStart(2, '0');
+    propNumber = today.getFullYear() + '-' + mmN + ddN + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  }
+  window.propProposalNumber = propNumber;
+
 
   const VPD = {
     landscape:  ['https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-1.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-2.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-3.jpg', 'https://www.seattlewebdesign.com/uploads/_proposal/portfolio/portfolio-landscape-4.jpg'],
@@ -789,9 +829,13 @@ function propBuildHTML(clientName) {
   const addressComplete = /,\s*[A-Z]{2}\b/.test(address) || /\b\d{5}(?:-\d{4})?\b/.test(address);
   const fullAddress = (address && !addressComplete && location) ? address + ', ' + location : address;
 
+  // Street on one line, "City, ST ZIP" on the next — a joined single line
+  // reads as a run-on in the logo block and the signature block
+  const addrLines = propAddressLines();
+  const addressTwoLine = addrLines.length ? addrLines.join('<br>') : (fullAddress || location || '');
+
   const lines = [];
-  if (fullAddress) lines.push(fullAddress);
-  else if (location) lines.push(location);
+  if (addressTwoLine) lines.push(addressTwoLine);
   if (phone)   lines.push('<a href="tel:' + phone + '" style="color:#636366;text-decoration:none;">' + phone + '</a>');
   if (website) lines.push('<a href="' + website + '" style="color:#F56300;text-decoration:none;" target="_blank">' + website.replace(/https?:\/\//,'').replace(/\/$/, '') + '</a>');
   const addressHtml = lines.length ? '<div style="font-size:11px;color:#636366;line-height:1.8;text-align:center;">' + lines.join('<br>') + '</div>' : '';
@@ -888,7 +932,7 @@ function propBuildHTML(clientName) {
   // fixed 16px line box so checkbox, title, and price align; wrapped description
   // lines stay tight underneath.
   const addonCard = (key, title, desc, priceNum) => '<label class="addon-row" style="display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.08); cursor:pointer;">'
-    + '<input type="checkbox" class="prog-opt-check" data-opt="addon_' + key + '" data-label="' + ('Add-on: ' + title.replace(/&amp;/g, '&') + ' — $' + priceNum + '/mo').replace(/"/g, '&quot;') + '" data-mprice="' + priceNum + '" style="width:16px; height:16px; accent-color:#F56300; flex-shrink:0; margin-top:0;">'
+    + '<input type="checkbox" class="prog-opt-check" data-opt="addon_' + key + '" data-label="' + ('Add-on: ' + title.replace(/&amp;/g, '&') + ' — $' + priceNum + '/m').replace(/"/g, '&quot;') + '" data-mprice="' + priceNum + '" style="width:16px; height:16px; accent-color:#F56300; flex-shrink:0; margin-top:0;">'
     + '<div style="flex:1; line-height:1.35;"><span style="font-size:12px; font-weight:700; color:var(--white); line-height:16px;">' + title + '</span><span style="font-size:10.5px; color:rgba(255,255,255,0.65);"> — ' + desc + '</span></div>'
     + '<div style="font-size:13px; font-weight:800; color:var(--white); white-space:nowrap; line-height:16px;">$' + priceNum + '<span style="font-size:11px; font-weight:400; color:var(--gray-2);">/month</span></div>'
     + '</label>';
@@ -921,33 +965,33 @@ function propBuildHTML(clientName) {
 
   // Offer price block — for RGS-only the monthly program IS the headline price
   const offerHeadlinePrice = isRGS
-    ? fmt(rp) + '<span style="font-size:20px; font-weight:400;">/mo</span>'
+    ? fmt(rp) + '<span style="font-size:20px; font-weight:400;">/m</span>'
     : fmt(wp);
   const offerPriceLabel = isRGS ? 'Digital Marketing<br>Program' : isWO ? (hours + ' hours of<br>website updates') : 'One-time website';
   const offerSecondaryBlock = isRGS
     ? ''
     : isWO
-    ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + liveRgs + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Digital Marketing<br>Program</div></div>'
+    ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + liveRgs + '<span style="font-size:12px; font-weight:400;">/m</span></div><div class="offer-price-label">Digital Marketing<br>Program</div></div>'
     : (hp > 0
-      ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(hp) + '<span style="font-size:12px; font-weight:400;">/mo</span></div><div class="offer-price-label">Hosting, Support<br>&amp; CMS Maint</div></div>'
+      ? '<div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);"><div style="font-size:22px; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1;">' + fmt(hp) + '<span style="font-size:12px; font-weight:400;">/m</span></div><div class="offer-price-label">Hosting, Support<br>&amp; CMS Maint</div></div>'
       : '');
 
   // Payment rows
   const payRow = (label, val, border, orange) => '<div style="display:flex; justify-content:space-between; align-items:center; padding:' + (orange ? '16px' : '10px') + ' 0;' + (border ? ' border-bottom:1px solid rgba(0,0,0,0.06);' : '') + '"><span style="font-size:13px; ' + (orange ? 'font-weight:700; color:var(--orange);' : 'color:var(--gray-1);') + ' display:flex; align-items:center;">' + label + '</span><span style="font-size:13px; font-weight:700; color:' + (orange ? 'var(--orange)' : 'var(--black)') + '; display:flex; align-items:center;">' + val + '</span></div>';
-  const hostingRow = hp > 0 ? payRow('Website Hosting, Support &amp; CMS Maintenance', fmt(hp) + '/mo', true, false) : '';
+  const hostingRow = hp > 0 ? payRow('Website Hosting, Support &amp; CMS Maintenance', fmt(hp) + '/m', true, false) : '';
   const paymentRows = isRGS
-    ? (payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/mo', true, true)
+    ? (payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/m', true, true)
       + payRow('Three-month minimum term, then month-to-month', '30 days\' notice to cancel', true, false)
       + payRow('Ad spend (Google)', 'Paid directly to platform', false, false))
     : isWO
     ? (payRow('50% Deposit upon project approval', fmt(d1), true, false)
       + payRow('50% Milestone Payment @ 45 days', fmt(d2), true, false)
       + hostingRow
-      + payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/mo', false, true))
+      + payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/m', false, true))
     : (payRow('50% project deposit upon approval', fmt(d1), true, false)
-      + payRow('50% project balance paid over 24 months, 0% interest', '$' + Math.round(m50).toLocaleString() + '/mo', true, false)
+      + payRow('50% project balance paid over 24 months, 0% interest', '$' + Math.round(m50).toLocaleString() + '/m', true, false)
       + hostingRow
-      + (optional ? '' : payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/mo', false, true)));
+      + (optional ? '' : payRow('Monthly Digital Marketing Program (RGS)', liveRgs + '/m', false, true)));
 
   // ── SITE ARCHITECTURE DIAGRAM ──────────────────────────────────────
   // ── SITE ARCHITECTURE WIREFRAME DIAGRAM ─────────────────────────────
@@ -1109,7 +1153,7 @@ function propBuildHTML(clientName) {
   // multi-program proposals become "Select Your Options" with client-checkable
   // boxes (live on the hosted page and recorded with the acceptance; printable
   // as tick-boxes on paper). Hosting rides with the website option.
-  const hostingNote = hp > 0 ? ' + ' + fmt(hp) + '/mo hosting' : '';
+  const hostingNote = hp > 0 ? ' + ' + fmt(hp) + '/m hosting' : '';
   const progOptRow = (key, label, checked, mprice, oprice) =>
     '<label class="prog-opt" title="You can select one or both programs" style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:8px;">'
     + '<input type="checkbox" class="prog-opt-check" data-opt="' + key + '" data-label="' + label.replace(/"/g, '&quot;') + '" data-mprice="' + (mprice || 0) + '" data-oprice="' + (oprice || 0) + '"' + (checked ? ' checked' : '') + ' style="width:15px; height:15px; accent-color:#F56300; flex-shrink:0;">'
@@ -1124,14 +1168,14 @@ function propBuildHTML(clientName) {
   if (isRGS) {
     programSummaryBlock = '<div style="flex:1; min-width:280px;">'
       + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:4px;">Program Summary</div>'
-      + '<div style="font-size:13px; color:var(--white); font-weight:500;">RGS program @ ' + fmt(rp) + '/mo &nbsp;·&nbsp; 3-month minimum, then month-to-month</div>'
+      + '<div style="font-size:13px; color:var(--white); font-weight:500;">RGS program @ ' + fmt(rp) + '/m &nbsp;·&nbsp; 3-month minimum, then month-to-month</div>'
       + monthlyTotalLine(rp, rp)
       + '</div>';
   } else {
     const websiteLabel = isWO
       ? fmt(wp) + ' — Website Updates (Work Order)' + hostingNote
       : fmt(wp) + ' — New Website Project (0% interest plan)' + hostingNote;
-    const rgsLabel = fmt(rp) + '/mo — RGS Marketing Program' + (optional ? ' (optional)' : '');
+    const rgsLabel = fmt(rp) + '/m — RGS Marketing Program' + (optional ? ' (optional)' : '');
     const initialMonthly = hp + (optional ? 0 : rp); // website checked by default; add-ons start unchecked
     programSummaryBlock = '<div style="flex:1; min-width:280px;">'
       + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:2px;">Select Your Options</div>'
@@ -1162,14 +1206,14 @@ function propBuildHTML(clientName) {
     : isWO
     ? ('<p style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--black);">We\'re excited to partner with you on your website updates and marketing program!</p>'
       + '<p style="margin-bottom:8px;"><strong>The Website Updates (Work Order)</strong> engagement includes a focused, ' + hours + '-hour scope of targeted improvements — schema markup, location and service page content, metadata, and on-page SEO fixes. The total work order investment is <strong>[[WEBSITE_PRICE]]</strong>, with a <strong>[[DEP1]]</strong> deposit (50%) to get started and the remaining <strong>[[DEP2]]</strong> (50%) due at the 45-day milestone.</p>'
-      + (hp > 0 ? '<p style="margin-bottom:8px;">We\'ll also migrate your existing website to efelle\'s hosting platform — ongoing hosting, support &amp; CMS updates + mgt services are <strong>' + fmt(hp) + '/mo</strong>, starting upon migration.</p>' : '')
+      + (hp > 0 ? '<p style="margin-bottom:8px;">We\'ll also migrate your existing website to efelle\'s hosting platform — ongoing hosting, support &amp; CMS updates + mgt services are <strong>' + fmt(hp) + '/m</strong>, starting upon migration.</p>' : '')
       + '<p style="margin-bottom:8px;">[[RGS_AGREEMENT_PARA]]</p>'
       + '<p style="margin-bottom:8px;">We\'ll deliver everything outlined in the approved scope and keep the work moving forward with clear milestones. You\'re responsible for providing access to your website and the info we need to complete the updates — including brand assets, photos, and key company information — and for having the rights to use any photos provided.</p>'
       + '<p style="margin-bottom:8px;">If you change the scope (like adding new work, shifting direction after approvals, or pausing the engagement) it will affect the timeline &amp; potentially the cost. It\'s rare, but if that happens, we\'ll talk it through with you and align on next steps before moving forward.</p>'
       + '<p style="margin-bottom:8px;">You retain full ownership of your website and content.</p>'
       + '<p>This agreement follows Washington State law and helps set clear expectations so everything stays on track, but you\'ll find us very easy to work with — we share a common goal, getting your website updates completed &amp; digital marketing program running ASAP to help you grow your business!</p>')
     : ('<p style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--black);">We\'re excited to partner with you on your new website and marketing program!</p>'
-      + '<p style="margin-bottom:8px;"><strong>The Website Project</strong> component includes design, development, CMS setup &amp; integration, copywriting and site launch services + ongoing mgt, hosting &amp; support. The total website project investment is <strong>[[WEBSITE_PRICE]]</strong>, with a <strong>[[DEP1]]</strong> deposit to get started and the remaining balance spread over 24 months at <strong>[[MONTHLY_PAY]]/mo</strong>, interest-free.</p>'
+      + '<p style="margin-bottom:8px;"><strong>The Website Project</strong> component includes design, development, CMS setup &amp; integration, copywriting and site launch services + ongoing mgt, hosting &amp; support. The total website project investment is <strong>[[WEBSITE_PRICE]]</strong>, with a <strong>[[DEP1]]</strong> deposit to get started and the remaining balance spread over 24 months at <strong>[[MONTHLY_PAY]]/m</strong>, interest-free.</p>'
       + (hp > 0 ? '<p style="margin-bottom:8px;">Ongoing hosting, support &amp; CMS updates + mgt services are <strong>[[HOSTING_PRICE_MO]]</strong>, starting upon site launch.</p>' : '')
       + '<p style="margin-bottom:8px;">[[RGS_AGREEMENT_PARA]]</p>'
       + '<p style="margin-bottom:8px;">We\'ll deliver everything outlined in the approved scope and keep the project moving forward with clear milestones and review rounds. We will create most of the website copywriting and imagery, but you\'re responsible for providing info we need to build your site — including your logo, brand assets, photos, and key company information — and for having the rights to use any photos provided.</p>'
@@ -1191,7 +1235,8 @@ function propBuildHTML(clientName) {
     '[[ABOUT_P1]]':             about1,
     '[[ABOUT_P2]]':             about2,
     '[[CLIENT_LOGO]]':          logoHtml,
-    '[[CLIENT_ADDRESS]]':       fullAddress || location || '',
+    '[[CLIENT_ADDRESS]]':       addressTwoLine || '',
+    '[[PROPOSAL_NO]]':          propNumber,
     '[[CLIENT_PHONE]]':         phone || '',
     '[[CLIENT_WEBSITE]]':       website ? website.replace(/https?:\/\//,'').replace(/\/$/, '') : '',
     '[[ADDRESS]]':              addressHtml,
@@ -1222,12 +1267,12 @@ function propBuildHTML(clientName) {
     '[[RGS_FROM]]':             (!isWO && optional) ? '<span style="font-size:16px; font-weight:400; color:var(--gray-2);">from </span>' : '',
     '[[WEBSITE_PRICE]]':        offerHeadlinePrice,
     '[[HOSTING_PRICE]]':        fmt(hp),
-    '[[HOSTING_PRICE_MO]]':     fmt(hp) + '/mo',
+    '[[HOSTING_PRICE_MO]]':     fmt(hp) + '/m',
     '[[RGS_PAYMENT_ROW]]':      '',
     '[[DEP1]]':                 fmt(d1),
     '[[MONTHLY_PAY]]':          monthlyPay,
     '[[DEP2]]':                 fmt(d2),
-    '[[MONTHLY40]]':            '$' + Math.round(m50).toLocaleString() + '/mo',
+    '[[MONTHLY40]]':            '$' + Math.round(m50).toLocaleString() + '/m',
     '[[PROGRAM_SUMMARY_BLOCK]]': programSummaryBlock,
     '[[AUTH_LEAD]]':            isRGS
       ? 'By signing below, you authorize efelle creative to begin work as outlined above. Our team will reach out ASAP to schedule your kickoff call and go to work for you!'
@@ -1403,6 +1448,9 @@ async function propGenerate() {
       document.getElementById('prop-stage-3').classList.add('active');
       const frame = document.getElementById('prop-report-frame');
       await writeToFrame(frame, html);
+      bindPreviewPricing();
+      const lblEl = document.getElementById('prop-preview-label');
+      if (lblEl && propNumber) lblEl.textContent = 'Proposal // ' + propNumber;
 
       // If this company already has a published link, surface its status and
       // push the freshly generated version to it (no-op if signed/locked)
@@ -1436,6 +1484,7 @@ async function propGenerate() {
           type: propType,
           marketType: propMarketType,
           rgs: propRGS,
+          number: propNumber,
           prices: {
             website: document.getElementById('price-website').value,
             hosting: document.getElementById('price-hosting').value,
@@ -1595,6 +1644,7 @@ document.getElementById('prop-logo').addEventListener('change', async () => {
     if (!clientName) return;
     propReportHtml = propBuildHTML(clientName);
     await writeToFrame(document.getElementById('prop-report-frame'), propReportHtml);
+    bindPreviewPricing();
   }
 });
 
@@ -1647,7 +1697,7 @@ Return ONLY a JSON array of find-and-replace operations. Each operation has:
 - "replace": the replacement text/HTML
 
 Example response:
-[{"find":"$4,500/mo","replace":"$2,850/mo"}]
+[{"find":"$4,500/m","replace":"$2,850/m"}]
 
 Rules:
 - Return ONLY the JSON array, no explanation, no markdown fences
@@ -1747,6 +1797,7 @@ PRICING (important): live totals are driven by data attributes (data-mprice/data
     // prices, then update the proposal and the live published link
     propReportHtml = syncPricingData(updatedHtml);
     await writeToFrame(document.getElementById('prop-report-frame'), propReportHtml);
+    bindPreviewPricing();
     autoRepublish();
 
     // Honest reporting: only claim what actually landed, and flag what didn't
@@ -1799,10 +1850,10 @@ function syncPricingData(html) {
         cb.setAttribute('data-opt', key);
       }
       usedKeys.add(key);
-      if (title) cb.setAttribute('data-label', 'Add-on: ' + title + ' — $' + (p !== null ? p : (cb.getAttribute('data-mprice') || '0')) + '/mo');
+      if (title) cb.setAttribute('data-label', 'Add-on: ' + title + ' — $' + (p !== null ? p : (cb.getAttribute('data-mprice') || '0')) + '/m');
     });
     // Program rows: label text → data-label; website $X → data-oprice and
-    // "+$Y/mo hosting" → data-mprice; rgs $X/mo → data-mprice
+    // "+$Y/m hosting" → data-mprice; rgs $X/m → data-mprice
     doc.querySelectorAll('.prog-opt').forEach(rowLabel => {
       const cb = rowLabel.querySelector('.prog-opt-check');
       if (!cb) return;
@@ -1813,7 +1864,7 @@ function syncPricingData(html) {
       if (cb.getAttribute('data-opt') === 'website') {
         const first = clean.match(/\$\s*(\d+)/);
         if (first) cb.setAttribute('data-oprice', first[1]);
-        const host = clean.match(/\+\s*\$\s*(\d+)\s*\/mo/);
+        const host = clean.match(/\+\s*\$\s*(\d+)\s*\/m/);
         cb.setAttribute('data-mprice', host ? host[1] : '0');
       } else if (cb.getAttribute('data-opt') === 'rgs') {
         const first = clean.match(/\$\s*(\d+)/);
@@ -1846,6 +1897,70 @@ function syncPricingData(html) {
 }
 window.syncPricingData = syncPricingData;
 
+// ─── Live pricing inside the builder preview ─────────────────────────
+// The hosted /p/ page gets its pricing script from the server; the builder
+// preview iframe gets the same behavior here, so add-ons can be pre-selected
+// (with live price updates) BEFORE publishing. Every toggle is persisted into
+// propReportHtml, so the selection carries into Publish, PDF, and Download.
+function applySelectionToHtml(html, key, on) {
+  try {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const cb = doc.querySelector('.prog-opt-check[data-opt="' + key + '"]');
+    if (!cb) return html;
+    if (on) cb.setAttribute('checked', ''); else cb.removeAttribute('checked');
+    let addonSum = 0;
+    doc.querySelectorAll('.prog-opt-check').forEach(c => {
+      if ((c.getAttribute('data-opt') || '').indexOf('addon_') === 0 && c.hasAttribute('checked')) {
+        addonSum += parseInt(c.getAttribute('data-mprice') || '0', 10) || 0;
+      }
+    });
+    doc.querySelectorAll('.live-rgs-monthly').forEach(s => {
+      const base = parseInt(s.getAttribute('data-base') || '0', 10) || 0;
+      s.textContent = '$' + (base + addonSum).toLocaleString('en-US');
+    });
+    return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+  } catch (e) { return html; }
+}
+
+function bindPreviewPricing() {
+  const frame = document.getElementById('prop-report-frame');
+  if (!frame) return;
+  // srcdoc loads replace the iframe's document AFTER writeToFrame resolves, so
+  // a one-time bind can land on the document that's about to be thrown away.
+  // Hook the frame's load event once — every fresh document gets re-bound.
+  if (!frame.__pricingLoadHook) {
+    frame.__pricingLoadHook = true;
+    frame.addEventListener('load', () => { bindPreviewDoc(frame); });
+  }
+  bindPreviewDoc(frame);
+}
+
+function bindPreviewDoc(frame) {
+  const fdoc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+  if (!fdoc || !fdoc.documentElement || !fdoc.querySelector('.prog-opt-check')) return;
+  if (fdoc.documentElement.getAttribute('data-pricing-bound')) return;
+  fdoc.documentElement.setAttribute('data-pricing-bound', '1');
+  fdoc.addEventListener('change', (ev) => {
+    const cb = ev.target;
+    if (!cb || !cb.classList || !cb.classList.contains('prog-opt-check')) return;
+    let addonSum = 0;
+    fdoc.querySelectorAll('.prog-opt-check').forEach(c => {
+      if ((c.getAttribute('data-opt') || '').indexOf('addon_') === 0 && c.checked) {
+        addonSum += parseInt(c.getAttribute('data-mprice') || '0', 10) || 0;
+      }
+    });
+    fdoc.querySelectorAll('.live-rgs-monthly').forEach(s => {
+      const base = parseInt(s.getAttribute('data-base') || '0', 10) || 0;
+      s.textContent = '$' + (base + addonSum).toLocaleString('en-US');
+    });
+    if (propReportHtml) {
+      propReportHtml = applySelectionToHtml(propReportHtml, cb.getAttribute('data-opt') || '', cb.checked);
+      autoRepublish();
+    }
+  });
+}
+window.bindPreviewPricing = bindPreviewPricing;
+
 // ─── Toolbar dropdown menus (Edit ▾ / Download ▾) ────────────────────
 function setupToolbarMenu(btnId, menuId) {
   const btn = document.getElementById(btnId);
@@ -1877,8 +1992,7 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
   // the existing link) first so the email always points at the current version.
   let link = '';
   try {
-    const slug = pubSlug();
-    const existingToken = localStorage.getItem('prospector_pub_' + slug) || undefined;
+    const existingToken = propPubToken || localStorage.getItem('prospector_pub_' + pubSlug()) || undefined;
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: getApiHeaders(),
@@ -1886,7 +2000,7 @@ document.getElementById('prop-email-btn').addEventListener('click', async () => 
     });
     const d = await res.json();
     if (res.ok) {
-      localStorage.setItem('prospector_pub_' + slug, d.token);
+      propPubToken = d.token;
       renderPublishPanel(d.token, d);
       link = window.location.origin + '/p/' + d.token;
     } else if (res.status === 409 && existingToken) {
@@ -1938,9 +2052,17 @@ function pubContactEmails() {
 let propSavedReportId = null;
 window.setPropSavedReportId = function(id) { propSavedReportId = id || null; };
 
+// The published token for THE PROPOSAL CURRENTLY OPEN. Identity is per
+// proposal (Library report), never per company — three proposals for one
+// company get three links. The server resolves reportId → token as the
+// authority; localStorage's old per-company key remains only as a one-time
+// legacy claim so links emailed before this fix keep updating.
+let propPubToken = null;
+let propNumber = null;
+
 let autoRepubTimer = null;
 function autoRepublish() {
-  const token = localStorage.getItem('prospector_pub_' + pubSlug());
+  const token = propPubToken;
   if (!token || !propReportHtml) return;
   clearTimeout(autoRepubTimer);
   autoRepubTimer = setTimeout(async () => {
@@ -1958,7 +2080,7 @@ function autoRepublish() {
       });
       const d = await res.json();
       if (res.status === 409) { renderPublishPanel(token, { views: null, accepted: d.accepted, locked: true }); return; }
-      if (res.ok) renderPublishPanel(d.token, d, 'live link updated with your latest edits');
+      if (res.ok) { propPubToken = d.token; renderPublishPanel(d.token, d, 'live link updated with your latest edits'); }
     } catch (e) { /* silent — manual Publish Link still available */ }
   }, 1200);
 }
@@ -1993,7 +2115,7 @@ function renderPublishPanel(token, status, flash) {
     + '<button class="pbx-iconbtn" title="Unpublish — permanently delete this link" onclick="unpublishProposal(\'' + token + '\',' + (accepted ? 'true' : 'false') + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v6 M14 11v6"/></svg></button>'
     + (accepted
         ? '<span class="pbx-pub-accept">\u2713 Accepted by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString()
-          + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + (accepted.monthlyTotal > 0 ? ', $' + Number(accepted.monthlyTotal).toLocaleString('en-US') + '/mo' : '') + ')' : '')
+          + ((accepted.options && accepted.options.length) ? ' (' + accepted.options.map(o => (o.label || o.key)).join(' + ').replace(/</g, '&lt;') + (accepted.monthlyTotal > 0 ? ', $' + Number(accepted.monthlyTotal).toLocaleString('en-US') + '/m' : '') + ')' : '')
           + '</span>'
         : '')
     + (status && status.locked ? '<span class="pbx-pub-lock">Signed: published version locked, edits no longer update the link</span>' : '')
@@ -2004,13 +2126,30 @@ function renderPublishPanel(token, status, flash) {
 }
 
 window.refreshPublishStatus = async function() {
-  const token = localStorage.getItem('prospector_pub_' + pubSlug());
+  const token = propPubToken || localStorage.getItem('prospector_pub_' + pubSlug());
   if (!token) return;
   try {
     const res = await fetch('/api/publish/' + token + '/status', { headers: getApiHeaders() });
     if (!res.ok) return;
     renderPublishPanel(token, await res.json());
   } catch (e) { /* panel keeps last state */ }
+};
+
+// Called on Library restore: shows the proposal's own published-link panel (or
+// hides a stale one from the previously open proposal)
+window.restorePublishPanel = async function(token) {
+  propPubToken = token || null;
+  const panel = document.getElementById('prop-publish-panel');
+  if (!token) {
+    if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
+    return;
+  }
+  try {
+    const res = await fetch('/api/publish/' + token + '/status', { headers: getApiHeaders() });
+    if (res.ok) { renderPublishPanel(token, await res.json()); return; }
+    if (res.status === 404) propPubToken = null;
+  } catch (e) { /* leave panel as-is */ }
+  if (panel && !propPubToken) { panel.style.display = 'none'; panel.innerHTML = ''; }
 };
 
 // Unpublish — permanently deletes the hosted /p/<token> link and its record.
@@ -2026,7 +2165,8 @@ window.unpublishProposal = async function(token, signed) {
       alert('Could not unpublish: ' + (d.error || res.status));
       return;
     }
-    localStorage.removeItem('prospector_pub_' + pubSlug());
+    if (propPubToken === token) propPubToken = null;
+    if (localStorage.getItem('prospector_pub_' + pubSlug()) === token) localStorage.removeItem('prospector_pub_' + pubSlug());
     const panel = document.getElementById('prop-publish-panel');
     if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
   } catch (e) {
@@ -2040,8 +2180,7 @@ document.getElementById('prop-publish-btn').addEventListener('click', async () =
   const orig = btn.innerHTML;
   btn.disabled = true; btn.innerHTML = '⟳ Publishing…';
   try {
-    const slug = pubSlug();
-    const existingToken = localStorage.getItem('prospector_pub_' + slug) || undefined;
+    const existingToken = propPubToken || localStorage.getItem('prospector_pub_' + pubSlug()) || undefined;
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: getApiHeaders(),
@@ -2061,7 +2200,7 @@ document.getElementById('prop-publish-btn').addEventListener('click', async () =
       return;
     }
     if (!res.ok) throw new Error(d.error || 'Publish failed');
-    localStorage.setItem('prospector_pub_' + slug, d.token);
+    propPubToken = d.token;
     renderPublishPanel(d.token, d);
     btn.innerHTML = '✓ Published';
     setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2500);
