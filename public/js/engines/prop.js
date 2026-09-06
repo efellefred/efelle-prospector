@@ -396,23 +396,29 @@ function propFullAddress() {
   return out;
 }
 
+// Scrapers sometimes jam phone fragments and the city into the street line
+// ("733 0191 928 Thomas Road Bellingham") — strip both ends. Used when the
+// research fills the form AND defensively when rendering the address.
+function cleanStreetValue(street, phone, city) {
+  let s = String(street || '').trim();
+  const digits = String(phone || '').replace(/\D/g, '');
+  const lead = s.match(/^((?:\(?\d{3,4}\)?[\s.\-]+){1,3})(?=\d)/);
+  if (lead && digits && lead[1].replace(/\D/g, '').length >= 6 && digits.includes(lead[1].replace(/\D/g, ''))) {
+    s = s.slice(lead[1].length).trim();
+  }
+  if (s && city && s.toLowerCase().endsWith(String(city).toLowerCase()) && s.length > String(city).length) {
+    s = s.slice(0, s.length - String(city).length).replace(/[,\s]+$/, '');
+  }
+  return s;
+}
+
 // Display form of the address: street on its own line, then "City, ST ZIP" —
 // used by the logo block and the signature block (single-line reads as a run-on)
 function propAddressLines() {
-  let street = propAddrVal('prop-address');
-  const city = propAddrVal('prop-city');
+  const phone = document.getElementById('prop-phone') ? document.getElementById('prop-phone').value : '';
+  const street = cleanStreetValue(propAddrVal('prop-address'), phone, propAddrVal('prop-city'));
   const cs = propCityState();
   const zip = propAddrVal('prop-zip');
-  // Research autofill sometimes jams phone fragments and the city into the
-  // street field ("733 0191 928 Thomas Road Bellingham") — clean both ends.
-  const phoneDigits = (document.getElementById('prop-phone') ? document.getElementById('prop-phone').value : '').replace(/\D/g, '');
-  const lead = street.match(/^((?:\d{3,4}[\s.\-]+){1,3})(?=\d)/);
-  if (lead && phoneDigits && lead[1].replace(/\D/g, '').length >= 6 && phoneDigits.includes(lead[1].replace(/\D/g, ''))) {
-    street = street.slice(lead[1].length).trim();
-  }
-  if (street && city && street.toLowerCase().endsWith(city.toLowerCase()) && street.length > city.length) {
-    street = street.slice(0, street.length - city.length).replace(/[,\s]+$/, '');
-  }
   const line2 = cs ? (zip ? cs + ' ' + zip : cs) : zip;
   return [street, line2].filter(Boolean);
 }
@@ -437,14 +443,17 @@ function selectPropType(type) {
   const isWO = type === 'wo_rgs';
   const isRGS = type === 'rgs_only';
   document.getElementById('price-website-label').textContent = isWO ? 'WO price ($)' : 'Website price ($)';
-  document.getElementById('price-website').value = isWO ? 6600 : 7500;
-  document.getElementById('price-rgs').value = (isWO || isRGS) ? 2800 : 2500;
+  // Pricing starts at $0 — every amount is a conscious entry, never a stale default
+  document.getElementById('price-website').value = 0;
+  document.getElementById('price-rgs').value = 0;
+  const hoursEl = document.getElementById('price-hours');
+  if (hoursEl) hoursEl.value = 0;
   // Field visibility: new site = website + hosting; WO = WO price + hosting + hours
   // (hosting on WOs covers migrating an existing site to efelle hosting — it only
   // appears in the proposal when > $0); RGS only = RGS monthly only
   document.getElementById('price-website-field').style.display = isRGS ? 'none' : '';
   document.getElementById('price-hosting-field').style.display = isRGS ? 'none' : '';
-  document.getElementById('price-hosting').value = isWO ? 0 : 85;
+  document.getElementById('price-hosting').value = 0;
   document.getElementById('price-hours-field').style.display = isWO ? '' : 'none';
   // RGS Mode (included vs optional) only applies when there's a website project to attach it to
   document.getElementById('rgs-mode-divider').style.display = isRGS ? 'none' : '';
@@ -659,7 +668,7 @@ async function propFetchClient() {
     if (data.location)     propApplyAddress(propParseCityState(data.location), true);
     if (data.address) {
       const a = propParseFullAddress(data.address);
-      document.getElementById('prop-address').value = a.street;
+      document.getElementById('prop-address').value = cleanStreetValue(a.street, data.phone, a.city);
       propApplyAddress({ city: a.city, state: a.state, zip: a.zip }, false);
     }
     if (data.phone)        document.getElementById('prop-phone').value = data.phone;
@@ -696,7 +705,8 @@ async function propFetchClient() {
 
     if (finalAddress) {
       const a = propParseFullAddress(finalAddress);
-      document.getElementById('prop-address').value = a.street;
+      const knownPhone = data.phone || document.getElementById('prop-phone').value;
+      document.getElementById('prop-address').value = cleanStreetValue(a.street, knownPhone, a.city);
       propApplyAddress({ city: a.city, state: a.state, zip: a.zip }, true);
     }
 
@@ -1154,10 +1164,10 @@ function propBuildHTML(clientName) {
   // boxes (live on the hosted page and recorded with the acceptance; printable
   // as tick-boxes on paper). Hosting rides with the website option.
   const hostingNote = hp > 0 ? ' + ' + fmt(hp) + '/m hosting' : '';
-  const progOptRow = (key, label, checked, mprice, oprice) =>
+  const progOptRow = (key, label, checked, mprice, oprice, displayHtml) =>
     '<label class="prog-opt" title="You can select one or both programs" style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:8px;">'
     + '<input type="checkbox" class="prog-opt-check" data-opt="' + key + '" data-label="' + label.replace(/"/g, '&quot;') + '" data-mprice="' + (mprice || 0) + '" data-oprice="' + (oprice || 0) + '"' + (checked ? ' checked' : '') + ' style="width:15px; height:15px; accent-color:#F56300; flex-shrink:0;">'
-    + '<span style="font-size:13px; color:var(--white); font-weight:500;">' + label + '</span>'
+    + '<span style="font-size:13px; color:var(--white); font-weight:500;">' + (displayHtml || label) + '</span>'
     + '</label>';
   // Live monthly total: programs' recurring portions (hosting rides with the website
   // option; the 0% build financing is NOT monthly-recurring) + any checked add-ons.
@@ -1176,12 +1186,15 @@ function propBuildHTML(clientName) {
       ? fmt(wp) + ' — Website Updates (Work Order)' + hostingNote
       : fmt(wp) + ' — New Website Project (0% interest plan)' + hostingNote;
     const rgsLabel = fmt(rp) + '/m — RGS Marketing Program' + (optional ? ' (optional)' : '');
+    // The visible RGS price in this row is a live span — checked add-ons update
+    // it here too, not just in the offer panel / payment rows / price band
+    const rgsRowDisplay = liveRgs + '/m — RGS Marketing Program' + (optional ? ' (optional)' : '');
     const initialMonthly = hp + (optional ? 0 : rp); // website checked by default; add-ons start unchecked
     programSummaryBlock = '<div style="flex:1; min-width:280px;">'
       + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:2px;">Select Your Options</div>'
       + '<div style="font-size:10px; color:rgba(255,255,255,0.45);">Check one or both — your signature authorizes the selected options.</div>'
       + progOptRow('website', websiteLabel, true, hp, wp)
-      + progOptRow('rgs', rgsLabel, !optional, rp, 0)
+      + progOptRow('rgs', rgsLabel, !optional, rp, 0, rgsRowDisplay)
       + monthlyTotalLine(initialMonthly, 0)
       + '</div>';
   }
@@ -1852,6 +1865,12 @@ function syncPricingData(html) {
       usedKeys.add(key);
       if (title) cb.setAttribute('data-label', 'Add-on: ' + title + ' — $' + (p !== null ? p : (cb.getAttribute('data-mprice') || '0')) + '/m');
     });
+    // The RGS row's visible number may include pre-checked add-ons (its live
+    // span shows base + checked add-ons) — subtract them to recover the base
+    let checkedAddonSum = 0;
+    doc.querySelectorAll('.addon-row .prog-opt-check').forEach(c => {
+      if (c.hasAttribute('checked')) checkedAddonSum += parseInt(c.getAttribute('data-mprice') || '0', 10) || 0;
+    });
     // Program rows: label text → data-label; website $X → data-oprice and
     // "+$Y/m hosting" → data-mprice; rgs $X/m → data-mprice
     doc.querySelectorAll('.prog-opt').forEach(rowLabel => {
@@ -1868,7 +1887,10 @@ function syncPricingData(html) {
         cb.setAttribute('data-mprice', host ? host[1] : '0');
       } else if (cb.getAttribute('data-opt') === 'rgs') {
         const first = clean.match(/\$\s*(\d+)/);
-        if (first) cb.setAttribute('data-mprice', first[1]);
+        if (first) {
+          const shown = parseInt(first[1], 10) || 0;
+          cb.setAttribute('data-mprice', String(Math.max(0, shown - checkedAddonSum)));
+        }
       }
     });
     // RGS base for the listed-price spans: the Select Your Options row is the
@@ -1879,14 +1901,19 @@ function syncPricingData(html) {
     if (rgsCb) rgsBase = parseInt(rgsCb.getAttribute('data-mprice') || '0', 10) || 0;
     else {
       const s0 = doc.querySelector('.live-rgs-monthly');
-      if (s0) rgsBase = money(s0.textContent);
+      if (s0) {
+        const shown = money(s0.textContent);
+        if (shown !== null) rgsBase = Math.max(0, shown - checkedAddonSum);
+      }
       if (rgsBase === null && marker) rgsBase = parseInt(marker.getAttribute('data-base') || '0', 10) || 0;
       if (marker && rgsBase !== null) marker.setAttribute('data-base', String(rgsBase));
     }
     if (rgsBase !== null) {
+      // data-base carries the program base; the visible number includes any
+      // pre-checked add-ons (matching what the live page computes on load)
       doc.querySelectorAll('.live-rgs-monthly').forEach(s => {
         s.setAttribute('data-base', String(rgsBase));
-        s.textContent = '$' + rgsBase.toLocaleString('en-US');
+        s.textContent = '$' + (rgsBase + checkedAddonSum).toLocaleString('en-US');
       });
     }
     return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;

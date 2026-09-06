@@ -2,6 +2,13 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.31.0 — 2026-09-05 — Clean Scraped Addresses, Live Signature-Block Total, $0 Pricing Defaults
+
+- **Scraper address cleanup at the source**: `cleanStreetValue(street, phone, city)` strips leading phone-digit groups (≥6 digits, verified against the phone field) and a trailing duplicated city from the street line; applied when Research Client fills the form (both research branches) and defensively in `propAddressLines` at render time
+- **Third RGS price is live**: the Select Your Options RGS row now renders its price as a `.live-rgs-monthly` span, so checked add-ons update it like every other listed price (server + preview scripts pick it up automatically). `syncPricingData` is add-on-aware: it subtracts pre-checked add-on sums to recover the program base, and renders visible amounts as base + checked add-ons
+- **Pricing starts at $0**: `selectPropType` and the static form now zero WO hours, WO/website price, hosting, and RGS monthly (hosting at $0 keeps hiding hosting). Library restores still bring back saved prices
+- Battery: 35 checks green (13 identity + 14 builder incl. new live-options-row and $0-defaults assertions + 8 on-page editing)
+
 ## 4.30.0 — 2026-09-05 — On-Page Editing + Dropdown Menus Un-Clipped
 
 - **Fixed clipped dropdowns**: `.pbx-hero` carried `overflow:hidden` (to contain the orange bloom), which cut the Edit ▾ / Download ▾ menus at the band's bottom edge — only "Add logo" was visible. The bloom now clips itself via an `inset:0` wrapper with an oversized `::before`, and the hero no longer clips descendants

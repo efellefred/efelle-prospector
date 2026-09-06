@@ -4,6 +4,17 @@
 
 const CHANGELOG = [
   {
+    version: '4.31.0',
+    date: '2026-09-05',
+    title: 'Clean Scraped Addresses, Live Signature-Block Total, $0 Pricing Defaults',
+    changes: [
+      'FIXED: Research Client no longer writes phone fragments or a duplicated city into the Street Address field ("733 0191 928 Thomas Road Bellingham" → "928 Thomas Road") — cleaned at fill time, and defensively again at render time',
+      'FIXED: the third RGS price — in the Select Your Options card under the signature — now updates live when add-ons are checked, matching the offer panel, payment rows, price band, and sticky bar',
+      'Pricing fields (WO hours, WO/website price, hosting, RGS monthly) now start at $0 — every amount is a conscious entry, no more stale pre-loaded numbers',
+      'Pricing sync understands pre-checked add-ons: AI edits and on-page edits keep the program base and the displayed total straight even with services pre-selected',
+    ]
+  },
+  {
     version: '4.30.0',
     date: '2026-09-05',
     title: 'On-Page Editing + Dropdown Menus Un-Clipped',
