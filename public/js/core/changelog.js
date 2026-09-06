@@ -4,6 +4,18 @@
 
 const CHANGELOG = [
   {
+    version: '4.33.0',
+    date: '2026-09-05',
+    title: 'Library Pipeline, Deep Links, No More Duplicates & Proposal Expiry',
+    changes: [
+      'Every open proposal now has its own URL (prospector.efelle.com/proposal/…) — refreshing no longer bounces you to a blank builder, and you can bookmark or share a proposal internally',
+      'Regenerating a proposal UPDATES its Library entry instead of creating a duplicate — one client, one row per proposal',
+      'The Library is now a pipeline: the Status column shows Draft → Published → Sent → opened (count + last date) → ✓ Signed (name + date), with signed deals sorting to the top and an orange dot marking new activity since your last visit',
+      'Proposals now expire for real: past the valid-through date, the hosted page shows an "expired — contact us" notice and signing is blocked (server-enforced). A new clock button in the publish panel extends the date 14 days — live link and Library copy both update',
+      'Want an email the moment a client opens or signs? Opens/signatures already log as HubSpot notes — set up a HubSpot workflow on notes containing "efelle proposal" to notify you. In-app, the Library activity dots show the same thing',
+    ]
+  },
+  {
     version: '4.32.0',
     date: '2026-09-05',
     title: 'Hosting Visible in the Sticky Total + Cleaner Options Rows',

@@ -6,7 +6,7 @@ import { PROPOSAL_TEMPLATE, FEATURE_ICONS } from '../data/proposal-template.js';
 import { RGS_CASE_STUDIES } from '../data/case-studies.js';
 import { dbg } from '../core/debug.js';
 import { fmt, fetchImageAsDataURI, inlineImages, writeToFrame } from '../core/utils.js';
-import { saveReport, listReports, getReport, initSearchableClientDropdown } from '../core/reports.js';
+import { saveReport, updateReport, listReports, getReport, initSearchableClientDropdown } from '../core/reports.js';
 
 const TYPE_LABELS = {
   cca: { label: 'Strategy Plan' },
@@ -512,6 +512,7 @@ function propReset() {
   propNumber = null;
   window.propProposalNumber = null;
   propPubToken = null;
+  if (window.clearProposalUrl) window.clearProposalUrl();
   propClientData = {};
   propLogoInfo = null;
   propVertical = '';
@@ -1316,6 +1317,7 @@ function propBuildHTML(clientName) {
     '[[FEATURE_CARDS]]':        featureCardsHtml,
     '[[SITEMAP_HTML]]':         sitemapHtml,
     '[[EXPIRY]]':               expiry,
+    '[[EXPIRY_ISO]]':           expDate.toISOString().slice(0, 10),
   };
 
   let html = PROPOSAL_TEMPLATE;
@@ -1497,7 +1499,7 @@ async function propGenerate() {
         logo_bg: propLogoBg,
       };
       try {
-        await saveReport('prop', clientName, {
+        const propMeta = {
           vertical: propVertical,
           type: propType,
           marketType: propMarketType,
@@ -1509,9 +1511,15 @@ async function propGenerate() {
             hours: document.getElementById('price-hours').value,
             rgs: document.getElementById('price-rgs').value,
           },
-        }, propClientData, propReportHtml).then(saved => {
+        };
+        if (propSavedReportId) {
+          // Regeneration updates the SAME Library entry — no duplicates
+          await updateReport(propSavedReportId, { clientName, metadata: propMeta, html: propReportHtml, engineData: propClientData });
+        } else {
+          const saved = await saveReport('prop', clientName, propMeta, propClientData, propReportHtml);
           if (saved && saved.id) propSavedReportId = saved.id;
-        });
+        }
+        if (propSavedReportId && window.setProposalUrl) window.setProposalUrl(propSavedReportId);
       } catch (e) { console.warn('Auto-save failed:', e.message); }
 
     } catch(e) {
@@ -2130,6 +2138,7 @@ function pubContactEmails() {
 // publishes link the hosted copy to it and sends get recorded on it.
 let propSavedReportId = null;
 window.setPropSavedReportId = function(id) { propSavedReportId = id || null; };
+window.getPropSavedReportId = function() { return propSavedReportId; };
 
 // The published token for THE PROPOSAL CURRENTLY OPEN. Identity is per
 // proposal (Library report), never per company — three proposals for one
@@ -2203,6 +2212,7 @@ function renderPublishPanel(token, status, flash) {
     + '<span class="pbx-pub-stat" title="' + tip + '">' + views + ' view' + (views === 1 ? '' : 's') + '</span>'
     + (last ? '<span class="pbx-pub-stat" title="' + tip + '">Last opened ' + last + '</span>' : '')
     + '<button class="pbx-iconbtn" title="Refresh views and acceptance" onclick="refreshPublishStatus()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36 M21 3v6h-6"/></svg></button>'
+    + '<button class="pbx-iconbtn" title="Extend the valid-through date by 14 days" onclick="extendProposalExpiry(\'' + token + '\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></button>'
     + '<button class="pbx-iconbtn" title="Unpublish — permanently delete this link" onclick="unpublishProposal(\'' + token + '\',' + (accepted ? 'true' : 'false') + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v6 M14 11v6"/></svg></button>'
     + (accepted
         ? '<span class="pbx-pub-accept">\u2713 Accepted by ' + accepted.name.replace(/</g, '&lt;') + ' on ' + new Date(accepted.t).toLocaleDateString()
@@ -2241,6 +2251,26 @@ window.restorePublishPanel = async function(token) {
     if (res.status === 404) propPubToken = null;
   } catch (e) { /* leave panel as-is */ }
   if (panel && !propPubToken) { panel.style.display = 'none'; panel.innerHTML = ''; }
+};
+
+// Extend the proposal's valid-through date by 14 days (hosted + Library copy)
+window.extendProposalExpiry = async function(token) {
+  try {
+    const res = await fetch('/api/publish/' + token + '/extend', { method: 'POST', headers: getApiHeaders() });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { alert(d.error || ('Extend failed (' + res.status + ')')); return; }
+    // Keep the working copy in step so the next republish doesn't revert the date
+    if (propReportHtml) {
+      propReportHtml = propReportHtml
+        .replace(/(class="prop-expiry"[^>]*data-expiry=")\d{4}-\d{2}-\d{2}(")/g, (m, a, b) => a + d.expiresAt + b)
+        .replace(/(<span class="prop-expiry"[^>]*>)[^<]*(<\/span>)/g, (m, a, b) => a + d.expires + b);
+      const frame = document.getElementById('prop-report-frame');
+      if (frame) { await writeToFrame(frame, propReportHtml); bindPreviewPricing(); }
+    }
+    renderPublishPanel(token, await (await fetch('/api/publish/' + token + '/status', { headers: getApiHeaders() })).json().catch(() => ({})), 'extended — now valid through ' + d.expires);
+  } catch (e) {
+    alert('Extend failed: ' + e.message);
+  }
 };
 
 // Unpublish — permanently deletes the hosted /p/<token> link and its record.

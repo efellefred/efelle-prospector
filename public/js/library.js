@@ -36,7 +36,13 @@ const USER_NAMES = {
 /**
  * Navigate to the library screen and render its content.
  */
+// Activity dots compare against the previous visit's timestamp — snapshot it
+// once per visit so re-sorting/filtering doesn't clear the dots mid-visit
+let activitySeenSnapshot = 0;
+
 export async function showLibrary() {
+  activitySeenSnapshot = parseInt(localStorage.getItem('prospector_library_seen') || '0', 10) || 0;
+  try { localStorage.setItem('prospector_library_seen', String(Date.now())); } catch (e) {}
   showScreen('library');
   await renderLibrary();
 }
@@ -68,7 +74,8 @@ window.librarySort = function(key) {
 function sortValue(r) {
   if (sortKey === 'name') return (r.clientName || '').toLowerCase();
   if (sortKey === 'sent') return r.sentAt ? new Date(r.sentAt).getTime() : null;
-  if (sortKey === 'views') return typeof r.views === 'number' ? r.views : 0;
+  // Status sort: signed proposals rank above any view count
+  if (sortKey === 'views') return r.accepted ? 1e15 + (r.accepted.t || 0) : (typeof r.views === 'number' ? r.views : 0);
   return new Date(r.createdAt).getTime() || 0;
 }
 
@@ -102,7 +109,7 @@ function headHtml() {
     + '<button class="' + cls('name') + '" onclick="librarySort(\'name\')">Name' + arrow('name') + '</button>'
     + '<button class="' + cls('created') + '" onclick="librarySort(\'created\')">Created' + arrow('created') + '</button>'
     + '<button class="' + cls('sent') + '" onclick="librarySort(\'sent\')">Sent' + arrow('sent') + '</button>'
-    + '<button class="' + cls('views') + ' lbx-center" onclick="librarySort(\'views\')">Views' + arrow('views') + '</button>'
+    + '<button class="' + cls('views') + '" onclick="librarySort(\'views\')">Status' + arrow('views') + '</button>'
     + '<span></span>'
     + '</div>';
 }
@@ -146,7 +153,19 @@ function renderRows() {
       +   '<span class="lbx-date">' + (r.sentAt ? fmtDate(r.sentAt) : 'Not sent') + '</span>'
       +   (r.sentAt && r.sentTo ? '<span class="lbx-sentto">' + esc(r.sentTo) + '</span>' : '')
       + '</div>'
-      + '<span class="lbx-views">' + (typeof r.views === 'number' ? r.views : 0) + '</span>'
+      + (function() {
+          if (r.type !== 'prop') return '<div class="lbx-statuscell"><span class="lbx-sentto">—</span></div>';
+          const acc = r.accepted;
+          const isNew = ((r.lastViewedAt || 0) > activitySeenSnapshot) || (acc && (acc.t || 0) > activitySeenSnapshot);
+          const expiredTag = r.expired ? '<span class="lbx-expired">expired</span>' : '';
+          let cell;
+          if (acc) cell = '<span class="lbx-signed">✓ Signed ' + fmtDate(acc.t) + '</span><span class="lbx-sentto">' + esc(acc.name || '') + '</span>';
+          else if (r.views > 0) cell = '<span class="lbx-opened">' + r.views + ' view' + (r.views === 1 ? '' : 's') + '</span><span class="lbx-sentto">last ' + fmtDate(r.lastViewedAt) + '</span>' + expiredTag;
+          else if (r.sentAt) cell = '<span class="lbx-sentto">Sent — not opened</span>' + expiredTag;
+          else if (r.publishToken) cell = '<span class="lbx-sentto">Published — not opened</span>' + expiredTag;
+          else cell = '<span class="lbx-sentto">Draft</span>';
+          return '<div class="lbx-statuscell">' + (isNew ? '<span class="lbx-newdot" title="New activity since your last Library visit"></span>' : '') + cell + '</div>';
+        })()
       + '<div class="lbx-actions">'
       +   '<span style="position:relative;display:inline-block;">'
       +     '<button class="lbx-actbtn" onclick="libMenuToggle(event, \'lbx-am-' + i + '\')">Actions \u25BE</button>'
@@ -216,6 +235,8 @@ async function libraryEditReport(id, type) {
       if (typeof window.loadPropClient === 'function') window.loadPropClient(id);
       // Show THIS proposal's published-link panel (or hide the previous one's)
       if (typeof window.restorePublishPanel === 'function') window.restorePublishPanel(report.publishToken || null);
+      // Deep link: refresh/bookmark reopens this exact proposal
+      if (typeof window.setProposalUrl === 'function') window.setProposalUrl(id);
 
       const frame = document.getElementById('prop-report-frame');
       await writeToFrame(frame, html);

@@ -13,6 +13,22 @@ import { getApiHeaders } from './api.js';
  * @param {string} html       – rendered HTML to store as downloadable file
  * @returns {Promise<{id: string, saved: boolean}>}
  */
+// Update an existing report in place (regeneration, on-page edits) — keeps the
+// same Library entry instead of creating a duplicate
+export async function updateReport(id, { clientName, metadata, html, engineData } = {}) {
+  const res = await fetch('/api/reports/' + encodeURIComponent(id), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-session-token': sessionStorage.getItem('prospector_token') || '',
+    },
+    body: JSON.stringify({ clientName, metadata, html, engineData }),
+  });
+  if (!res.ok) throw new Error('Update failed (' + res.status + ')');
+  return res.json();
+}
+window.updateReport = updateReport;
+
 export async function saveReport(type, clientName, metadata, engineData, html) {
   try {
     const res = await fetch('/api/reports', {

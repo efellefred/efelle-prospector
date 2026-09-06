@@ -2,6 +2,14 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.33.0 — 2026-09-05 — Library Pipeline, Deep Links, No More Duplicates & Proposal Expiry
+
+- **Deep links**: `/proposal/<reportId>` opens that Library proposal directly (`nav.js` parses the path, defers the open one tick so modules finish loading; `setProposalUrl`/`clearProposalUrl` keep the URL honest; the screen-sync guard never strips an open proposal's id). Refresh restores stage 3 with the doc, number label, and publish panel
+- **No duplicate Library entries**: `propGenerate` calls the new `updateReport` (PUT, with html + metadata + engineData + clientName) when the proposal already has an id — only first-time generates POST a new report
+- **Pipeline Library**: the list endpoint now joins `accepted` and `expired` alongside views; the Status column renders Draft/Published/Sent → "N views · last date" → "✓ Signed date + name", signed rows sort above any view count, and an orange dot flags activity newer than your last Library visit (localStorage snapshot per visit)
+- **Expiry enforcement**: docs carry `<span class="prop-expiry" data-expiry="YYYY-MM-DD">`; past end-of-day the hosted page swaps the accept bar for an amber expired notice and `/accept` returns 403. `POST /api/publish/:token/extend` (auth) rewrites the marker + visible date (+14 days) in the hosted and Library copies; the publish panel's clock button drives it and re-syncs the working copy. Docs published before the marker existed never expire and extend returns guidance to regenerate once
+- Battery: 48 checks green (20 identity+expiry + 20 builder incl. deep-link reload and no-dupe regenerate + 8 on-page editing)
+
 ## 4.32.0 — 2026-09-05 — Hosting Visible in the Sticky Total + Cleaner Options Rows
 
 - **Sticky bar spells out hosting**: `$2,935/m (incl. $135/m hosting)` — hosting is the website option's `data-mprice`, so the injected total script reads it directly; server-side change, so every published link (old markup included) gets it on deploy without republishing

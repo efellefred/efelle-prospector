@@ -619,6 +619,40 @@ app.post('/api/publish', requireAuth, (req, res) => {
   }
 });
 
+// Extend a proposal's valid-through date by 14 days from today — rewrites the
+// expiry marker (machine attr + visible date) in the hosted copy and, when
+// linked, the Library copy. Docs without the marker need a regenerate first.
+app.post('/api/publish/:token/extend', requireAuth, (req, res) => {
+  const rec = readPublished(req.params.token);
+  if (!rec) return res.status(404).json({ error: 'Not found' });
+  if (!/class="prop-expiry"[^>]*data-expiry="\d{4}-\d{2}-\d{2}"/.test(rec.html)) {
+    return res.status(409).json({ error: 'This proposal predates expiry tracking — regenerate it once to add the marker, then extend.' });
+  }
+  const d = new Date(); d.setDate(d.getDate() + 14);
+  const iso = d.toISOString().slice(0, 10);
+  const pretty = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const rewrite = (html) => html
+    .replace(/(class="prop-expiry"[^>]*data-expiry=")\d{4}-\d{2}-\d{2}(")/g, (mm, a, b) => a + iso + b)
+    .replace(/(<span class="prop-expiry"[^>]*>)[^<]*(<\/span>)/g, (mm, a, b) => a + pretty + b);
+  rec.html = rewrite(rec.html);
+  rec.updatedAt = Date.now();
+  try {
+    writePublished(rec);
+    if (rec.reportId) {
+      try {
+        const entry = readIndex().find(r => r.id === rec.reportId);
+        if (entry) {
+          const f = path.join(REPORTS_DIR, entry.htmlFile);
+          if (fs.existsSync(f)) fs.writeFileSync(f, rewrite(fs.readFileSync(f, 'utf8')));
+        }
+      } catch (e) { /* non-fatal */ }
+    }
+    res.json({ ok: true, expiresAt: iso, expires: pretty });
+  } catch (err) {
+    res.status(500).json({ error: 'Extend failed: ' + err.message });
+  }
+});
+
 // Unpublish (delete) a hosted proposal — removes the public /p/<token> link
 // and its record entirely. Used to clean up test proposals and retire dead
 // links. Any authenticated user may unpublish; a signed proposal can be
@@ -786,7 +820,16 @@ function injectSignature(html, rec) {
   return out;
 }
 
-function acceptUiHtml(rec) {
+// Machine-readable expiry: docs carry <span class="prop-expiry" data-expiry="YYYY-MM-DD">.
+// Older docs without the marker never expire (graceful).
+function proposalExpiry(html) {
+  const m = String(html || '').match(/class="prop-expiry"[^>]*data-expiry="(\d{4}-\d{2}-\d{2})"/);
+  if (!m) return { iso: null, expired: false };
+  const endOfDay = new Date(m[1] + 'T23:59:59');
+  return { iso: m[1], expired: Date.now() > endOfDay.getTime() };
+}
+
+function acceptUiHtml(rec, expired) {
   // Sticky live-total bar: only when the doc has selectable pricing
   const hasPricing = rec.html.includes('prog-opt-check') || rec.html.includes('id="monthly-total"');
   const stickyTop = rec.accepted ? '46px' : '0';
@@ -836,6 +879,17 @@ function acceptUiHtml(rec) {
             + ')'
           : '')
       + ' &mdash; the efelle team will reach out shortly to schedule your kickoff call.'
+      + '</div>'
+      + totalScript;
+  }
+  if (expired) {
+    // Past the valid-through date and unsigned: viewing stays open, signing closes
+    const exp = proposalExpiry(rec.html);
+    const expStr = exp.iso ? new Date(exp.iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
+    return hideOnPrint
+      + '<div class="pub-ui" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#7C2D12;color:#fff;padding:14px 20px;text-align:center;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;box-shadow:0 -4px 20px rgba(0,0,0,0.35);">'
+      + '&#9888; This proposal expired' + (expStr ? ' on <strong>' + expStr + '</strong>' : '') + ' and can no longer be signed. '
+      + 'Please contact efelle creative at <strong>206.384.4909</strong> for current pricing &mdash; we\'d love to pick this back up.'
       + '</div>'
       + totalScript;
   }
@@ -898,7 +952,7 @@ app.get('/p/:token', publicViewLimiter, (req, res) => {
     }
     writePublished(rec);
   } catch (e) { /* tracking must never block viewing */ }
-  const ui = acceptUiHtml(rec);
+  const ui = acceptUiHtml(rec, !rec.accepted && proposalExpiry(rec.html).expired);
   const signed = rec.accepted ? injectSignature(rec.html, rec) : rec.html;
   // Function form: ui contains the signer's name (banner) — see injectSignature note
   const html = signed.includes('</body>') ? signed.replace('</body>', () => ui + '</body>') : signed + ui;
@@ -913,6 +967,9 @@ app.post('/api/p/:token/accept', acceptLimiter, (req, res) => {
   const rec = readPublished(req.params.token);
   if (!rec) return res.status(404).json({ error: 'Not found' });
   if (rec.accepted) return res.json({ ok: true, accepted: rec.accepted, already: true });
+  if (proposalExpiry(rec.html).expired) {
+    return res.status(403).json({ error: 'This proposal has expired — please contact efelle creative at 206.384.4909 for current pricing.' });
+  }
   const name = ((req.body || {}).name || '').toString().trim().slice(0, 120);
   if (name.length < 2) return res.status(400).json({ error: 'Please type your full name' });
   // Program options: the request only says WHICH keys were selected — keys are
@@ -1678,10 +1735,14 @@ app.put('/api/reports/:id', requireAuth, (req, res) => {
     const index = readIndex();
     const entry = index.find(r => r.id === req.params.id);
     if (!entry) return res.status(404).json({ error: 'Report not found' });
-    const { html, metadata } = req.body || {};
+    const { html, metadata, clientName, engineData } = req.body || {};
     if (html && typeof html === 'string') {
       if (html.length > 10 * 1024 * 1024) return res.status(413).json({ error: 'Document too large' });
       fs.writeFileSync(path.join(REPORTS_DIR, entry.htmlFile), html);
+    }
+    if (clientName && typeof clientName === 'string') entry.clientName = clientName.slice(0, 120);
+    if (engineData && typeof engineData === 'object') {
+      fs.writeFileSync(path.join(REPORTS_DIR, `${entry.id}.json`), JSON.stringify(engineData, null, 2));
     }
     if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
       entry.metadata = { ...(entry.metadata || {}), ...metadata };
@@ -1712,6 +1773,8 @@ app.get('/api/reports', requireAuth, (req, res) => {
       return Object.assign({}, r, {
         views: rec ? rec.views.length : 0,
         lastViewedAt: rec && rec.views.length ? rec.views[rec.views.length - 1].t : null,
+        accepted: rec && rec.accepted ? { name: rec.accepted.name, t: rec.accepted.t } : null,
+        expired: rec ? (!rec.accepted && proposalExpiry(rec.html).expired) : false,
       });
     });
     res.json(enriched);

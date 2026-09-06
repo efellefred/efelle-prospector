@@ -577,7 +577,7 @@ export const PROPOSAL_TEMPLATE = `<!DOCTYPE html>
 
     <div style="background:rgba(245,99,0,0.06); border:1px solid rgba(245,99,0,0.2); border-radius:8px; padding:13px 16px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F56300" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-      <div style="font-size:11px; color:var(--gray-1);"><strong style="color:var(--orange);">Proposal valid through [[EXPIRY]].</strong> Pricing and terms are subject to change after this date.</div>
+      <div style="font-size:11px; color:var(--gray-1);"><strong style="color:var(--orange);">Proposal valid through <span class="prop-expiry" data-expiry="[[EXPIRY_ISO]]">[[EXPIRY]]</span>.</strong> Pricing and terms are subject to change after this date.</div>
     </div>
 
     <!-- Signature grid: columns TOP-aligned so the COMPANY and SIGNATURE eyebrows

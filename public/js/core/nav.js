@@ -56,7 +56,39 @@ const SCREEN_PATHS = {
 const PATH_SCREENS = {};
 for (const [id, p] of Object.entries(SCREEN_PATHS)) PATH_SCREENS[p] = id;
 
+// Deep links: /proposal/<reportId> opens that Library proposal directly, and
+// refresh keeps you on it instead of bouncing to the blank builder.
+function parsePath(p) {
+  if (p.startsWith('/proposal/')) {
+    const reportId = decodeURIComponent(p.slice('/proposal/'.length)) || null;
+    return { screen: 'prop', reportId };
+  }
+  return { screen: PATH_SCREENS[p] || 'home', reportId: null };
+}
+
+function openProposalFromUrl(reportId) {
+  if (!reportId) return;
+  if (typeof window.getPropSavedReportId === 'function' && window.getPropSavedReportId() === reportId) return;
+  if (typeof window.libraryEditReport === 'function') window.libraryEditReport(reportId, 'prop');
+}
+
+window.setProposalUrl = function(reportId) {
+  if (!reportId) return;
+  const path = '/proposal/' + encodeURIComponent(reportId);
+  if (window.location.pathname !== path) history.replaceState({ screen: 'prop', reportId }, '', path);
+};
+window.clearProposalUrl = function() {
+  if (window.location.pathname.startsWith('/proposal/')) {
+    history.replaceState({ screen: 'prop' }, '', '/proposal');
+  }
+};
+
 function syncUrl(id) {
+  // An open proposal owns its deep URL — screen syncing must not strip the id
+  if (id === 'prop' && window.location.pathname.startsWith('/proposal/')) {
+    history.replaceState({ screen: 'prop' }, '', window.location.pathname);
+    return;
+  }
   const path = SCREEN_PATHS[id];
   if (!path) return; // screens without a route keep the current URL
   if (window.location.pathname !== path) {
@@ -140,21 +172,27 @@ window.showEngine = showEngine;
 window.resetCurrentEngine = resetCurrentEngine;
 
 // Browser Back/Forward: route to the screen the URL (or history entry) names.
-window.addEventListener('popstate', (e) => {
-  const id = (e.state && e.state.screen) || PATH_SCREENS[window.location.pathname] || 'home';
-  showScreenFromUrl(id);
+window.addEventListener('popstate', () => {
+  const info = parsePath(window.location.pathname);
+  showScreenFromUrl(info.screen);
+  if (info.reportId) openProposalFromUrl(info.reportId);
 });
 
 // Initialize: route from the current URL (deep links work; unknown paths → home).
 // Library renders after all modules load, so defer its first paint one tick.
-const initialScreen = PATH_SCREENS[window.location.pathname] || 'home';
+const initialInfo = parsePath(window.location.pathname);
+const initialScreen = initialInfo.screen;
 if (initialScreen === 'library') {
   showScreen('library');
   setTimeout(() => { if (typeof window.showLibrary === 'function') window.showLibrary(); }, 0);
 } else {
   showScreenFromUrl(initialScreen);
 }
-if (!SCREEN_PATHS[initialScreen] || window.location.pathname !== SCREEN_PATHS[initialScreen]) {
+if (initialInfo.reportId) {
+  // Deep-linked proposal: modules finish loading first, then open it
+  history.replaceState({ screen: 'prop', reportId: initialInfo.reportId }, '', window.location.pathname);
+  setTimeout(() => openProposalFromUrl(initialInfo.reportId), 0);
+} else if (!SCREEN_PATHS[initialScreen] || window.location.pathname !== SCREEN_PATHS[initialScreen]) {
   history.replaceState({ screen: initialScreen }, '', SCREEN_PATHS[initialScreen] || '/');
 } else {
   history.replaceState({ screen: initialScreen }, '', window.location.pathname);
