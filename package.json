@@ -1,6 +1,6 @@
 {
   "name": "efelle-prospector",
-  "version": "4.31.0",
+  "version": "4.32.0",
   "description": "efelle Prospector — modular sales tool with API proxy",
   "main": "server.js",
   "scripts": {

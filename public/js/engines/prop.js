@@ -1163,7 +1163,6 @@ function propBuildHTML(clientName) {
   // multi-program proposals become "Select Your Options" with client-checkable
   // boxes (live on the hosted page and recorded with the acceptance; printable
   // as tick-boxes on paper). Hosting rides with the website option.
-  const hostingNote = hp > 0 ? ' + ' + fmt(hp) + '/m hosting' : '';
   const progOptRow = (key, label, checked, mprice, oprice, displayHtml) =>
     '<label class="prog-opt" title="You can select one or both programs" style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:8px;">'
     + '<input type="checkbox" class="prog-opt-check" data-opt="' + key + '" data-label="' + label.replace(/"/g, '&quot;') + '" data-mprice="' + (mprice || 0) + '" data-oprice="' + (oprice || 0) + '"' + (checked ? ' checked' : '') + ' style="width:15px; height:15px; accent-color:#F56300; flex-shrink:0;">'
@@ -1182,18 +1181,24 @@ function propBuildHTML(clientName) {
       + monthlyTotalLine(rp, rp)
       + '</div>';
   } else {
-    const websiteLabel = isWO
-      ? fmt(wp) + ' — Website Updates (Work Order)' + hostingNote
-      : fmt(wp) + ' — New Website Project (0% interest plan)' + hostingNote;
-    const rgsLabel = fmt(rp) + '/m — RGS Marketing Program' + (optional ? ' (optional)' : '');
+    // Layout: price in a fixed-width column, then the program name; hosting
+    // reads as part of the MONTHLY line ("+ $135/m hosting & support" on the
+    // RGS row) though billing still rides the website option's data-mprice
+    const websiteName = isWO ? 'Website Updates (Work Order)' : 'New Website Project (0% interest plan)';
+    const rgsHostNote = hp > 0 ? ' + ' + fmt(hp) + '/m hosting &amp; support' : '';
+    const websiteLabel = fmt(wp) + ' ' + websiteName;
+    const rgsLabel = fmt(rp) + '/m RGS Marketing Program' + (optional ? ' (optional)' : '') + rgsHostNote;
+    const priceCol = (html) => '<span style="display:inline-block; min-width:96px; font-weight:700;">' + html + '</span>';
+    const websiteDisplay = priceCol(fmt(wp)) + websiteName;
     // The visible RGS price in this row is a live span — checked add-ons update
     // it here too, not just in the offer panel / payment rows / price band
-    const rgsRowDisplay = liveRgs + '/m — RGS Marketing Program' + (optional ? ' (optional)' : '');
+    const rgsRowDisplay = priceCol(liveRgs + '/m') + 'RGS Marketing Program' + (optional ? ' (optional)' : '')
+      + (rgsHostNote ? '<span style="color:rgba(255,255,255,0.55);">' + rgsHostNote + '</span>' : '');
     const initialMonthly = hp + (optional ? 0 : rp); // website checked by default; add-ons start unchecked
     programSummaryBlock = '<div style="flex:1; min-width:280px;">'
       + '<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.6); margin-bottom:2px;">Select Your Options</div>'
       + '<div style="font-size:10px; color:rgba(255,255,255,0.45);">Check one or both — your signature authorizes the selected options.</div>'
-      + progOptRow('website', websiteLabel, true, hp, wp)
+      + progOptRow('website', websiteLabel, true, hp, wp, websiteDisplay)
       + progOptRow('rgs', rgsLabel, !optional, rp, 0, rgsRowDisplay)
       + monthlyTotalLine(initialMonthly, 0)
       + '</div>';
@@ -1871,6 +1876,13 @@ function syncPricingData(html) {
     doc.querySelectorAll('.addon-row .prog-opt-check').forEach(c => {
       if (c.hasAttribute('checked')) checkedAddonSum += parseInt(c.getAttribute('data-mprice') || '0', 10) || 0;
     });
+    // The "+ $X/m hosting" note may sit on any program row (it displays on the
+    // RGS line); billing rides the website option's data-mprice
+    let hostAmt = null;
+    doc.querySelectorAll('.prog-opt').forEach(l => {
+      const mm = l.textContent.replace(/,/g, '').match(/\+\s*\$\s*(\d+)\s*\/m\s*hosting/i);
+      if (mm) hostAmt = mm[1];
+    });
     // Program rows: label text → data-label; website $X → data-oprice and
     // "+$Y/m hosting" → data-mprice; rgs $X/m → data-mprice
     doc.querySelectorAll('.prog-opt').forEach(rowLabel => {
@@ -1884,7 +1896,7 @@ function syncPricingData(html) {
         const first = clean.match(/\$\s*(\d+)/);
         if (first) cb.setAttribute('data-oprice', first[1]);
         const host = clean.match(/\+\s*\$\s*(\d+)\s*\/m/);
-        cb.setAttribute('data-mprice', host ? host[1] : '0');
+        cb.setAttribute('data-mprice', host ? host[1] : (hostAmt !== null ? hostAmt : '0'));
       } else if (cb.getAttribute('data-opt') === 'rgs') {
         const first = clean.match(/\$\s*(\d+)/);
         if (first) {

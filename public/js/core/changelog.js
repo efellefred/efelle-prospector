@@ -4,6 +4,16 @@
 
 const CHANGELOG = [
   {
+    version: '4.32.0',
+    date: '2026-09-05',
+    title: 'Hosting Visible in the Sticky Total + Cleaner Options Rows',
+    changes: [
+      'The sticky "Your selection" bar now spells out hosting — e.g. "$2,935/m (incl. $135/m hosting)" — so the client sees why the monthly total is higher than the RGS program price. Applies to ALL published links immediately, including ones published before this update',
+      'Select Your Options rows redesigned: price in an aligned column, then the program name — hosting moved off the website line onto the monthly RGS line as "+ $135/m hosting & support"',
+      'Pricing sync follows the hosting note to its new home, so AI edits and on-page edits keep hosting billing intact',
+    ]
+  },
+  {
     version: '4.31.0',
     date: '2026-09-05',
     title: 'Clean Scraped Addresses, Live Signature-Block Total, $0 Pricing Defaults',

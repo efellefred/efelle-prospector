@@ -2,6 +2,13 @@
 
 This mirrors the in-app Update Log (Updates button in the header).
 
+## 4.32.0 — 2026-09-05 — Hosting Visible in the Sticky Total + Cleaner Options Rows
+
+- **Sticky bar spells out hosting**: `$2,935/m (incl. $135/m hosting)` — hosting is the website option's `data-mprice`, so the injected total script reads it directly; server-side change, so every published link (old markup included) gets it on deploy without republishing
+- **Options rows**: price in a fixed-width column, then the name; the hosting note moved from the website line to the RGS monthly line as muted "+ $X/m hosting & support" (billing still rides the website option — the machine pricing is unchanged)
+- `syncPricingData` scans all program rows for the hosting note (it may sit on the RGS line now) and still prefers a website-row note when present (legacy docs)
+- Battery: 36 checks green (13 identity + 15 builder + 8 on-page editing)
+
 ## 4.31.0 — 2026-09-05 — Clean Scraped Addresses, Live Signature-Block Total, $0 Pricing Defaults
 
 - **Scraper address cleanup at the source**: `cleanStreetValue(street, phone, city)` strips leading phone-digit groups (≥6 digits, verified against the phone field) and a trailing duplicated city from the street line; applied when Research Client fills the form (both research branches) and defensively in `propAddressLines` at render time

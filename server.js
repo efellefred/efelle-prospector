@@ -814,7 +814,11 @@ function acceptUiHtml(rec) {
     + 'var mStr = "$" + total.toLocaleString("en-US");'
     + 'if (totalEl && ' + (rec.accepted ? 'false' : 'true') + ') totalEl.textContent = mStr;'
     + 'if (stickyO) stickyO.textContent = oneTime > 0 ? ("$" + oneTime.toLocaleString("en-US") + " one-time + ") : "";'
-    + 'if (stickyM) stickyM.textContent = mStr + "/m";'
+    // Hosting rides the website option's data-mprice — call it out so the
+    // client can see why the monthly total is higher than the program price
+    + 'var wcb = document.querySelector(\'.prog-opt-check[data-opt="website"]\');'
+    + 'var hostM = (wcb && wcb.checked) ? (parseInt(wcb.getAttribute("data-mprice") || "0", 10) || 0) : 0;'
+    + 'if (stickyM) stickyM.textContent = mStr + "/m" + (hostM > 0 ? " (incl. $" + hostM.toLocaleString("en-US") + "/m hosting)" : "");'
     // The listed RGS program prices update in place: base program + checked add-ons
     + 'document.querySelectorAll(".live-rgs-monthly").forEach(function(s) { var b = parseInt(s.getAttribute("data-base") || "0", 10) || 0; s.textContent = "$" + (b + addonSum).toLocaleString("en-US"); });'
     + '}'
